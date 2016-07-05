@@ -1,0 +1,22 @@
+[
+    {
+        "merged": "E:\\Android\\astws\\HelloWorld\\myLauncher\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi-v4\\dot_deactive.png",
+        "source": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\drawable-xhdpi\\dot_deactive.png"
+    },
+    {
+        "merged": "E:\\Android\\astws\\HelloWorld\\myLauncher\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi-v4\\icon.png",
+        "source": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\drawable-xhdpi\\icon.png"
+    },
+    {
+        "merged": "E:\\Android\\astws\\HelloWorld\\myLauncher\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi-v4\\dot_active.png",
+        "source": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\drawable-xhdpi\\dot_active.png"
+    },
+    {
+        "merged": "E:\\Android\\astws\\HelloWorld\\myLauncher\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi-v4\\ic_launcher.png",
+        "source": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\drawable-xhdpi\\ic_launcher.png"
+    },
+    {
+        "merged": "E:\\Android\\astws\\HelloWorld\\myLauncher\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi-v4\\black_circle_x.png",
+        "source": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\drawable-xhdpi\\black_circle_x.png"
+    }
+]

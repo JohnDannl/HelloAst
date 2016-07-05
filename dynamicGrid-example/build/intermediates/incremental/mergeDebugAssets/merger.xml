@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="unspecified"><source path="E:\Android\astws\HelloWorld\dynamicGrid-example\build\intermediates\exploded-aar\HelloWorld\dynamicgrid\unspecified\assets"/></dataSet><dataSet config="main"><source path="E:\Android\astws\HelloWorld\dynamicGrid-example\assets"/><source path="E:\Android\astws\HelloWorld\dynamicGrid-example\build\generated\assets\shaders\debug"/></dataSet><dataSet config="debug"><source path="E:\Android\astws\HelloWorld\dynamicGrid-example\src\debug\assets"/></dataSet></merger>

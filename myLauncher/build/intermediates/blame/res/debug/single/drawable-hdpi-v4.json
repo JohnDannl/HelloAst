@@ -1,0 +1,38 @@
+[
+    {
+        "merged": "E:\\Android\\astws\\HelloWorld\\myLauncher\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi-v4\\titlebar_background.png",
+        "source": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\drawable-hdpi\\titlebar_background.png"
+    },
+    {
+        "merged": "E:\\Android\\astws\\HelloWorld\\myLauncher\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi-v4\\folder_bg.9.png",
+        "source": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\drawable-hdpi\\folder_bg.9.png"
+    },
+    {
+        "merged": "E:\\Android\\astws\\HelloWorld\\myLauncher\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi-v4\\default_background.png",
+        "source": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\drawable-hdpi\\default_background.png"
+    },
+    {
+        "merged": "E:\\Android\\astws\\HelloWorld\\myLauncher\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi-v4\\ic_launcher.png",
+        "source": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\drawable-hdpi\\ic_launcher.png"
+    },
+    {
+        "merged": "E:\\Android\\astws\\HelloWorld\\myLauncher\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi-v4\\folder_title_bg.9.png",
+        "source": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\drawable-hdpi\\folder_title_bg.9.png"
+    },
+    {
+        "merged": "E:\\Android\\astws\\HelloWorld\\myLauncher\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi-v4\\bg_app.jpg",
+        "source": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\drawable-hdpi\\bg_app.jpg"
+    },
+    {
+        "merged": "E:\\Android\\astws\\HelloWorld\\myLauncher\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi-v4\\close.png",
+        "source": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\drawable-hdpi\\close.png"
+    },
+    {
+        "merged": "E:\\Android\\astws\\HelloWorld\\myLauncher\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi-v4\\icon.png",
+        "source": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\drawable-hdpi\\icon.png"
+    },
+    {
+        "merged": "E:\\Android\\astws\\HelloWorld\\myLauncher\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi-v4\\folder.png",
+        "source": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\drawable-hdpi\\folder.png"
+    }
+]

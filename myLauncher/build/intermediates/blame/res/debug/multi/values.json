@@ -1,0 +1,318 @@
+[
+    {
+        "outputFile": "E:\\Android\\astws\\HelloWorld\\myLauncher\\build\\intermediates\\res\\merged\\debug\\values\\values.xml",
+        "map": [
+            {
+                "to": {
+                    "startLine": 2,
+                    "startColumn": 4,
+                    "startOffset": 55,
+                    "endColumn": 47,
+                    "endOffset": 98
+                },
+                "from": {
+                    "file": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\values\\strings.xml",
+                    "position": {
+                        "startLine": 3,
+                        "startColumn": 4,
+                        "startOffset": 56,
+                        "endColumn": 47,
+                        "endOffset": 99
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 3,
+                    "startColumn": 4,
+                    "startOffset": 103,
+                    "endColumn": 52,
+                    "endOffset": 151
+                },
+                "from": {
+                    "file": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\values\\strings.xml",
+                    "position": {
+                        "startLine": 4,
+                        "startColumn": 4,
+                        "startOffset": 104,
+                        "endColumn": 52,
+                        "endOffset": 152
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 4,
+                    "startColumn": 4,
+                    "startOffset": 156,
+                    "endLine": 8,
+                    "endColumn": 12,
+                    "endOffset": 381
+                },
+                "from": {
+                    "file": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\values\\styles.xml",
+                    "position": {
+                        "startLine": 10,
+                        "startColumn": 4,
+                        "startOffset": 321,
+                        "endLine": 14,
+                        "endColumn": 12,
+                        "endOffset": 546
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 9,
+                    "startColumn": 4,
+                    "startOffset": 386,
+                    "endLine": 12,
+                    "endColumn": 12,
+                    "endOffset": 563
+                },
+                "from": {
+                    "file": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\values\\styles.xml",
+                    "position": {
+                        "startLine": 93,
+                        "startColumn": 4,
+                        "startOffset": 4343,
+                        "endLine": 96,
+                        "endColumn": 12,
+                        "endOffset": 4520
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 13,
+                    "startColumn": 4,
+                    "startOffset": 568,
+                    "endLine": 19,
+                    "endColumn": 12,
+                    "endOffset": 1034
+                },
+                "from": {
+                    "file": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\values\\styles.xml",
+                    "position": {
+                        "startLine": 85,
+                        "startColumn": 4,
+                        "startOffset": 3871,
+                        "endLine": 91,
+                        "endColumn": 12,
+                        "endOffset": 4337
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 20,
+                    "startColumn": 4,
+                    "startOffset": 1039,
+                    "endLine": 25,
+                    "endColumn": 12,
+                    "endOffset": 1394
+                },
+                "from": {
+                    "file": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\values\\styles.xml",
+                    "position": {
+                        "startLine": 16,
+                        "startColumn": 4,
+                        "startOffset": 552,
+                        "endLine": 21,
+                        "endColumn": 12,
+                        "endOffset": 907
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 26,
+                    "startColumn": 4,
+                    "startOffset": 1399,
+                    "endLine": 29,
+                    "endColumn": 12,
+                    "endOffset": 1642
+                },
+                "from": {
+                    "file": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\values\\styles.xml",
+                    "position": {
+                        "startLine": 23,
+                        "startColumn": 4,
+                        "startOffset": 913,
+                        "endLine": 26,
+                        "endColumn": 12,
+                        "endOffset": 1156
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 30,
+                    "startColumn": 4,
+                    "startOffset": 1647,
+                    "endLine": 37,
+                    "endColumn": 12,
+                    "endOffset": 2085
+                },
+                "from": {
+                    "file": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\values\\styles.xml",
+                    "position": {
+                        "startLine": 46,
+                        "startColumn": 4,
+                        "startOffset": 1891,
+                        "endLine": 53,
+                        "endColumn": 12,
+                        "endOffset": 2329
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 38,
+                    "startColumn": 4,
+                    "startOffset": 2090,
+                    "endLine": 45,
+                    "endColumn": 12,
+                    "endOffset": 2543
+                },
+                "from": {
+                    "file": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\values\\styles.xml",
+                    "position": {
+                        "startLine": 55,
+                        "startColumn": 4,
+                        "startOffset": 2335,
+                        "endLine": 62,
+                        "endColumn": 12,
+                        "endOffset": 2788
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 46,
+                    "startColumn": 4,
+                    "startOffset": 2548,
+                    "endLine": 51,
+                    "endColumn": 12,
+                    "endOffset": 2843
+                },
+                "from": {
+                    "file": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\values\\styles.xml",
+                    "position": {
+                        "startLine": 28,
+                        "startColumn": 4,
+                        "startOffset": 1162,
+                        "endLine": 33,
+                        "endColumn": 12,
+                        "endOffset": 1457
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 52,
+                    "startColumn": 4,
+                    "startOffset": 2848,
+                    "endLine": 57,
+                    "endColumn": 12,
+                    "endOffset": 3137
+                },
+                "from": {
+                    "file": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\values\\styles.xml",
+                    "position": {
+                        "startLine": 35,
+                        "startColumn": 4,
+                        "startOffset": 1463,
+                        "endLine": 40,
+                        "endColumn": 12,
+                        "endOffset": 1752
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 58,
+                    "startColumn": 4,
+                    "startOffset": 3142,
+                    "endLine": 60,
+                    "endColumn": 12,
+                    "endOffset": 3269
+                },
+                "from": {
+                    "file": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\values\\styles.xml",
+                    "position": {
+                        "startLine": 42,
+                        "startColumn": 4,
+                        "startOffset": 1758,
+                        "endLine": 44,
+                        "endColumn": 12,
+                        "endOffset": 1885
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 61,
+                    "startColumn": 4,
+                    "startOffset": 3274,
+                    "endLine": 63,
+                    "endColumn": 12,
+                    "endOffset": 3401
+                },
+                "from": {
+                    "file": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\values\\styles.xml",
+                    "position": {
+                        "startLine": 6,
+                        "startColumn": 4,
+                        "startOffset": 188,
+                        "endLine": 8,
+                        "endColumn": 12,
+                        "endOffset": 315
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 64,
+                    "startColumn": 4,
+                    "startOffset": 3406,
+                    "endLine": 66,
+                    "endColumn": 12,
+                    "endOffset": 3571
+                },
+                "from": {
+                    "file": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\values\\styles.xml",
+                    "position": {
+                        "startLine": 2,
+                        "startColumn": 4,
+                        "startOffset": 17,
+                        "endLine": 4,
+                        "endColumn": 12,
+                        "endOffset": 182
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 67,
+                    "startColumn": 4,
+                    "startOffset": 3576,
+                    "endLine": 86,
+                    "endColumn": 12,
+                    "endOffset": 4647
+                },
+                "from": {
+                    "file": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\values\\styles.xml",
+                    "position": {
+                        "startLine": 64,
+                        "startColumn": 4,
+                        "startOffset": 2794,
+                        "endLine": 83,
+                        "endColumn": 12,
+                        "endOffset": 3865
+                    }
+                }
+            }
+        ]
+    }
+]

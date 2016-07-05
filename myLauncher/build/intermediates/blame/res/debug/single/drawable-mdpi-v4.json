@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "E:\\Android\\astws\\HelloWorld\\myLauncher\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4\\icon.png",
+        "source": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\drawable-mdpi\\icon.png"
+    },
+    {
+        "merged": "E:\\Android\\astws\\HelloWorld\\myLauncher\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4\\ic_launcher.png",
+        "source": "E:\\Android\\astws\\HelloWorld\\myLauncher\\src\\main\\res\\drawable-mdpi\\ic_launcher.png"
+    }
+]

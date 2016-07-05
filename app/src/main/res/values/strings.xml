@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">HelloWorld</string>
+    <string name="add_view">+</string>
+    <string name="btn_prefix">Button_%1$s</string>
+    <string name="str_search">搜索</string>
+    <string name="remove_view">-</string>
+    <string name="str_text1">Text1</string>
+    <string name="str_text2">Text2</string>
+    <string name="str_text3">Text3</string>
+</resources>
