@@ -25,7 +25,7 @@ public class SpringBoardPage extends View implements IPageView {
     private Point selectedLocation;
     public int shadowType = 1;
     LayoutCalculator lc;
-    private ObjectPool pp;
+    private ObjectPool objectPool;
     private boolean isAboveFolder = false;
     private int aboveIndex = -1;
 
@@ -43,7 +43,7 @@ public class SpringBoardPage extends View implements IPageView {
 
     public void init(LayoutCalculator lc, ObjectPool pp) {
         this.lc = lc;
-        this.pp = pp;
+        this.objectPool = pp;
     }
 
 
@@ -97,7 +97,7 @@ public class SpringBoardPage extends View implements IPageView {
     }
 
     private void drawNormalRaw(Canvas canvas) {
-        Paint paint = pp.getPaintTextBlack();
+        Paint paint = objectPool.getPaintTextBlack();
         Paint iconPaint = null;
         int gapV = getVerticalGap();
         int y = gapV + lc.marginTop;
@@ -123,8 +123,8 @@ public class SpringBoardPage extends View implements IPageView {
                             tFormation.getMatrix().mapPoints(point);
                             int x1 = (int) point[0];
                             int y1 = (int) point[1];
-                            info.drawBoundIcon(lc, pp, canvas, x1, y1, paint, new Paint());
-                            info.drawBlackCircle(lc, pp, canvas, x1 + lc.iconWidth, y1);
+                            info.drawBoundIcon(lc, objectPool, canvas, x1, y1, paint, new Paint());
+                            info.drawBlackCircle(lc, objectPool, canvas, x1 + lc.iconWidth, y1);
                         } else {
                             info.tAnim = null;
                             long time = AnimationUtils.currentAnimationTimeMillis();
@@ -137,8 +137,8 @@ public class SpringBoardPage extends View implements IPageView {
                                     }
                                     float scale = 1 + (1.0f * duration / info.sAnim.getDuration()) * 0.4f;
                                     int x1 = (int) (lc.iconWidth * scale - lc.iconWidth) / 2;
-                                    info.drawFolderBound(lc, pp, canvas, x - x1, y - x1, iconPaint, scale);
-                                    info.drawIconContent(lc, pp, canvas, x, y, paint);
+                                    info.drawFolderBound(lc, objectPool, canvas, x - x1, y - x1, iconPaint, scale);
+                                    info.drawIconContent(lc, objectPool, canvas, x, y, paint);
                                 } else if (info.getIsAboveFolder() == 2) {
                                     long startTime = info.sAnim.getStartTime();
                                     long duration = time - startTime;
@@ -147,13 +147,13 @@ public class SpringBoardPage extends View implements IPageView {
                                     }
                                     float scale = 1.4f - (1.0f * duration / info.sAnim.getDuration()) * 0.4f;
                                     int x1 = (int) (lc.iconWidth * scale - lc.iconWidth) / 2;
-                                    info.drawFolderBound(lc, pp, canvas, x - x1, y - x1, iconPaint, scale);
-                                    info.drawIconContent(lc, pp, canvas, x, y, paint);
+                                    info.drawFolderBound(lc, objectPool, canvas, x - x1, y - x1, iconPaint, scale);
+                                    info.drawIconContent(lc, objectPool, canvas, x, y, paint);
                                 } else {
                                     if (isAboveFolder && info.getIsAboveFolder() == 1) {
                                         int x1 = (int) (lc.iconWidth * 1.4f - lc.iconWidth) / 2;
-                                        info.drawFolderBound(lc, pp, canvas, x - x1, y - x1, iconPaint, 1.4f);
-                                        info.drawIconContent(lc, pp, canvas, x, y, paint);
+                                        info.drawFolderBound(lc, objectPool, canvas, x - x1, y - x1, iconPaint, 1.4f);
+                                        info.drawIconContent(lc, objectPool, canvas, x, y, paint);
                                     } else {
                                         drawNormalIcon(info, canvas, x, y, paint);
                                     }
@@ -162,8 +162,8 @@ public class SpringBoardPage extends View implements IPageView {
                                 info.sAnim = null;
                                 if (isAboveFolder && info.getIsAboveFolder() == 1) {
                                     int x1 = (int) (lc.iconWidth * 1.4f - lc.iconWidth) / 2;
-                                    info.drawFolderBound(lc, pp, canvas, x - x1, y - x1, iconPaint, 1.4f);
-                                    info.drawIconContent(lc, pp, canvas, x, y, paint);
+                                    info.drawFolderBound(lc, objectPool, canvas, x - x1, y - x1, iconPaint, 1.4f);
+                                    info.drawIconContent(lc, objectPool, canvas, x, y, paint);
                                 } else {
                                     drawNormalIcon(info, canvas, x, y, paint);
                                 }
@@ -175,11 +175,11 @@ public class SpringBoardPage extends View implements IPageView {
                 } else {
                     ApplicationInfo info = icons.get(index);
                     if (info != null) {
-                        iconPaint = pp.getPaintDarkener();
+                        iconPaint = objectPool.getPaintDarkener();
                         ApplicationInfo app = (ApplicationInfo) info;
-                        app.drawBoundIcon(lc, pp, canvas, x, y, paint, iconPaint);
+                        app.drawBoundIcon(lc, objectPool, canvas, x, y, paint, iconPaint);
                         if (app.isJiggle()) {
-                            app.drawBlackCircle(lc, pp, canvas, x + lc.iconWidth, y);
+                            app.drawBlackCircle(lc, objectPool, canvas, x + lc.iconWidth, y);
                         }
                     }
                 }
@@ -190,9 +190,9 @@ public class SpringBoardPage extends View implements IPageView {
     }
 
     private void drawNormalIcon(ApplicationInfo info, Canvas canvas, int x, int y, Paint paint) {
-        info.drawBoundIcon(lc, pp, canvas, x, y, paint, null);
+        info.drawBoundIcon(lc, objectPool, canvas, x, y, paint, null);
         if (info.isJiggle()) {
-            info.drawBlackCircle(lc, pp, canvas, x + lc.iconWidth, y);
+            info.drawBlackCircle(lc, objectPool, canvas, x + lc.iconWidth, y);
         }
     }
 
@@ -231,7 +231,7 @@ public class SpringBoardPage extends View implements IPageView {
         int y1 = top;
         int left = lc.marginLeft + lc.gapH;
         //        Log.d(TAG, "gapV =" + gapV + ", top =" + top + ", y1 =" + y1 + ", left =" + left);
-        Bitmap remove = pp.getBitmapBlackCircle();
+        Bitmap remove = objectPool.getBitmapBlackCircle();
         int rWidth = remove.getWidth();
         int rHeight = remove.getHeight();
         for (int row = 0; row < LayoutCalculator.rows; row++) {

@@ -760,7 +760,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
 
     private int remeasure(int widthMode, int widthSize) {
         widthSize = acknowledgeWidthSize(widthMode, widthSize, displayWidth);
-        measureChildren(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+        measureChildren(MeasureSpec.EXACTLY, MeasureSpec.UNSPECIFIED);
         computedColumnCount = adapter.columnCount();
         computedRowCount = 16;
         columnWidthSize = widthSize / adapter.columnCount();
