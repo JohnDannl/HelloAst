@@ -3,12 +3,13 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AstWorkspace.iml" filepath="$PROJECT_DIR$/AstWorkspace.iml" />
+      <module fileurl="file://$PROJECT_DIR$/HelloWorld.iml" filepath="$PROJECT_DIR$/HelloWorld.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/dragDrop-1/dragDrop-1.iml" filepath="$PROJECT_DIR$/dragDrop-1/dragDrop-1.iml" />
       <module fileurl="file://$PROJECT_DIR$/dragDrop-2/dragDrop-2.iml" filepath="$PROJECT_DIR$/dragDrop-2/dragDrop-2.iml" />
-      <module fileurl="file://$PROJECT_DIR$/dragGridview/dragGridview.iml" filepath="$PROJECT_DIR$/dragGridview/dragGridview.iml" />
       <module fileurl="file://$PROJECT_DIR$/dragViewPager-lib/dragViewPager-lib.iml" filepath="$PROJECT_DIR$/dragViewPager-lib/dragViewPager-lib.iml" />
       <module fileurl="file://$PROJECT_DIR$/dragViewPager-sample/dragViewPager-sample.iml" filepath="$PROJECT_DIR$/dragViewPager-sample/dragViewPager-sample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dragGridview/draggridview.iml" filepath="$PROJECT_DIR$/dragGridview/draggridview.iml" />
       <module fileurl="file://$PROJECT_DIR$/dynamicGrid/dynamicGrid.iml" filepath="$PROJECT_DIR$/dynamicGrid/dynamicGrid.iml" />
       <module fileurl="file://$PROJECT_DIR$/dynamicGrid-example/dynamicGrid-example.iml" filepath="$PROJECT_DIR$/dynamicGrid-example/dynamicGrid-example.iml" />
       <module fileurl="file://$PROJECT_DIR$/itemTouchHelper-demo/itemTouchHelper-demo.iml" filepath="$PROJECT_DIR$/itemTouchHelper-demo/itemTouchHelper-demo.iml" />

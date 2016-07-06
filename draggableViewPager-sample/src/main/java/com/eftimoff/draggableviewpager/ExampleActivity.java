@@ -29,13 +29,19 @@
 package com.eftimoff.draggableviewpager;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewTreeObserver;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 public class ExampleActivity extends Activity implements OnClickListener {
@@ -49,6 +55,19 @@ public class ExampleActivity extends Activity implements OnClickListener {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+        final LinearLayout contentContainer=(LinearLayout)findViewById(R.id.content_container);
+        contentContainer.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                int height=contentContainer.getHeight();
+                int width=contentContainer.getWidth();
+                int mHeight=contentContainer.getMeasuredHeight();
+                int mWidth=contentContainer.getMeasuredWidth();
+                Log.d("XXXXXX","width:"+width+",mw:"+mWidth+",height:"+height+",mh:"+mHeight);
+                contentContainer.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+            }
+        });
+
         gridview = (DraggableViewPager) findViewById(R.id.gridview);
 
         ExampleDraggableViewPagerAdapter adapter = new ExampleDraggableViewPagerAdapter(this, gridview);
@@ -58,7 +77,18 @@ public class ExampleActivity extends Activity implements OnClickListener {
 
         gridview.setBackgroundColor(Color.BLACK);
     }
-
+    public static float dipToPixels(Context context, float dipValue) {
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, metrics);
+    }
+    public int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);

@@ -7,4 +7,7 @@
     <string name="str_text1">Text1</string>
     <string name="str_text2">Text2</string>
     <string name="str_text3">Text3</string>
+    <string name="str_anim">动画</string>
+    <string name="str_rotate">旋转</string>
+    <string name="str_toast">Toast</string>
 </resources>

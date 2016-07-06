@@ -22,75 +22,35 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
         this.gridview = gridview;
 
         Page page1 = new Page();
+        int totalCount=0;
         List<Item> items = new ArrayList<Item>();
-        items.add(new Item(1, "Item 1", R.drawable.ic_launcher));
-        items.add(new Item(2, "Item 2", R.drawable.ic_launcher));
-        items.add(new Item(3, "Item 3", R.drawable.ic_launcher));
+        for(totalCount=1;totalCount<=4;totalCount++){
+            items.add(new Item(totalCount, "Item "+totalCount, R.drawable.ic_launcher));
+        }
         page1.setItems(items);
         pages.add(page1);
 
         Page page2 = new Page();
         items = new ArrayList<Item>();
-        items.add(new Item(4, "Item 4", R.drawable.ic_launcher));
-        items.add(new Item(5, "Item 5", R.drawable.ic_launcher));
-        items.add(new Item(6, "Item 6", R.drawable.ic_launcher));
-        items.add(new Item(7, "Item 7", R.drawable.ic_launcher));
-        items.add(new Item(8, "Item 8", R.drawable.ic_launcher));
-        items.add(new Item(9, "Item 9", R.drawable.ic_launcher));
+        for(;totalCount<=8;totalCount++){
+            items.add(new Item(totalCount, "Item "+totalCount, R.drawable.ic_launcher));
+        }
         page2.setItems(items);
         pages.add(page2);
 
         Page page3 = new Page();
         items = new ArrayList<Item>();
-        items.add(new Item(10, "Item 10", R.drawable.ic_launcher));
-        items.add(new Item(11, "Item 11", R.drawable.ic_launcher));
-        items.add(new Item(12, "Item 12", R.drawable.ic_launcher));
-        items.add(new Item(13, "Item 13", R.drawable.ic_launcher));
-        items.add(new Item(14, "Item 14", R.drawable.ic_launcher));
-        items.add(new Item(15, "Item 15", R.drawable.ic_launcher));
-        items.add(new Item(16, "Item 16", R.drawable.ic_launcher));
-        items.add(new Item(17, "Item 17", R.drawable.ic_launcher));
-        items.add(new Item(18, "Item 18", R.drawable.ic_launcher));
-        items.add(new Item(19, "Item 19", R.drawable.ic_launcher));
-        items.add(new Item(20, "Item 20", R.drawable.ic_launcher));
-        items.add(new Item(21, "Item 21", R.drawable.ic_launcher));
-        items.add(new Item(22, "Item 22", R.drawable.ic_launcher));
-        items.add(new Item(23, "Item 23", R.drawable.ic_launcher));
-        items.add(new Item(24, "Item 24", R.drawable.ic_launcher));
-        items.add(new Item(25, "Item 25", R.drawable.ic_launcher));
-        items.add(new Item(26, "Item 26", R.drawable.ic_launcher));
-        items.add(new Item(27, "Item 27", R.drawable.ic_launcher));
-        items.add(new Item(28, "Item 28", R.drawable.ic_launcher));
-        items.add(new Item(29, "Item 29", R.drawable.ic_launcher));
-        items.add(new Item(30, "Item 30", R.drawable.ic_launcher));
-        items.add(new Item(31, "Item 31", R.drawable.ic_launcher));
-        items.add(new Item(32, "Item 32", R.drawable.ic_launcher));
-        items.add(new Item(33, "Item 33", R.drawable.ic_launcher));
-        items.add(new Item(34, "Item 34", R.drawable.ic_launcher));
-        items.add(new Item(35, "Item 35", R.drawable.ic_launcher));
-        items.add(new Item(36, "Item 36", R.drawable.ic_launcher));
-        items.add(new Item(37, "Item 37", R.drawable.ic_launcher));
-        items.add(new Item(38, "Item 38", R.drawable.ic_launcher));
-        items.add(new Item(39, "Item 39", R.drawable.ic_launcher));
-        items.add(new Item(40, "Item 40", R.drawable.ic_launcher));
-        items.add(new Item(41, "Item 41", R.drawable.ic_launcher));
-        items.add(new Item(42, "Item 42", R.drawable.ic_launcher));
-        items.add(new Item(43, "Item 43", R.drawable.ic_launcher));
-        items.add(new Item(44, "Item 44", R.drawable.ic_launcher));
-        items.add(new Item(45, "Item 45", R.drawable.ic_launcher));
-        items.add(new Item(46, "Item 46", R.drawable.ic_launcher));
-        items.add(new Item(47, "Item 47", R.drawable.ic_launcher));
-        items.add(new Item(48, "Item 48", R.drawable.ic_launcher));
-        items.add(new Item(49, "Item 49", R.drawable.ic_launcher));
-        items.add(new Item(50, "Item 50", R.drawable.ic_launcher));
-        items.add(new Item(51, "Item 51", R.drawable.ic_launcher));
+        for(;totalCount<=11;totalCount++){
+            items.add(new Item(totalCount, "Item "+totalCount, R.drawable.ic_launcher));
+        }
         page3.setItems(items);
         pages.add(page3);
 
         Page page4 = new Page();
         items = new ArrayList<Item>();
-        items.add(new Item(46, "Item 46", R.drawable.ic_launcher));
-
+        for(;totalCount<=12;totalCount++){
+            items.add(new Item(totalCount, "Item "+totalCount, R.drawable.ic_launcher));
+        }
         page4.setItems(items);
         pages.add(page4);
     }

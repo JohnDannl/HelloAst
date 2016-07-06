@@ -14,5 +14,5 @@ android {
 }
 
 dependencies {
-    compile project(':dragViewPager-lib')
+    compile project(':draggableViewPager-lib')
 }

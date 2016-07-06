@@ -1,5 +1,6 @@
 package com.eftimoff.draggableviewpager;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
@@ -23,7 +24,7 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
     private GestureDetector gestureScanner;
 
     private OnPageChangedListener pageChangedListener;
-    private int xmlRes;
+    private int bgXmlRes;
 
     public DraggableViewPager(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -83,8 +84,8 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
         final LockableScrollView lockableScrollView = new LockableScrollView(getContext());
         grid = new DragDropGrid(getContext());
         grid.setLockableScrollView(lockableScrollView);
-        if (xmlRes != -1) {
-            grid.setBackgroundResource(xmlRes);
+        if (bgXmlRes != -1) {
+            grid.setBackgroundResource(bgXmlRes);
         }
         lockableScrollView.addView(grid);
         addView(lockableScrollView, layoutParams);
@@ -92,13 +93,15 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
 
     private void setBackground(AttributeSet attrs) {
         final String xmlns = "http://schemas.android.com/apk/res/android";
-        xmlRes = attrs.getAttributeResourceValue(xmlns, "background", -1);
+        bgXmlRes = attrs.getAttributeResourceValue(xmlns, "background", -1);
     }
 
     public void initPagedScroll() {
 
-
-        setScrollBarStyle(SCROLLBARS_INSIDE_OVERLAY);
+        //setScrollBarStyle(SCROLLBARS_INSIDE_OVERLAY);
+        //setSmoothScrollingEnabled(true);
+        //hide horizontal scrollbar
+        setHorizontalScrollBarEnabled(false);
 
         if (!isInEditMode()) {
             gestureScanner = new GestureDetector(getContext(), this);
@@ -111,7 +114,14 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
                 if (!specialEventUsed && (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL)) {
                     int scrollX = getScrollX();
                     int onePageWidth = v.getMeasuredWidth();
-                    int page = ((scrollX + (onePageWidth / 2)) / onePageWidth);
+                    //int page = ((scrollX + (onePageWidth *1/2)) / onePageWidth);
+                    int hoverPageWidth=onePageWidth*1/3;
+                    int page=currentPage();
+                    if(scrollX-onePageWidth*page>=hoverPageWidth){
+                        page = (scrollX + onePageWidth -hoverPageWidth) / onePageWidth;
+                    }else if(scrollX-onePageWidth*page<=-hoverPageWidth){
+                        page=scrollX / onePageWidth;
+                    }
                     scrollToPage(page);
                     return true;
                 } else {
@@ -153,7 +163,10 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
         activePage = page;
         int onePageWidth = getMeasuredWidth();
         int scrollTo = page * onePageWidth;
-        smoothScrollTo(scrollTo, 0);
+        ObjectAnimator animator= ObjectAnimator.ofInt(this, "scrollX",scrollTo);
+        animator.setDuration(800);
+        animator.start();
+        //smoothScrollTo(scrollTo, 0);
         if (pageChangedListener != null)
             pageChangedListener.onPageChanged(this, page);
     }

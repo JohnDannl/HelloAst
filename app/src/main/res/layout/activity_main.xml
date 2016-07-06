@@ -32,54 +32,95 @@
             android:ems="6"
             android:hint="@string/str_search" />
     </LinearLayout>
-    <LinearLayout
-        android:id="@+id/btn_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <ScrollView
         android:layout_below="@id/first_line"
-        android:orientation="horizontal">
-        <Button
-            android:id="@+id/btn_add_view"
-            android:layout_width="0dip"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="@string/add_view"/>
-        <Button
-            android:id="@+id/btn_rm_view"
-            android:layout_width="0dip"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="@string/remove_view"/>
-    </LinearLayout>
-    <LinearLayout
-        android:id="@+id/tv_container"
         android:layout_width="match_parent"
-        android:layout_height="48dip"
-        android:layout_below="@id/btn_container"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_weight="1"
-            android:gravity="center"
-            android:layout_margin="6dip"
-            android:text="@string/str_text1"
-            android:background="@color/colorGray"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
-        <TextView
-            android:layout_weight="1"
-            android:gravity="center"
-            android:layout_margin="6dip"
-            android:text="@string/str_text2"
-            android:background="@color/colorGray"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
-        <TextView
-            android:layout_weight="3"
-            android:gravity="center"
-            android:layout_margin="6dip"
-            android:text="@string/str_text3"
-            android:background="@color/colorGray"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
-    </LinearLayout>
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:id="@+id/btn_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/btn_add_view"
+                    android:layout_width="0dip"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="@string/add_view"/>
+                <Button
+                    android:id="@+id/btn_rm_view"
+                    android:layout_width="0dip"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="@string/remove_view"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/tv_container"
+                android:layout_width="match_parent"
+                android:layout_height="48dip"
+                android:layout_below="@id/btn_container"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:layout_margin="6dip"
+                    android:text="@string/str_text1"
+                    android:background="@color/colorGray"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:layout_margin="6dip"
+                    android:text="@string/str_text2"
+                    android:background="@color/colorGray"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:layout_weight="3"
+                    android:gravity="center"
+                    android:layout_margin="6dip"
+                    android:text="@string/str_text3"
+                    android:background="@color/colorGray"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/anim_container"
+                android:layout_below="@id/tv_container"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="100dip"
+                android:orientation="vertical">
+                <Button
+                    android:id="@+id/btn_anim"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/str_anim"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_below="@id/anim_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/btn_rotate"
+                    android:layout_centerHorizontal="true"
+                    android:text="@string/str_rotate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <Button
+                    android:id="@+id/btn_toast"
+                    android:layout_centerHorizontal="true"
+                    android:text="@string/str_toast"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+        </RelativeLayout>
+    </ScrollView>
 </RelativeLayout>
