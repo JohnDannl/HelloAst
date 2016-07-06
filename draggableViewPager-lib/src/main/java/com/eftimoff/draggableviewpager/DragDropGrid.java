@@ -813,8 +813,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         //If we don't have pages don't do layout
         if (adapter.pageCount() == 0)
             return;
-
-        int pageWidth = (l + r) / adapter.pageCount();
+        int pageWidth = (r-l) / adapter.pageCount();
 
         for (int page = 0; page < adapter.pageCount(); page++) {
             layoutPage(pageWidth, page);
