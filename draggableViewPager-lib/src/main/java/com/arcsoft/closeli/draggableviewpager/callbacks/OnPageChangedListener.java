@@ -1,6 +1,6 @@
-package com.eftimoff.draggableviewpager.callbacks;
+package com.arcsoft.closeli.draggableviewpager.callbacks;
 
-import com.eftimoff.draggableviewpager.DraggableViewPager;
+import com.arcsoft.closeli.draggableviewpager.DraggableViewPager;
 
 public interface OnPageChangedListener {
 

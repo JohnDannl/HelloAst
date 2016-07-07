@@ -1,4 +1,4 @@
-package com.eftimoff.draggableviewpager;
+package com.arcsoft.closeli.draggableviewpager;
 
 public interface ViewPagerContainer {
 

@@ -1,10 +1,9 @@
-package com.eftimoff.draggableviewpager;
+package com.arcsoft.closeli.draggableviewpager;
 
 import android.content.Context;
 import android.graphics.Point;
 import android.os.Handler;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.Display;
 import android.view.MotionEvent;

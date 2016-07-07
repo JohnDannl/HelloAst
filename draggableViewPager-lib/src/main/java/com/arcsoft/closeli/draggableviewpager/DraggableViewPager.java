@@ -1,4 +1,4 @@
-package com.eftimoff.draggableviewpager;
+package com.arcsoft.closeli.draggableviewpager;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 
-import com.eftimoff.draggableviewpager.callbacks.OnPageChangedListener;
+import com.arcsoft.closeli.draggableviewpager.callbacks.OnPageChangedListener;
 
 public class DraggableViewPager extends HorizontalScrollView implements ViewPagerContainer, OnGestureListener {
 

@@ -1,10 +1,14 @@
-package com.eftimoff.draggableviewpager;
+package com.closeli.draggableviewpager;
 
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
+
+import com.arcsoft.closeli.draggableviewpager.DraggableViewPager;
+import com.arcsoft.closeli.draggableviewpager.DraggableViewPagerAdapter;
+import com.closeli.draggableviewpager.R;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.eftimoff.mylibrary">
+    package="com.arcsoft.closeli.draggableviewpager">
 
     <application android:allowBackup="true">
 

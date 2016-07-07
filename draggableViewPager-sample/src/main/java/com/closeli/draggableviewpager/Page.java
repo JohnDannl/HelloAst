@@ -1,4 +1,4 @@
-package com.eftimoff.draggableviewpager;
+package com.closeli.draggableviewpager;
 
 import java.util.ArrayList;
 import java.util.Collections;
