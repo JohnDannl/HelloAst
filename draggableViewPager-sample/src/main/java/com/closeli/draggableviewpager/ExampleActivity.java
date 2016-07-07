@@ -74,6 +74,9 @@ public class ExampleActivity extends Activity implements OnClickListener {
         gridview.setClickListener(this);
 
         gridview.setBackgroundColor(Color.BLACK);
+
+        gridview.setDragEnabled(true);
+        gridview.setPageScrollSpeed(800);
     }
     public static float dipToPixels(Context context, float dipValue) {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();

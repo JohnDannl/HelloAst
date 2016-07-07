@@ -26,6 +26,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
 
     public static int ROW_HEIGHT = 300;
     private static int ANIMATION_DURATION = 250;
+    private boolean enableDrag=true;
 
     private static int EGDE_DETECTION_MARGIN = 35;
     private final Handler edgeTimerHandler = new Handler();
@@ -204,6 +205,9 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         onClickListener = l;
     }
 
+    public void setDragEnabled(boolean enabled){
+        this.enableDrag=enabled;
+    }
     private void addChildViews() {
         for (int page = 0; page < adapter.pageCount(); page++) {
             for (int item = 0; item < adapter.itemCountInPage(page); item++) {
@@ -513,11 +517,8 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         View draggedView = reorderedViews.get(draggedEndPosition);
         reorderedViews.remove(draggedEndPosition);
 
-       /* int indexLastElementInNextPage = findTheIndexLastElementInNextPage();
-        int indexOfDraggedOnNewPage = indexLastElementInNextPage - 1;*/
-
-        int indexFirstElementInNextPage = findTheIndexFirstElementInNextPage();
-        int indexOfDraggedOnNewPage = indexFirstElementInNextPage - 1;
+        int indexLastElementInNextPage = findTheIndexLastElementInNextPage();
+        int indexOfDraggedOnNewPage = indexLastElementInNextPage - 1;
 
         reorderAndAddViews(reorderedViews, draggedView, indexOfDraggedOnNewPage);
     }
@@ -536,14 +537,6 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             removeView(child);
             views.remove(child);
         }
-    }
-    private int findTheIndexFirstElementInNextPage() {
-        int currentPage = currentPage();
-        int indexLastElementInNextPage = 0;
-        for (int i = 0; i <= currentPage ; i++) {
-            indexLastElementInNextPage += adapter.itemCountInPage(i);
-        }
-        return indexLastElementInNextPage+1;
     }
 
     private int findTheIndexLastElementInNextPage() {
@@ -888,14 +881,16 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         if (positionForView(v) != -1) {
             container.disableScroll();
             lockableScrollView.setScrollingEnabled(false);
-            movingView = true;
-            dragged = positionForView(v);
 
-            bringDraggedToFront();
+            if(enableDrag){
+                movingView = true;
+                dragged = positionForView(v);
 
-            animateDragged();
+                bringDraggedToFront();
 
-            return true;
+                animateDragged();
+                return true;
+            }
         }
 
         return false;
