@@ -14,7 +14,7 @@ android {
 }
 
 dependencies {
-    //compile project(':draggableViewPager-lib')
-    compile 'com.android.support:appcompat-v7:24.0.0'
-    compile 'com.android.support:recyclerview-v7:24.0.0'
+    compile project(':draggableViewPager-lib')
+    //compile 'com.android.support:appcompat-v7:24.0.0'
+    //compile 'com.android.support:recyclerview-v7:24.0.0'
 }
