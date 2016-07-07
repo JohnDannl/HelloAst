@@ -514,9 +514,12 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         View draggedView = reorderedViews.get(draggedEndPosition);
         reorderedViews.remove(draggedEndPosition);
 
-        int indexLastElementInNextPage = findTheIndexLastElementInNextPage();
+       /* int indexLastElementInNextPage = findTheIndexLastElementInNextPage();
+        int indexOfDraggedOnNewPage = indexLastElementInNextPage - 1;*/
 
-        int indexOfDraggedOnNewPage = indexLastElementInNextPage - 1;
+        int indexFirstElementInNextPage = findTheIndexFirstElementInNextPage();
+        int indexOfDraggedOnNewPage = indexFirstElementInNextPage - 1;
+
         reorderAndAddViews(reorderedViews, draggedView, indexOfDraggedOnNewPage);
     }
 
@@ -534,6 +537,14 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             removeView(child);
             views.remove(child);
         }
+    }
+    private int findTheIndexFirstElementInNextPage() {
+        int currentPage = currentPage();
+        int indexLastElementInNextPage = 0;
+        for (int i = 0; i <= currentPage ; i++) {
+            indexLastElementInNextPage += adapter.itemCountInPage(i);
+        }
+        return indexLastElementInNextPage+1;
     }
 
     private int findTheIndexLastElementInNextPage() {

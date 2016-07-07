@@ -63,7 +63,7 @@ public class ExampleActivity extends Activity implements OnClickListener {
                 int width=contentContainer.getWidth();
                 int mHeight=contentContainer.getMeasuredHeight();
                 int mWidth=contentContainer.getMeasuredWidth();
-                Log.d("XXXXXX","width:"+width+",mw:"+mWidth+",height:"+height+",mh:"+mHeight);
+                //Log.d("XXXXXX","width:"+width+",mw:"+mWidth+",height:"+height+",mh:"+mHeight);
                 contentContainer.getViewTreeObserver().removeGlobalOnLayoutListener(this);
             }
         });

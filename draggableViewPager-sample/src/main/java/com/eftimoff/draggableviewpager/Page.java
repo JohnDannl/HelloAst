@@ -20,6 +20,12 @@ public class Page {
         items.add(item);
     }
 
+    public void addItem(int index,Item item){
+        items.add(index,item);
+    }
+
+    public int size(){return items.size();}
+
     public void swapItems(int itemA, int itemB) {
         Collections.swap(items, itemA, itemB);
     }

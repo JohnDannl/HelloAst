@@ -124,8 +124,10 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
             Page startpage = getPage(pageIndex);
             Page landingPage = getPage(leftPageIndex);
 
+            Item landingPageLastItem=landingPage.removeItem(landingPage.size()-1);
             Item item = startpage.removeItem(itemIndex);
             landingPage.addItem(item);
+            startpage.addItem(0,landingPageLastItem);
         }
     }
 
@@ -136,8 +138,10 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
             Page startpage = getPage(pageIndex);
             Page landingPage = getPage(rightPageIndex);
 
+            Item landingPageFirstItem=landingPage.removeItem(0);
             Item item = startpage.removeItem(itemIndex);
-            landingPage.addItem(item);
+            landingPage.addItem(0,item);
+            startpage.addItem(landingPageFirstItem);
         }
     }
 
