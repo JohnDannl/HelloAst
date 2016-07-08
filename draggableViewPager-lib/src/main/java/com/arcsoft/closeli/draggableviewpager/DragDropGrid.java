@@ -31,7 +31,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     private static int EGDE_DETECTION_MARGIN = 35;
     private final Handler edgeTimerHandler = new Handler();
     private DraggableViewPagerAdapter adapter;
-    private OnClickListener onClickListener = null;
+    private OnDragDropGridItemClickListener onItemClickListener = null;
     private ViewPagerContainer container;
     private List<View> views = new ArrayList<View>();
     private SparseIntArray newPositions = new SparseIntArray();
@@ -201,8 +201,8 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         addChildViews();
     }
 
-    public void setOnClickListener(OnClickListener l) {
-        onClickListener = l;
+    public void setOnItemClickListener(OnDragDropGridItemClickListener l) {
+        onItemClickListener = l;
     }
 
     public void setDragEnabled(boolean enabled){
@@ -309,10 +309,12 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
 
     private void touchUp(MotionEvent event) {
         if (!aViewIsDragged()) {
-            if (onClickListener != null) {
-                View clickedView = getChildAt(getTargetAtCoor((int) event.getX(), (int) event.getY()));
-                if (clickedView != null)
-                    onClickListener.onClick(clickedView);
+            if (onItemClickListener != null) {
+                int childIndex=getTargetAtCoor((int) event.getX(), (int) event.getY());
+                ItemPosition itemPosition=itemInformationAtPosition(childIndex);
+                View clickedView = getChildAt(childIndex);
+                if (clickedView != null&&itemPosition!=null)
+                    onItemClickListener.onClick(clickedView,itemPosition.pageIndex,itemPosition.itemIndex);
             }
         } else {
             cancelAnimations();
@@ -335,9 +337,8 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
 
     private void reorderChildren() {
         List<View> children = cleanUnorderedChildren();
+        newPositions.clear();
         addReorderedChildrenToParent(children);
-        views.clear();
-        views.addAll(children);
     }
 
     private void tellAdapterDraggedIsDeleted(Integer newDraggedPosition) {
@@ -349,7 +350,8 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         initialX = (int) event.getRawX();
         initialY = (int) event.getRawY();
 
-        lastTouchX = (int) event.getRawX() + (currentPage() * gridPageWidth);
+        //lastTouchX = (int) event.getRawX() + (currentPage() * gridPageWidth);
+        lastTouchX = (int) event.getX();
         lastTouchY = (int) event.getRawY();
     }
 
@@ -533,10 +535,12 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     }
 
     private void removeItemChildren(List<View> children) {
-        for (View child : children) {
+        /*for (View child : children) {
             removeView(child);
             views.remove(child);
-        }
+        }*/
+        removeAllViews();
+        views.removeAll(children);
     }
 
     private int findTheIndexLastElementInNextPage() {
@@ -599,7 +603,6 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         if (viewAtPosition == dragged) {
             return;
         }
-
         View targetView = getChildView(viewAtPosition);
 
         Point oldXY = getCoorForIndex(viewAtPosition);
@@ -725,17 +728,12 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
 
     private void addReorderedChildrenToParent(List<View> children) {
         List<View> reorderedViews = children;
-
-        newPositions.clear();
-        views.clear();
         for (View view : reorderedViews) {
             if (view != null) {
-                removeView(view);
                 addView(view);
-
-                views.add(view);
             }
         }
+        views.addAll(children);
     }
 
     private List<View> saveChildren() {
@@ -965,6 +963,10 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         int currentGlobalIndex = 0;
         for (int currentPageIndex = 0; currentPageIndex < adapter.pageCount(); currentPageIndex++) {
             int itemCount = adapter.itemCountInPage(currentPageIndex);
+            if(pageIndex != currentPageIndex){
+                currentGlobalIndex+=itemCount;
+                continue;
+            }
             for (int currentItemIndex = 0; currentItemIndex < itemCount; currentItemIndex++) {
                 if (pageIndex == currentPageIndex && childIndex == currentItemIndex) {
                     return currentGlobalIndex;
@@ -1021,5 +1023,8 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             this.pageIndex = pageIndex;
             this.itemIndex = itemIndex;
         }
+    }
+    public interface OnDragDropGridItemClickListener {
+        public void onClick(View view,int page,int item);
     }
 }

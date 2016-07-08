@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 24
+    compileSdkVersion 23
     buildToolsVersion "24.0.0"
 
     defaultConfig {
         applicationId "com.closeli.draggableviewpager.sample"
         minSdkVersion 14
-        targetSdkVersion 24
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
     }
@@ -15,6 +15,6 @@ android {
 
 dependencies {
     compile project(':draggableViewPager-lib')
-    //compile 'com.android.support:appcompat-v7:24.0.0'
-    //compile 'com.android.support:recyclerview-v7:24.0.0'
+    //compile 'com.android.support:appcompat-v7:23.0.1'
+    //compile 'com.android.support:recyclerview-v7:23.0.1'
 }

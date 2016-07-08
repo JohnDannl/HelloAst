@@ -21,7 +21,7 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
 
     private DragDropGrid grid;
     private DraggableViewPagerAdapter adapter;
-    private OnClickListener listener;
+    private DragDropGrid.OnDragDropGridItemClickListener listener;
     private GestureDetector gestureScanner;
 
     private OnPageChangedListener pageChangedListener;
@@ -142,9 +142,9 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
         grid.setContainer(this);
     }
 
-    public void setClickListener(OnClickListener l) {
+    public void setClickListener(DragDropGrid.OnDragDropGridItemClickListener l) {
         this.listener = l;
-        grid.setOnClickListener(l);
+        grid.setOnItemClickListener(l);
     }
 
     /**

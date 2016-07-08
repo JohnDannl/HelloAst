@@ -40,9 +40,10 @@ import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.arcsoft.closeli.draggableviewpager.DragDropGrid;
 import com.arcsoft.closeli.draggableviewpager.DraggableViewPager;
 
-public class ExampleActivity extends Activity implements OnClickListener {
+public class ExampleActivity extends Activity implements DragDropGrid.OnDragDropGridItemClickListener {
 
     private String CURRENT_PAGE_KEY = "CURRENT_PAGE_KEY";
 
@@ -106,7 +107,7 @@ public class ExampleActivity extends Activity implements OnClickListener {
     }
 
     @Override
-    public void onClick(View v) {
-        Toast.makeText(this, "Clicked View", Toast.LENGTH_SHORT).show();
+    public void onClick(View v,int page,int item) {
+        Toast.makeText(this, String.format("Clicked View(%1$s,%2$s)",page+1,item+1), Toast.LENGTH_SHORT).show();
     }
 }
