@@ -34,7 +34,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     private OnDragDropGridItemClickListener onItemClickListener = null;
     private ViewPagerContainer container;
     private List<View> views = new ArrayList<View>();
-    private SparseIntArray newPositions = new SparseIntArray();
+    private SparseIntArray newPositions = new SparseIntArray();// store the itemIndex-->position mapping
     private int gridPageWidth = 0;
     private int dragged = -1;
     private int columnWidthSize;
