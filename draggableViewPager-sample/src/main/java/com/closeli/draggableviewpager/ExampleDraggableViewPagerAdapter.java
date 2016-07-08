@@ -167,6 +167,6 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
 
     @Override
     public boolean disableZoomAnimationsOnChangePage() {
-        return true;
+        return false;
     }
 }
