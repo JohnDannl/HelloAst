@@ -3,6 +3,7 @@ package com.arcsoft.closeli.draggableviewpager;
 import android.content.Context;
 import android.graphics.Point;
 import android.os.Handler;
+import android.os.Message;
 import android.util.AttributeSet;
 import android.util.SparseIntArray;
 import android.view.Display;
@@ -26,7 +27,14 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
 
     public static int ROW_HEIGHT = 300;
     private static int ANIMATION_DURATION = 250;
+    private static final long DOUBLE_CLICK_INTERVAL = 250; // in millis
+    private boolean hasDoubleClick=false;
+    private long lastClickTime=0L;
+    private int lastClickItem=-1;
+    private int doubleClickItem=-1;
+    private boolean hasFullScreen=false;
     private boolean enableDrag=true;
+    private static final boolean noStatusBar=true;
 
     private static int EGDE_DETECTION_MARGIN = 35;
     private final Handler edgeTimerHandler = new Handler();
@@ -115,8 +123,12 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         display.getSize(point);
         displayWidth = point.x;
         displayHeight = point.y;
-        int statusHeight=getStatusBarHeight();
-        ROW_HEIGHT=(displayHeight-statusHeight)/2;
+        if(noStatusBar){
+            ROW_HEIGHT=displayHeight/2;
+        }else{
+            int statusHeight=getStatusBarHeight();
+            ROW_HEIGHT=(displayHeight-statusHeight)/2;
+        }
     }
     private int getStatusBarHeight() {
         int result = 0;
@@ -208,6 +220,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     public void setDragEnabled(boolean enabled){
         this.enableDrag=enabled;
     }
+
     private void addChildViews() {
         for (int page = 0; page < adapter.pageCount(); page++) {
             for (int item = 0; item < adapter.itemCountInPage(page); item++) {
@@ -280,8 +293,9 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
                 touchUp(event);
                 break;
         }
-        if (aViewIsDragged())
+        if (aViewIsDragged()){
             return true;
+        }
         return false;
     }
 
@@ -309,13 +323,25 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
 
     private void touchUp(MotionEvent event) {
         if (!aViewIsDragged()) {
-            if (onItemClickListener != null) {
-                int childIndex=getTargetAtCoor((int) event.getX(), (int) event.getY());
-                ItemPosition itemPosition=itemInformationAtPosition(childIndex);
-                View clickedView = getChildAt(childIndex);
-                if (clickedView != null&&itemPosition!=null)
-                    onItemClickListener.onClick(clickedView,itemPosition.pageIndex,itemPosition.itemIndex);
+            long clickTime=event.getEventTime();
+            final int childIndex=getTargetAtCoor((int) event.getX(), (int) event.getY());
+            if(clickTime-lastClickTime<=DOUBLE_CLICK_INTERVAL&&childIndex==lastClickItem){
+                hasDoubleClick=true;
+                onItemDoubleClick(childIndex);
+            }else{
+                hasDoubleClick=false;
+                Handler handler=new Handler(){
+                    public void handleMessage(Message msg){
+                        if(!hasDoubleClick){
+                            onItemClick(childIndex);
+                        }
+                    }
+                };
+                Message m = new Message();
+                handler.sendMessageDelayed(m,DOUBLE_CLICK_INTERVAL);
             }
+            lastClickTime=clickTime;
+            lastClickItem=childIndex;
         } else {
             cancelAnimations();
             lockableScrollView.setScrollingEnabled(true);
@@ -329,7 +355,36 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
 
         }
     }
+    private void onItemClick(int childIndex){
+        if (onItemClickListener != null) {
+            ItemPosition itemPosition=itemInformationAtPosition(childIndex);
+            View clickedView = getChildAt(childIndex);
+            if (clickedView != null&&itemPosition!=null)
+                onItemClickListener.onClick(clickedView,itemPosition.pageIndex,itemPosition.itemIndex);
+        }
+    }
+    private void onItemDoubleClick(int childIndex){
+        doubleClickItem=childIndex;
+        if(!hasFullScreen){
+            extendToFullScreen(childIndex);
+        }else{
+            shrinkToNormalScreen(childIndex);
+        }
+        hasFullScreen=!hasFullScreen;
 
+        if (onItemClickListener != null) {
+            ItemPosition itemPosition=itemInformationAtPosition(childIndex);
+            View clickedView = getChildAt(childIndex);
+            if (clickedView != null&&itemPosition!=null)
+                onItemClickListener.onDoubleClick(clickedView,itemPosition.pageIndex,itemPosition.itemIndex);
+        }
+    }
+    private void extendToFullScreen(int childIndex){
+
+    }
+    private void shrinkToNormalScreen(int childIndex){
+
+    }
     private void manageChildrenReordering() {
         reorderChildren();
     }
@@ -915,7 +970,10 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         View draggedView = getChildAt(dragged);
         draggedView.bringToFront();
     }
-
+    private void bringDoubleClickItemToFront(){
+        View doubleClickView = getChildAt(doubleClickItem);
+        doubleClickView.bringToFront();
+    }
     private View getDraggedView() {
         return views.get(dragged);
     }
@@ -1043,5 +1101,6 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     }
     public interface OnDragDropGridItemClickListener {
         public void onClick(View view,int page,int item);
+        public void onDoubleClick(View view,int page,int item);
     }
 }

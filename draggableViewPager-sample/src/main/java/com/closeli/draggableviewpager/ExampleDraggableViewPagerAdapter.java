@@ -36,7 +36,7 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
 
         Page page2 = new Page();
         items = new ArrayList<Item>();
-        for(;totalCount<=9;totalCount++){
+        for(;totalCount<=8;totalCount++){
             items.add(new Item(totalCount, "Item "+totalCount, R.drawable.ic_launcher));
         }
         page2.setItems(items);
@@ -44,7 +44,7 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
 
         Page page3 = new Page();
         items = new ArrayList<Item>();
-        for(;totalCount<=12;totalCount++){
+        for(;totalCount<=11;totalCount++){
             items.add(new Item(totalCount, "Item "+totalCount, R.drawable.ic_launcher));
         }
         page3.setItems(items);

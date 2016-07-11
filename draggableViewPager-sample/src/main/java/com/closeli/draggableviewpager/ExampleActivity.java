@@ -37,6 +37,8 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewTreeObserver;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -52,6 +54,10 @@ public class ExampleActivity extends Activity implements DragDropGrid.OnDragDrop
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_main);
         final LinearLayout contentContainer=(LinearLayout)findViewById(R.id.content_container);
@@ -77,7 +83,9 @@ public class ExampleActivity extends Activity implements DragDropGrid.OnDragDrop
         gridview.setBackgroundColor(Color.BLACK);
 
         gridview.setDragEnabled(true);
-        gridview.setPageScrollSpeed(800);
+//        gridview.setPageScrollAnimationEnabled(true);
+//        gridview.setPageScrollSpeed(500);
+        gridview.setPageScrollAnimationEnabled(false);
     }
     public static float dipToPixels(Context context, float dipValue) {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
@@ -109,5 +117,9 @@ public class ExampleActivity extends Activity implements DragDropGrid.OnDragDrop
     @Override
     public void onClick(View v,int page,int item) {
         Toast.makeText(this, String.format("Clicked View(%1$s,%2$s)",page+1,item+1), Toast.LENGTH_SHORT).show();
+    }
+    @Override
+    public void onDoubleClick(View v,int page,int item) {
+        Toast.makeText(this, String.format("Double Clicked View(%1$s,%2$s)",page+1,item+1), Toast.LENGTH_SHORT).show();
     }
 }

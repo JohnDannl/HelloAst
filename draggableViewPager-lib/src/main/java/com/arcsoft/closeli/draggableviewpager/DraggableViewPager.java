@@ -15,7 +15,8 @@ import com.arcsoft.closeli.draggableviewpager.callbacks.OnPageChangedListener;
 public class DraggableViewPager extends HorizontalScrollView implements ViewPagerContainer, OnGestureListener {
 
     private static final int FLING_VELOCITY = 500;
-    private int PAGE_SCROLL_SPEED=800;
+    private int PAGE_SCROLL_SPEED=500;
+    private boolean isPageScrollAnimationEnabled=true;
     private int activePage = 0;
     private boolean activePageRestored = false;
 
@@ -154,9 +155,11 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
     public void setDragEnabled(boolean enabled){
         grid.setDragEnabled(enabled);
     }
-
+    public void setPageScrollAnimationEnabled(boolean enabled){
+        this.isPageScrollAnimationEnabled=enabled;
+    }
     /**
-     * set page scroll time in millisecond,default:800ms
+     * set page scroll time in millisecond if scroll animation is enabled,default:500ms
      * @param milliSeconds
      */
     public void setPageScrollSpeed(int milliSeconds){
@@ -180,10 +183,13 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
         activePage = page;
         int onePageWidth = getMeasuredWidth();
         int scrollTo = page * onePageWidth;
-        ObjectAnimator animator= ObjectAnimator.ofInt(this, "scrollX",scrollTo);
-        animator.setDuration(PAGE_SCROLL_SPEED);
-        animator.start();
-        //smoothScrollTo(scrollTo, 0);
+        if(isPageScrollAnimationEnabled){
+            ObjectAnimator animator= ObjectAnimator.ofInt(this, "scrollX",scrollTo);
+            animator.setDuration(PAGE_SCROLL_SPEED);
+            animator.start();
+        }else{
+            smoothScrollTo(scrollTo, 0);
+        }
         if (pageChangedListener != null)
             pageChangedListener.onPageChanged(this, page);
     }
