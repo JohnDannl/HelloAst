@@ -470,19 +470,25 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     }
 
     private void scrollToNextPage() {
+        if(!aViewIsDragged())return; // error occurs if dragged equals -1
         tellAdapterToMoveItemToNextPage(dragged);
         moveDraggedToNextPage();
 
         container.scrollRight();
         int currentPage = currentPage();
-        int lastItem = adapter.itemCountInPage(currentPage) - 1;
-        dragged = positionOfItem(currentPage, lastItem);
+
+        /*int lastItem = adapter.itemCountInPage(currentPage) - 1;
+        dragged = positionOfItem(currentPage, lastItem);*/
+
+        int firstItem = 0;
+        dragged = positionOfItem(currentPage, firstItem);
 
         stopAnimateOnTheEdge();
         lockableScrollView.scrollTo(0, 0);
     }
 
     private void scrollToPreviousPage() {
+        if(!aViewIsDragged())return;
         tellAdapterToMoveItemToPreviousPage(dragged);
         moveDraggedToPreviousPage();
 
@@ -519,8 +525,11 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         View draggedView = reorderedViews.get(draggedEndPosition);
         reorderedViews.remove(draggedEndPosition);
 
-        int indexLastElementInNextPage = findTheIndexLastElementInNextPage();
-        int indexOfDraggedOnNewPage = indexLastElementInNextPage - 1;
+        /*int indexLastElementInNextPage = findTheIndexLastElementInNextPage();
+        int indexOfDraggedOnNewPage = indexLastElementInNextPage - 1;*/
+
+        int indexFirstElementInNextPage = findTheIndexFirstElementInNextPage();
+        int indexOfDraggedOnNewPage = indexFirstElementInNextPage;
 
         reorderAndAddViews(reorderedViews, draggedView, indexOfDraggedOnNewPage);
     }
@@ -550,6 +559,14 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             indexLastElementInNextPage += adapter.itemCountInPage(i);
         }
         return indexLastElementInNextPage;
+    }
+    private int findTheIndexFirstElementInNextPage() {
+        int currentPage = currentPage();
+        int indexFirstElementInNextPage = 0;
+        for (int i = 0; i <= currentPage; i++) {
+            indexFirstElementInNextPage += adapter.itemCountInPage(i);
+        }
+        return indexFirstElementInNextPage;
     }
 
     private void reorderAndAddViews(List<View> reorderedViews, View draggedView, int indexOfDraggedOnNewPage) {
