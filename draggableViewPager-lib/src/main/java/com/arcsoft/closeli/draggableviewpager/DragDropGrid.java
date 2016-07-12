@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 
@@ -380,15 +381,36 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         }
     }
     private void extendToFullScreen(int childIndex){
+        container.disableScroll();
+        lockableScrollView.setScrollingEnabled(false);
+        animateDoubleClick();
+        bringDoubleClickItemToFront();
+    }
+    private void animateDoubleClick() {
+        View animateView=views.get(doubleClickItem);
+        ScaleAnimation scale = new ScaleAnimation(1.0f, 2.0f, 1.0f, 2.0f,
+                Animation.RELATIVE_TO_SELF,0, Animation.RELATIVE_TO_SELF,0);
+        scale.setDuration(0);
+        scale.setFillAfter(true);
+        scale.setFillEnabled(true);
 
+        if (doubleClickItem != -1) {
+            View doubleClickView = views.get(doubleClickItem);
+            doubleClickView.clearAnimation();
+            doubleClickView.startAnimation(scale);
+        }
     }
     private void shrinkToNormalScreen(int childIndex){
-
+        cancelAnimations();
+        manageChildrenReordering();
+        doubleClickItem = -1;
+        lockableScrollView.setScrollingEnabled(true);
+        container.enableScroll();
     }
+
     private void manageChildrenReordering() {
         reorderChildren();
     }
-
 
     private void reorderChildren() {
         List<View> children = cleanUnorderedChildren();
@@ -891,10 +913,12 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         for (int page = 0; page < adapter.pageCount(); page++) {
             layoutPage(pageWidth, page);
         }
-
-        if (weWereMovingDragged()) {
+        /*if (weWereMovingDragged()) {
             bringDraggedToFront();
         }
+        if(doubleClickItem!=-1){
+            bringDoubleClickItemToFront();
+        }*/
     }
 
     private boolean weWereMovingDragged() {
@@ -924,7 +948,10 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         if (position == dragged && lastTouchOnEdge()) {
             left = computePageEdgeXCoor(child);
             top = lastTouchY - (child.getMeasuredHeight() / 2);
-        } else {
+        } else if(position == doubleClickItem){
+            left=(page * pageWidth);
+            top=0;
+        }else {
             left = (page * pageWidth) + (col * columnWidthSize) + ((columnWidthSize - child.getMeasuredWidth()) / 2);
             top = (row * rowHeightSize) + ((rowHeightSize - child.getMeasuredHeight()) / 2);
         }
