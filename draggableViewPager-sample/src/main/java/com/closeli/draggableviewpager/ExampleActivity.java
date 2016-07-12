@@ -32,6 +32,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
@@ -39,17 +40,21 @@ import android.view.View.OnClickListener;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.arcsoft.closeli.draggableviewpager.DragDropGrid;
 import com.arcsoft.closeli.draggableviewpager.DraggableViewPager;
 
-public class ExampleActivity extends Activity implements DragDropGrid.OnDragDropGridItemClickListener {
+public class ExampleActivity extends Activity  {
 
     private String CURRENT_PAGE_KEY = "CURRENT_PAGE_KEY";
 
-    private DraggableViewPager gridview;
+    private static int DELAY_TIME=2000;
+    private DraggableViewPager mDrgVpg;
+    private ImageView imgNavLeft;
+    private ImageView imgNavRight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +65,7 @@ public class ExampleActivity extends Activity implements DragDropGrid.OnDragDrop
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_main);
-        final LinearLayout contentContainer=(LinearLayout)findViewById(R.id.content_container);
+        final RelativeLayout contentContainer=(RelativeLayout)findViewById(R.id.content_container);
         contentContainer.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -73,19 +78,50 @@ public class ExampleActivity extends Activity implements DragDropGrid.OnDragDrop
             }
         });
 
-        gridview = (DraggableViewPager) findViewById(R.id.gridview);
+        mDrgVpg = (DraggableViewPager) findViewById(R.id.gridview);
 
-        ExampleDraggableViewPagerAdapter adapter = new ExampleDraggableViewPagerAdapter(this, gridview);
+        ExampleDraggableViewPagerAdapter adapter = new ExampleDraggableViewPagerAdapter(this, mDrgVpg);
 
-        gridview.setAdapter(adapter);
-        gridview.setClickListener(this);
+        mDrgVpg.setAdapter(adapter);
+        mDrgVpg.setClickListener(new DragDropGrid.OnDragDropGridItemClickListener() {
+            @Override
+            public void onClick(View v,int page,int item) {
+                //Toast.makeText(this, String.format("Clicked View(%1$s,%2$s)",page+1,item+1), Toast.LENGTH_SHORT).show();
+                dealOnClick();
+            }
+            @Override
+            public void onDoubleClick(View v,int page,int item) {
+                //Toast.makeText(this, String.format("Double Clicked View(%1$s,%2$s)",page+1,item+1), Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onFullScreenChange(View view, int page, int item, boolean isFullScreen) {
+                //Toast.makeText(ExampleActivity.this, String.format("View(%1$s,%2$s) FullScreen:%3$s",page+1,item+1,isFullScreen), Toast.LENGTH_SHORT).show();
+            }
+        });
 
-        gridview.setBackgroundColor(Color.BLACK);
+        mDrgVpg.setBackgroundColor(Color.BLACK);
 
-        gridview.setDragEnabled(true);
-//        gridview.setPageScrollAnimationEnabled(true);
-//        gridview.setPageScrollSpeed(500);
-        gridview.setPageScrollAnimationEnabled(false);
+        mDrgVpg.setDragEnabled(true);
+//        mDrgVpg.setPageScrollAnimationEnabled(true);
+//        mDrgVpg.setPageScrollSpeed(500);
+        mDrgVpg.setPageScrollAnimationEnabled(false);
+
+        imgNavLeft=(ImageView)findViewById(R.id.navi_bar_left);
+        imgNavLeft.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDrgVpg.scrollLeft();
+                dealOnClick();
+            }
+        });
+        imgNavRight=(ImageView)findViewById(R.id.navi_bar_right);
+        imgNavRight.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDrgVpg.scrollRight();
+                dealOnClick();
+            }
+        });
     }
     public static float dipToPixels(Context context, float dipValue) {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
@@ -103,23 +139,37 @@ public class ExampleActivity extends Activity implements DragDropGrid.OnDragDrop
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         int savedPage = savedInstanceState.getInt(CURRENT_PAGE_KEY);
-        gridview.restoreCurrentPage(savedPage);
+        mDrgVpg.restoreCurrentPage(savedPage);
     }
 
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
 
-        outState.putInt(CURRENT_PAGE_KEY, gridview.currentPage());
+        outState.putInt(CURRENT_PAGE_KEY, mDrgVpg.currentPage());
         super.onSaveInstanceState(outState);
     }
 
-    @Override
-    public void onClick(View v,int page,int item) {
-        Toast.makeText(this, String.format("Clicked View(%1$s,%2$s)",page+1,item+1), Toast.LENGTH_SHORT).show();
-    }
-    @Override
-    public void onDoubleClick(View v,int page,int item) {
-        Toast.makeText(this, String.format("Double Clicked View(%1$s,%2$s)",page+1,item+1), Toast.LENGTH_SHORT).show();
+    Handler mHandler=new Handler();
+    private Runnable hiddenNavBar=new Runnable() {
+        @Override
+        public void run() {
+            imgNavLeft.setVisibility(View.GONE);
+            imgNavRight.setVisibility(View.GONE);
+        }
+    };
+    private void dealOnClick(){
+        mHandler.removeCallbacks(hiddenNavBar);
+        mHandler.postDelayed(hiddenNavBar,DELAY_TIME);
+        if(mDrgVpg.canScrollToPreviousPage()){
+            imgNavLeft.setVisibility(View.VISIBLE);
+        }else{
+            imgNavLeft.setVisibility(View.GONE);
+        }
+        if(mDrgVpg.canScrollToNextPage()){
+            imgNavRight.setVisibility(View.VISIBLE);
+        }else{
+            imgNavRight.setVisibility(View.GONE);
+        }
     }
 }
