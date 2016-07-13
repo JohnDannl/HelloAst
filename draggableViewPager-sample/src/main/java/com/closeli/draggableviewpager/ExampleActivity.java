@@ -42,19 +42,20 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.arcsoft.closeli.draggableviewpager.DragDropGrid;
 import com.arcsoft.closeli.draggableviewpager.DraggableViewPager;
+import com.arcsoft.closeli.draggableviewpager.callbacks.OnPageChangedListener;
 
 public class ExampleActivity extends Activity  {
 
     private String CURRENT_PAGE_KEY = "CURRENT_PAGE_KEY";
 
-    private static int DELAY_TIME=2000;
+    private static int DELAY_TIME=5000;
     private DraggableViewPager mDrgVpg;
     private ImageView imgNavLeft;
     private ImageView imgNavRight;
+    private boolean isNavBarShow=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +88,7 @@ public class ExampleActivity extends Activity  {
             @Override
             public void onClick(View v,int page,int item) {
                 //Toast.makeText(this, String.format("Clicked View(%1$s,%2$s)",page+1,item+1), Toast.LENGTH_SHORT).show();
-                dealOnClick();
+                showNavBar();
             }
             @Override
             public void onDoubleClick(View v,int page,int item) {
@@ -96,6 +97,12 @@ public class ExampleActivity extends Activity  {
             @Override
             public void onFullScreenChange(View view, int page, int item, boolean isFullScreen) {
                 //Toast.makeText(ExampleActivity.this, String.format("View(%1$s,%2$s) FullScreen:%3$s",page+1,item+1,isFullScreen), Toast.LENGTH_SHORT).show();
+            }
+        });
+        mDrgVpg.setOnPageChangedListener(new OnPageChangedListener() {
+            @Override
+            public void onPageChanged(DraggableViewPager draggableViewPager, int newPageNumber) {
+                if(isNavBarShow)showNavBar();
             }
         });
 
@@ -111,7 +118,6 @@ public class ExampleActivity extends Activity  {
             @Override
             public void onClick(View v) {
                 mDrgVpg.scrollLeft();
-                dealOnClick();
             }
         });
         imgNavRight=(ImageView)findViewById(R.id.navi_bar_right);
@@ -119,7 +125,6 @@ public class ExampleActivity extends Activity  {
             @Override
             public void onClick(View v) {
                 mDrgVpg.scrollRight();
-                dealOnClick();
             }
         });
     }
@@ -151,16 +156,17 @@ public class ExampleActivity extends Activity  {
     }
 
     Handler mHandler=new Handler();
-    private Runnable hiddenNavBar=new Runnable() {
+    private Runnable hideNavBar =new Runnable() {
         @Override
         public void run() {
             imgNavLeft.setVisibility(View.GONE);
             imgNavRight.setVisibility(View.GONE);
+            isNavBarShow=false;
         }
     };
-    private void dealOnClick(){
-        mHandler.removeCallbacks(hiddenNavBar);
-        mHandler.postDelayed(hiddenNavBar,DELAY_TIME);
+    private void showNavBar(){
+        mHandler.removeCallbacks(hideNavBar);
+        mHandler.postDelayed(hideNavBar,DELAY_TIME);
         if(mDrgVpg.canScrollToPreviousPage()){
             imgNavLeft.setVisibility(View.VISIBLE);
         }else{
@@ -171,5 +177,6 @@ public class ExampleActivity extends Activity  {
         }else{
             imgNavRight.setVisibility(View.GONE);
         }
+        isNavBarShow=true;
     }
 }

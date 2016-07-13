@@ -6,9 +6,11 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Point;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.Button;
@@ -29,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<TextView> addedViews=new ArrayList<TextView>();
     private boolean start=false;
     private boolean isPortait=true;
+    private int displayWidth;
+    private int displayHeight;
+    private  ScaleAnimation scale;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams.WRAP_CONTENT,1);
         viewContainer.addView(searchView,llp);*/
         viewContainer.addView(searchView);
-        Button btn_add=(Button)findViewById(R.id.btn_add_view);
+        final Button btn_add=(Button)findViewById(R.id.btn_add_view);
         btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -61,25 +66,13 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        final Button btn_anim=(Button)findViewById(R.id.btn_anim);
-        final ScaleAnimation scale = new ScaleAnimation(.667f, 1.5f, .667f, 1.5f, btn_anim.getMeasuredWidth(), btn_anim.getMeasuredHeight() * 3 / 4);
-        scale.setDuration(200);
-        scale.setRepeatMode(Animation.REVERSE);
-        scale.setRepeatCount(Animation.INFINITE);
-        btn_anim.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!start){
-                    start=true;
-                    btn_anim.clearAnimation();
-                    btn_anim.startAnimation(scale);
-                }else{
-                    start=false;
-                    btn_anim.clearAnimation();
-                }
-            }
-        });
-        Button btn_rotate=(Button)findViewById(R.id.btn_rotate);
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        displayWidth=size.x;
+        displayHeight=size.y;
+
+        final Button btn_rotate=(Button)findViewById(R.id.btn_rotate);
         btn_rotate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -99,10 +92,58 @@ public class MainActivity extends AppCompatActivity {
                 Display display = getWindowManager().getDefaultDisplay();
                 Point size = new Point();
                 display.getSize(size);
-                int width = size.x;
-                int height = size.y;
-                Toast.makeText(MainActivity.this,"width:"+width+",height:"+height,Toast.LENGTH_SHORT).show();
+                displayWidth = size.x;
+                displayHeight = size.y;
+                Toast.makeText(MainActivity.this,"width:"+displayWidth+",height:"+displayHeight,Toast.LENGTH_SHORT).show();
             }
         });
+        final Button btn_anim1=(Button)findViewById(R.id.btn_anim_1);
+        final Button btn_anim2=(Button)findViewById(R.id.btn_anim_2);
+        final LinearLayout animContainer = (LinearLayout)findViewById(R.id.anim_container);
+        btn_anim1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!start){
+                    start=true;
+                    btn_anim1.clearAnimation();
+                    btn_anim1.startAnimation(scale);
+                    animContainer.bringToFront();
+                }else{
+                    start=false;
+                    btn_anim1.clearAnimation();
+                }
+            }
+        });
+        btn_anim2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btn_anim2.clearAnimation();
+                btn_anim2.startAnimation(scale);
+            }
+        });
+        final ViewTreeObserver.OnGlobalLayoutListener callback=new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                Log.d("XXXXani1","x:"+btn_anim1.getX()+",width:"+btn_anim1.getMeasuredWidth()+",left:"+btn_anim1.getLeft()+",right:"+btn_anim1.getRight());
+                Log.d("XXXXani1","y:"+btn_anim1.getY()+",height:"+btn_anim1.getMeasuredHeight()+",top:"+btn_anim1.getTop()+",bottom:"+btn_anim1.getBottom());
+                Log.d("XXXXani2","x:"+btn_anim1.getX()+",width:"+btn_anim1.getMeasuredWidth()+",left:"+btn_anim1.getLeft()+",right:"+btn_anim1.getRight());
+                Log.d("XXXXani2","y:"+btn_anim1.getY()+",height:"+btn_anim1.getMeasuredHeight()+",top:"+btn_anim1.getTop()+",bottom:"+btn_anim1.getBottom());
+                float left=btn_anim1.getX();
+                float top=btn_anim1.getTop();
+                float right=btn_anim1.getRight();
+                float bottom=btn_anim1.getBottom();
+                int width=btn_anim1.getMeasuredWidth();
+                int height=btn_anim1.getMeasuredHeight();
+                scale = new ScaleAnimation(1.0f, 1.5f, 1.0f, 1.5f, Animation.ABSOLUTE,displayWidth, Animation.ABSOLUTE, height);
+                scale.setDuration(200);
+//        scale.setRepeatMode(Animation.REVERSE);
+//        scale.setRepeatCount(Animation.INFINITE);
+                scale.setFillAfter(true);
+                scale.setFillEnabled(true);
+                animContainer.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+            }
+        };
+        animContainer.getViewTreeObserver().addOnGlobalLayoutListener(callback);
+
     }
 }

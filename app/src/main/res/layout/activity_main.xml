@@ -94,12 +94,17 @@
                 android:gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="100dip"
-                android:orientation="vertical">
+                android:orientation="horizontal">
                 <Button
-                    android:id="@+id/btn_anim"
+                    android:id="@+id/btn_anim_1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/str_anim"/>
+                    android:text="@string/str_anim_1"/>
+                <Button
+                    android:id="@+id/btn_anim_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/str_anim_2"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_below="@id/anim_container"
