@@ -24,7 +24,10 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongClickListener {
+/**
+ * Created by jd5737 on 2016/7/14.
+ */
+public class DragDropGridOrg extends ViewGroup implements OnTouchListener, OnLongClickListener {
 
     public static int ROW_HEIGHT = 300;
     private static int ANIMATION_DURATION = 250;
@@ -73,36 +76,36 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     private int displayHeight;
     private int measuredHeight;
 
-    public DragDropGrid(Context context, AttributeSet attrs, int defStyle) {
+    public DragDropGridOrg(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init();
     }
 
-    public DragDropGrid(Context context, AttributeSet attrs) {
+    public DragDropGridOrg(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public DragDropGrid(Context context) {
+    public DragDropGridOrg(Context context) {
         super(context);
         init();
     }
 
-    public DragDropGrid(Context context, AttributeSet attrs, int defStyle, DraggableViewPagerAdapter adapter, ViewPagerContainer container) {
+    public DragDropGridOrg(Context context, AttributeSet attrs, int defStyle, DraggableViewPagerAdapter adapter, ViewPagerContainer container) {
         super(context, attrs, defStyle);
         this.adapter = adapter;
         this.container = container;
         init();
     }
 
-    public DragDropGrid(Context context, AttributeSet attrs, DraggableViewPagerAdapter adapter, ViewPagerContainer container) {
+    public DragDropGridOrg(Context context, AttributeSet attrs, DraggableViewPagerAdapter adapter, ViewPagerContainer container) {
         super(context, attrs);
         this.adapter = adapter;
         this.container = container;
         init();
     }
 
-    public DragDropGrid(Context context, DraggableViewPagerAdapter adapter, ViewPagerContainer container) {
+    public DragDropGridOrg(Context context, DraggableViewPagerAdapter adapter, ViewPagerContainer container) {
         super(context);
         this.adapter = adapter;
         this.container = container;

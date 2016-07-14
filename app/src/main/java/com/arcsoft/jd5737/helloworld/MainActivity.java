@@ -11,8 +11,10 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
@@ -34,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private int displayWidth;
     private int displayHeight;
     private  ScaleAnimation scale;
+    private TranslateAnimation translate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 btn_anim2.clearAnimation();
-                btn_anim2.startAnimation(scale);
+                btn_anim2.startAnimation(translate);
             }
         });
         final ViewTreeObserver.OnGlobalLayoutListener callback=new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -126,8 +129,8 @@ public class MainActivity extends AppCompatActivity {
             public void onGlobalLayout() {
                 Log.d("XXXXani1","x:"+btn_anim1.getX()+",width:"+btn_anim1.getMeasuredWidth()+",left:"+btn_anim1.getLeft()+",right:"+btn_anim1.getRight());
                 Log.d("XXXXani1","y:"+btn_anim1.getY()+",height:"+btn_anim1.getMeasuredHeight()+",top:"+btn_anim1.getTop()+",bottom:"+btn_anim1.getBottom());
-                Log.d("XXXXani2","x:"+btn_anim1.getX()+",width:"+btn_anim1.getMeasuredWidth()+",left:"+btn_anim1.getLeft()+",right:"+btn_anim1.getRight());
-                Log.d("XXXXani2","y:"+btn_anim1.getY()+",height:"+btn_anim1.getMeasuredHeight()+",top:"+btn_anim1.getTop()+",bottom:"+btn_anim1.getBottom());
+                Log.d("XXXXani2","x:"+btn_anim2.getX()+",width:"+btn_anim2.getMeasuredWidth()+",left:"+btn_anim2.getLeft()+",right:"+btn_anim2.getRight());
+                Log.d("XXXXani2","y:"+btn_anim2.getY()+",height:"+btn_anim2.getMeasuredHeight()+",top:"+btn_anim2.getTop()+",bottom:"+btn_anim2.getBottom());
                 float left=btn_anim1.getX();
                 float top=btn_anim1.getTop();
                 float right=btn_anim1.getRight();
@@ -140,10 +143,23 @@ public class MainActivity extends AppCompatActivity {
 //        scale.setRepeatCount(Animation.INFINITE);
                 scale.setFillAfter(true);
                 scale.setFillEnabled(true);
+
+                translate=createTranslateAnimation(-btn_anim2.getWidth()/2,btn_anim2.getWidth()/2,0,btn_anim2.getHeight()/2);
                 animContainer.getViewTreeObserver().removeGlobalOnLayoutListener(this);
             }
         };
         animContainer.getViewTreeObserver().addOnGlobalLayoutListener(callback);
 
+    }
+    private TranslateAnimation createTranslateAnimation(int oldX,int newX,int oldY,int newY) {
+        TranslateAnimation translate = new TranslateAnimation(Animation.ABSOLUTE, oldX,
+                Animation.ABSOLUTE, newX,
+                Animation.ABSOLUTE, oldY,
+                Animation.ABSOLUTE, newY);
+        translate.setDuration(250);
+        translate.setFillEnabled(true);
+        translate.setFillAfter(true);
+        translate.setInterpolator(new AccelerateDecelerateInterpolator());
+        return translate;
     }
 }

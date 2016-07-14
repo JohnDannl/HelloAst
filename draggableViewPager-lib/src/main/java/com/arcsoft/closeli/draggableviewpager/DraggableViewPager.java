@@ -155,6 +155,9 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
     public void setDragEnabled(boolean enabled){
         grid.setDragEnabled(enabled);
     }
+    public void setDragZoomInAnimEnabled(boolean enabled){
+        grid.setDragZoomInAnimEnabled(enabled);
+    }
     public void setPageScrollAnimationEnabled(boolean enabled){
         this.isPageScrollAnimationEnabled=enabled;
     }
