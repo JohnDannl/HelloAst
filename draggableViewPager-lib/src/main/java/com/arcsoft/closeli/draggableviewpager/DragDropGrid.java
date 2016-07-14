@@ -19,7 +19,6 @@ import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -427,7 +426,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             fullScreenView.setLayoutParams(vlp);
             bringFullScreenItemToFront();
 
-           /* int page=currentPage();
+            int page=currentPage();
             for(int i=0;i<adapter.itemCountInPage(page);i++){
                 int position=positionOfItem(page,i);
                 if(position!=fullScreenItem){
@@ -436,15 +435,15 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
                     LayoutParams cvlp=childView.getLayoutParams();
                     cvlp.width=0;
                     cvlp.height=0;
-                    //childView.setLayoutParams(cvlp);
-                    childView.setVisibility(View.GONE);
+                    childView.setLayoutParams(cvlp);
+                    //childView.setVisibility(View.GONE);
                 }
-            }*/
+            }
         }
     }
     private void shrinkToNormalScreen(){
         if (fullScreenItem != -1) {
-            /*int page=currentPage();
+            int page=currentPage();
             for(int i=0;i<adapter.itemCountInPage(page);i++){
                 int position=positionOfItem(page,i);
                 if(position!=fullScreenItem){
@@ -452,10 +451,10 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
                     LayoutParams cvlp =childView.getLayoutParams();
                     cvlp.width=(displayWidth - getPaddingLeft() - getPaddingRight())/adapter.columnCount();
                     cvlp.height=ROW_HEIGHT;
-                    //childView.setLayoutParams(cvlp);
-                    childView.setVisibility(View.VISIBLE);
+                    childView.setLayoutParams(cvlp);
+                    //childView.setVisibility(View.VISIBLE);
                 }
-            }*/
+            }
 
             View fullScreenView = views.get(fullScreenItem);
             LayoutParams vlp =fullScreenView.getLayoutParams();
@@ -478,7 +477,6 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             int top=fullView.getTop();
             int height=fullView.getMeasuredHeight();
             ScaleAnimation scale=null;
-            //android.util.Log.d("XXXX","left:"+left+",top:"+top+",height:"+height);
             if(itemInformationAtPosition(fullScreenItem).itemIndex<2){
                 scale = new ScaleAnimation(1f, 2.0f, 1f, 2.0f, Animation.ABSOLUTE,left,Animation.ABSOLUTE,top);
             }else{
