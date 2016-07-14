@@ -2,7 +2,6 @@ package com.arcsoft.closeli.draggableviewpager;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
@@ -268,10 +267,6 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
         scrollToPage(activePage);
     }
 
-    @Override
-    public void onDraw(Canvas canvas){
-        android.util.Log.d("XXXX","onDraw");
-    }
     @Override
     public boolean onDown(MotionEvent arg0) {
         return false;
