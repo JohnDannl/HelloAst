@@ -1104,7 +1104,7 @@ public class DragDropGridOrg extends ViewGroup implements OnTouchListener, OnLon
 
     private void animateDragged() {
 
-        if(!enableDrag)return;
+        if(!enableDragAnim)return;
         ScaleAnimation scale = new ScaleAnimation(1f, 1.1f, 1f, 1.1f, displayWidth / 2, ROW_HEIGHT / 2);
         scale.setDuration(200);
         scale.setFillAfter(true);
