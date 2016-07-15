@@ -78,7 +78,7 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
         final TextView textView = (TextView) view.findViewById(R.id.info_text);
         Item item = getItem(page, index);
         textView.setText(item.getName());
-        textView.setBackgroundDrawable(context.getResources().getDrawable(item.getDrawable()));
+        //textView.setBackgroundDrawable(context.getResources().getDrawable(item.getDrawable()));
         return view;
     }
 

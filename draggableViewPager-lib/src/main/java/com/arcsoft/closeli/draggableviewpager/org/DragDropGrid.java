@@ -1,6 +1,9 @@
-package com.arcsoft.closeli.draggableviewpager;
+package com.arcsoft.closeli.draggableviewpager.org;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.os.Handler;
 import android.os.Message;
@@ -18,16 +21,17 @@ import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 
+import com.arcsoft.closeli.draggableviewpager.DraggableViewPager;
+import com.arcsoft.closeli.draggableviewpager.DraggableViewPagerAdapter;
+import com.arcsoft.closeli.draggableviewpager.LockableScrollView;
+import com.arcsoft.closeli.draggableviewpager.ViewPagerContainer;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-/**
- * Created by jd5737 on 2016/7/14.
- */
-public class DragDropGridOrg extends ViewGroup implements OnTouchListener, OnLongClickListener {
+public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongClickListener {
 
     public static int ROW_HEIGHT = 300;
     private static int ANIMATION_DURATION = 250;
@@ -40,6 +44,7 @@ public class DragDropGridOrg extends ViewGroup implements OnTouchListener, OnLon
     private boolean enableDrag=true;
     private boolean enableDragAnim=false;
     private static final boolean noStatusBar=true;
+    private Paint mPaint;
 
     private static int EGDE_DETECTION_MARGIN = 35;
     private final Handler edgeTimerHandler = new Handler();
@@ -76,36 +81,36 @@ public class DragDropGridOrg extends ViewGroup implements OnTouchListener, OnLon
     private int displayHeight;
     private int measuredHeight;
 
-    public DragDropGridOrg(Context context, AttributeSet attrs, int defStyle) {
+    public DragDropGrid(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init();
     }
 
-    public DragDropGridOrg(Context context, AttributeSet attrs) {
+    public DragDropGrid(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public DragDropGridOrg(Context context) {
+    public DragDropGrid(Context context) {
         super(context);
         init();
     }
 
-    public DragDropGridOrg(Context context, AttributeSet attrs, int defStyle, DraggableViewPagerAdapter adapter, ViewPagerContainer container) {
+    public DragDropGrid(Context context, AttributeSet attrs, int defStyle, DraggableViewPagerAdapter adapter, ViewPagerContainer container) {
         super(context, attrs, defStyle);
         this.adapter = adapter;
         this.container = container;
         init();
     }
 
-    public DragDropGridOrg(Context context, AttributeSet attrs, DraggableViewPagerAdapter adapter, ViewPagerContainer container) {
+    public DragDropGrid(Context context, AttributeSet attrs, DraggableViewPagerAdapter adapter, ViewPagerContainer container) {
         super(context, attrs);
         this.adapter = adapter;
         this.container = container;
         init();
     }
 
-    public DragDropGridOrg(Context context, DraggableViewPagerAdapter adapter, ViewPagerContainer container) {
+    public DragDropGrid(Context context, DraggableViewPagerAdapter adapter, ViewPagerContainer container) {
         super(context);
         this.adapter = adapter;
         this.container = container;
@@ -113,6 +118,10 @@ public class DragDropGridOrg extends ViewGroup implements OnTouchListener, OnLon
     }
 
     private void init() {
+        mPaint=new Paint();
+        mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setStrokeWidth(1f);
+        mPaint.setColor(Color.RED);
         if (isInEditMode() && adapter == null) {
             useEditModeAdapter();
         }
@@ -430,7 +439,7 @@ public class DragDropGridOrg extends ViewGroup implements OnTouchListener, OnLon
             fullScreenView.setLayoutParams(vlp);
             bringFullScreenItemToFront();
 
-           /* int page=currentPage();
+            int page=currentPage();
             for(int i=0;i<adapter.itemCountInPage(page);i++){
                 int position=positionOfItem(page,i);
                 if(position!=fullScreenItem){
@@ -439,15 +448,15 @@ public class DragDropGridOrg extends ViewGroup implements OnTouchListener, OnLon
                     LayoutParams cvlp=childView.getLayoutParams();
                     cvlp.width=0;
                     cvlp.height=0;
-                    //childView.setLayoutParams(cvlp);
-                    childView.setVisibility(View.GONE);
+                    childView.setLayoutParams(cvlp);
+                    //childView.setVisibility(View.GONE);
                 }
-            }*/
+            }
         }
     }
     private void shrinkToNormalScreen(){
         if (fullScreenItem != -1) {
-            /*int page=currentPage();
+            int page=currentPage();
             for(int i=0;i<adapter.itemCountInPage(page);i++){
                 int position=positionOfItem(page,i);
                 if(position!=fullScreenItem){
@@ -455,10 +464,10 @@ public class DragDropGridOrg extends ViewGroup implements OnTouchListener, OnLon
                     LayoutParams cvlp =childView.getLayoutParams();
                     cvlp.width=(displayWidth - getPaddingLeft() - getPaddingRight())/adapter.columnCount();
                     cvlp.height=ROW_HEIGHT;
-                    //childView.setLayoutParams(cvlp);
-                    childView.setVisibility(View.VISIBLE);
+                    childView.setLayoutParams(cvlp);
+                    //childView.setVisibility(View.VISIBLE);
                 }
-            }*/
+            }
 
             View fullScreenView = views.get(fullScreenItem);
             LayoutParams vlp =fullScreenView.getLayoutParams();
@@ -481,7 +490,6 @@ public class DragDropGridOrg extends ViewGroup implements OnTouchListener, OnLon
             int top=fullView.getTop();
             int height=fullView.getMeasuredHeight();
             ScaleAnimation scale=null;
-            //android.util.Log.d("XXXX","left:"+left+",top:"+top+",height:"+height);
             if(itemInformationAtPosition(fullScreenItem).itemIndex<2){
                 scale = new ScaleAnimation(1f, 2.0f, 1f, 2.0f, Animation.ABSOLUTE,left,Animation.ABSOLUTE,top);
             }else{
@@ -997,7 +1005,24 @@ public class DragDropGridOrg extends ViewGroup implements OnTouchListener, OnLon
         gridPageWidth = widthSize;
         return widthSize;
     }
+    @Override
+    public void dispatchDraw(Canvas canvas){
+        //draw yourself's things underneath children views
+        super.dispatchDraw(canvas);
+        //draw yourself's things over children views
+    }
+    @Override
+    public void onDraw(Canvas canvas){
+        //draw yourself's things underneath children views
 
+        //Draw the grid lines
+        /*for (int i=displayWidth/2; i < getWidth(); i += displayWidth) {
+            canvas.drawLine(i, 0, i, getHeight(), mPaint);
+        }
+        for (int i=displayHeight/2; i < getHeight(); i += displayHeight) {
+            canvas.drawLine(0, i, getWidth(), i, mPaint);
+        }*/
+    }
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         //If we don't have pages don't do layout

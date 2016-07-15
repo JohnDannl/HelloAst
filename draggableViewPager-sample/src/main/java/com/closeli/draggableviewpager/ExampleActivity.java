@@ -97,6 +97,7 @@ public class ExampleActivity extends Activity  {
             @Override
             public void onFullScreenChange(View view, int page, int item, boolean isFullScreen) {
                 //Toast.makeText(ExampleActivity.this, String.format("View(%1$s,%2$s) FullScreen:%3$s",page+1,item+1,isFullScreen), Toast.LENGTH_SHORT).show();
+                if(isFullScreen)hideNavBar();
             }
         });
         mDrgVpg.setOnPageChangedListener(new OnPageChangedListener() {
@@ -156,7 +157,7 @@ public class ExampleActivity extends Activity  {
     }
 
     Handler mHandler=new Handler();
-    private Runnable hideNavBar =new Runnable() {
+    private Runnable hideNavBarCallback =new Runnable() {
         @Override
         public void run() {
             imgNavLeft.setVisibility(View.GONE);
@@ -164,9 +165,15 @@ public class ExampleActivity extends Activity  {
             isNavBarShow=false;
         }
     };
+    private void hideNavBar(){
+        imgNavLeft.setVisibility(View.GONE);
+        imgNavRight.setVisibility(View.GONE);
+        isNavBarShow=false;
+    }
     private void showNavBar(){
-        mHandler.removeCallbacks(hideNavBar);
-        mHandler.postDelayed(hideNavBar,DELAY_TIME);
+        if(mDrgVpg.isFullScreen())return;
+        mHandler.removeCallbacks(hideNavBarCallback);
+        mHandler.postDelayed(hideNavBarCallback,DELAY_TIME);
         if(mDrgVpg.canScrollToPreviousPage()){
             imgNavLeft.setVisibility(View.VISIBLE);
         }else{

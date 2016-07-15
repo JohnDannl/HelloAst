@@ -12,11 +12,15 @@ import android.widget.HorizontalScrollView;
 
 import com.arcsoft.closeli.draggableviewpager.callbacks.OnPageChangedListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DraggableViewPager extends HorizontalScrollView implements ViewPagerContainer, OnGestureListener {
 
     private static final int FLING_VELOCITY = 500;
     private int PAGE_SCROLL_SPEED=500;
     private boolean isPageScrollAnimationEnabled=true;
+    private boolean isScrollEnalbed=true;
     private int activePage = 0;
     private boolean activePageRestored = false;
 
@@ -24,6 +28,7 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
     private DraggableViewPagerAdapter adapter;
     private DragDropGrid.OnDragDropGridItemClickListener listener;
     private GestureDetector gestureScanner;
+    private List<OnTouchListener> mOnTouchListeners = new ArrayList<OnTouchListener>();
 
     private OnPageChangedListener pageChangedListener;
     private int bgXmlRes;
@@ -112,6 +117,12 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
         setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                if (mOnTouchListeners != null) {
+                    for (OnTouchListener listener :  mOnTouchListeners) {
+                        listener.onTouch(v, event);
+                    }
+                }
+                if(!isScrollEnalbed)return true;
                 boolean specialEventUsed = gestureScanner.onTouchEvent(event);
                 if (!specialEventUsed && (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL)) {
                     int scrollX = getScrollX();
@@ -131,6 +142,16 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
                 }
             }
         });
+    }
+
+    public void addOnTouchListener(final OnTouchListener listener) {
+        if (listener != null && !mOnTouchListeners.contains(listener)) {
+            mOnTouchListeners.add(listener);
+        }
+    }
+
+    public void removeOnTouchListener(final OnTouchListener listener) {
+        mOnTouchListeners.remove(listener);
     }
 
     public boolean isFullScreen() {
@@ -210,6 +231,8 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
         int newPage = activePage - 1;
         if (canScrollToPreviousPage()) {
             scrollToPage(newPage);
+        }else{
+            scrollToPage(activePage);
         }
     }
 
@@ -218,6 +241,8 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
         int newPage = activePage + 1;
         if (canScrollToNextPage()) {
             scrollToPage(newPage);
+        }else{
+            scrollToPage(activePage);
         }
     }
 
@@ -229,11 +254,13 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
     @Override
     public void enableScroll() {
         requestDisallowInterceptTouchEvent(false);
+        isScrollEnalbed=true;
     }
 
     @Override
     public void disableScroll() {
         requestDisallowInterceptTouchEvent(true);
+        isScrollEnalbed=false;
     }
 
     @Override
