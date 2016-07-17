@@ -363,7 +363,6 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             movingView = false;
             dragged = -1;
             lastTarget = -1;
-            android.util.Log.d("XXXXXX","touchUp()");
             container.enableScroll();
 
         }
