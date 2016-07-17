@@ -368,6 +368,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             movingView = false;
             dragged = -1;
             lastTarget = -1;
+            android.util.Log.d("XXXXXX","touchUp()");
             container.enableScroll();
 
         }
@@ -388,7 +389,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         ItemPosition itemPosition=itemInformationAtPosition(childIndex);
         View clickedView = getChildView(childIndex);
 
-        if(!hasFullScreen){
+        if(!hasFullScreen&&clickedView != null&&itemPosition!=null){
             fullScreenItem =childIndex;
             extendToFullScreen();
             //extendToFullScreenWithAnimation();
@@ -1097,19 +1098,16 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
 
     @Override
     public boolean onLongClick(View v) {
-        if (positionForView(v) != -1) {
+        if (positionForView(v) != -1&&enableDrag) {
             container.disableScroll();
             lockableScrollView.setScrollingEnabled(false);
+            movingView = true;
+            dragged = positionForView(v);
 
-            if(enableDrag){
-                movingView = true;
-                dragged = positionForView(v);
+            bringDraggedToFront();
 
-                bringDraggedToFront();
-
-                animateDragged();
-                return true;
-            }
+            animateDragged();
+            return true;
         }
 
         return false;
@@ -1160,7 +1158,12 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     }
 
     private View getChildView(int index) {
-        return views.get(index);
+        if(index>=0&&index<views.size()){
+            return views.get(index);
+        }else{
+            return null;
+        }
+
     }
 
     private boolean isPointInsideView(float x, float y, View view) {
