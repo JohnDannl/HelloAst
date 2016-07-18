@@ -360,7 +360,6 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             movingView = false;
             dragged = -1;
             lastTarget = -1;
-
         }
     }
     private void onItemClick(int childIndex){

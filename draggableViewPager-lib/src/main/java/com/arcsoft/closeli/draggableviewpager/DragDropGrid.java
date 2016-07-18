@@ -3,7 +3,6 @@ package com.arcsoft.closeli.draggableviewpager;
 import android.content.Context;
 import android.graphics.Point;
 import android.os.Handler;
-import android.os.Message;
 import android.util.AttributeSet;
 import android.util.SparseIntArray;
 import android.view.Display;
@@ -356,7 +355,6 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             movingView = false;
             dragged = -1;
             lastTarget = -1;
-
         }
     }
     private void onItemClick(int childIndex){
