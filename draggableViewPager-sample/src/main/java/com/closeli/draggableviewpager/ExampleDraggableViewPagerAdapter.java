@@ -16,6 +16,15 @@ import java.util.List;
 
 public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapter {
 
+    /**
+     * 每行item个数
+     */
+    private static final int ROW_SIZE = 2;
+    /**
+     * 每列item个数
+     */
+    private static final int COLUMN_SIZE = 2;
+
     List<Page> pages = new ArrayList<Page>();
     private Context context;
     private DraggableViewPager gridview;
@@ -89,7 +98,7 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
 
     @Override
     public int rowCount() {
-        return -1;
+        return 2;
     }
 
     @Override

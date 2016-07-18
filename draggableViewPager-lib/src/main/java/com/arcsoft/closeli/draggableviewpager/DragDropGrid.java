@@ -363,7 +363,6 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             movingView = false;
             dragged = -1;
             lastTarget = -1;
-            android.util.Log.d("XXXXXX","touchUp()");
             container.enableScroll();
 
         }
@@ -959,7 +958,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         widthSize = remeasure(widthMode, widthSize);
         int largestSize = getLargestPageSize();
 
-        measuredHeight = (largestSize+adapter.columnCount()-1)/adapter.columnCount() * rowHeightSize;
+        measuredHeight = adapter.rowCount() * rowHeightSize;//(largestSize+adapter.columnCount()-1)/adapter.columnCount() * rowHeightSize;
         setMeasuredDimension(widthSize * adapter.pageCount(), measuredHeight);
     }
 
