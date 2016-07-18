@@ -1,9 +1,6 @@
 package com.arcsoft.closeli.draggableviewpager;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Point;
 import android.os.Handler;
 import android.os.Message;
@@ -39,7 +36,6 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     private boolean enableDrag=true;
     private boolean enableDragAnim=false;
     private static final boolean noStatusBar=true;
-    private Paint mPaint;
 
     private static int EGDE_DETECTION_MARGIN = 35;
     private final Handler edgeTimerHandler = new Handler();
@@ -113,10 +109,6 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     }
 
     private void init() {
-        mPaint=new Paint();
-        mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeWidth(1f);
-        mPaint.setColor(Color.RED);
         if (isInEditMode() && adapter == null) {
             useEditModeAdapter();
         }
@@ -342,28 +334,28 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
                 onItemDoubleClick(childIndex);
             }else{
                 hasDoubleClick=false;
-                Handler handler=new Handler(){
-                    public void handleMessage(Message msg){
+                postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
                         if(!hasDoubleClick){
                             onItemClick(childIndex);
                         }
                     }
-                };
-                Message m = new Message();
-                handler.sendMessageDelayed(m,DOUBLE_CLICK_INTERVAL);
+                },DOUBLE_CLICK_INTERVAL);
             }
             lastClickTime=clickTime;
             lastClickItem=childIndex;
         } else {
             cancelAnimations();
-            lockableScrollView.setScrollingEnabled(true);
-            manageChildrenReordering();
             cancelEdgeTimer();
+            reorderChildren();
+
+            lockableScrollView.setScrollingEnabled(true);
+            container.enableScroll();
 
             movingView = false;
             dragged = -1;
             lastTarget = -1;
-            container.enableScroll();
 
         }
     }
@@ -392,10 +384,10 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             }
         }else{
             shrinkToNormalScreen();
-//            shrinkToNormalScreenWithAnimation();
+            //shrinkToNormalScreenWithAnimation();
             ItemPosition shrinkItemPosition=itemInformationAtPosition(fullScreenItem);
             View shrinkItemView = getChildView(fullScreenItem);
-            if(onItemClickListener != null&&clickedView != null&&itemPosition!=null){
+            if(onItemClickListener != null&&shrinkItemView != null&&shrinkItemPosition!=null){
                 onItemClickListener.onFullScreenChange(shrinkItemView, shrinkItemPosition.pageIndex, shrinkItemPosition.itemIndex,false);
             }
             fullScreenItem = -1;
@@ -505,9 +497,6 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         }
         lockableScrollView.setScrollingEnabled(true);
         container.enableScroll();
-    }
-    private void manageChildrenReordering() {
-        reorderChildren();
     }
 
     private void reorderChildren() {
@@ -1001,24 +990,6 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         return widthSize;
     }
     @Override
-    public void dispatchDraw(Canvas canvas){
-        //draw yourself's things underneath children views
-        super.dispatchDraw(canvas);
-        //draw yourself's things over children views
-    }
-    @Override
-    public void onDraw(Canvas canvas){
-        //draw yourself's things underneath children views
-
-        //Draw the grid lines
-        /*for (int i=displayWidth/2; i < getWidth(); i += displayWidth) {
-            canvas.drawLine(i, 0, i, getHeight(), mPaint);
-        }
-        for (int i=displayHeight/2; i < getHeight(); i += displayHeight) {
-            canvas.drawLine(0, i, getWidth(), i, mPaint);
-        }*/
-    }
-    @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         //If we don't have pages don't do layout
         if (adapter.pageCount() == 0)
@@ -1092,9 +1063,10 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
 
     @Override
     public boolean onLongClick(View v) {
-        if (positionForView(v) != -1&&enableDrag) {
+        if (positionForView(v) != -1&&enableDrag&&!isFullScreen()) {
             container.disableScroll();
             lockableScrollView.setScrollingEnabled(false);
+
             movingView = true;
             dragged = positionForView(v);
 
