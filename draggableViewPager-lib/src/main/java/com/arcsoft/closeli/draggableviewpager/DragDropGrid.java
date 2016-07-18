@@ -509,6 +509,12 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         views.addAll(children);
     }
     private void reorderChildrenIncrement(){
+        if(newPositions.size()==0){
+            Point targetCoor=getCoorForIndex(dragged);
+            View targetView=getChildView(dragged);
+            targetView.layout(targetCoor.x,targetCoor.y,
+                    targetCoor.x+targetView.getMeasuredWidth(),targetCoor.y+targetView.getMeasuredHeight());
+        }
         for(int i=0;i<newPositions.size();i++){
             int itemIndex=newPositions.keyAt(i);
             int position=newPositions.valueAt(i);

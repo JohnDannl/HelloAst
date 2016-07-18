@@ -114,10 +114,10 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
     public void printLayout() {
         int i = 0;
         for (Page page : pages) {
-            Log.d("Page", Integer.toString(i++));
+            Log.d("XXXXPage", Integer.toString(i++));
 
             for (Item item : page.getItems()) {
-                Log.d("Item", Long.toString(item.getId()));
+                Log.d("XXXXItem", Long.toString(item.getId()));
             }
         }
     }
@@ -129,6 +129,7 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
     @Override
     public void swapItems(int pageIndex, int itemIndexA, int itemIndexB) {
         getPage(pageIndex).swapItems(itemIndexA, itemIndexB);
+        printLayout();
     }
 
     @Override
@@ -141,8 +142,9 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
             Item landingPageLastItem=landingPage.removeItem(landingPage.size()-1);
             Item item = startpage.removeItem(itemIndex);
             landingPage.addItem(item);
-            startpage.addItem(0,landingPageLastItem);
+            startpage.addItem(itemIndex,landingPageLastItem);
         }
+        printLayout();
     }
 
     @Override
@@ -155,8 +157,9 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
             Item landingPageFirstItem=landingPage.removeItem(0);
             Item item = startpage.removeItem(itemIndex);
             landingPage.addItem(0,item);
-            startpage.addItem(landingPageFirstItem);
+            startpage.addItem(itemIndex,landingPageFirstItem);
         }
+        printLayout();
     }
 
     @Override
