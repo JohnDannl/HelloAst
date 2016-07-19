@@ -9,6 +9,7 @@
     <string name="str_text3">Text3</string>
     <string name="str_anim_1">动画1</string>
     <string name="str_anim_2">动画2</string>
+    <string name="str_anim_3">动画3</string>
     <string name="str_rotate">旋转</string>
     <string name="str_toast">Toast</string>
 </resources>

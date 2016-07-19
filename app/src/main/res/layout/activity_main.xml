@@ -105,6 +105,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/str_anim_2"/>
+                <Button
+                    android:id="@+id/btn_anim_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/str_anim_3"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_below="@id/anim_container"

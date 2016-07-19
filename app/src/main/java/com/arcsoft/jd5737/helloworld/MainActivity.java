@@ -1,6 +1,6 @@
 package com.arcsoft.jd5737.helloworld;
 
-import android.app.ActionBar;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.graphics.Point;
@@ -17,12 +17,9 @@ import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -31,12 +28,15 @@ public class MainActivity extends AppCompatActivity {
     private Context mContext;
     private LinearLayout viewContainer;
     private ArrayList<TextView> addedViews=new ArrayList<TextView>();
-    private boolean start=false;
     private boolean isPortait=true;
     private int displayWidth;
     private int displayHeight;
     private  ScaleAnimation scale;
     private TranslateAnimation translate;
+    private boolean anim1 =false;
+    private boolean anim2 =false;
+    private boolean anim3 =false;
+    private ObjectAnimator objAnim;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,17 +102,18 @@ public class MainActivity extends AppCompatActivity {
         });
         final Button btn_anim1=(Button)findViewById(R.id.btn_anim_1);
         final Button btn_anim2=(Button)findViewById(R.id.btn_anim_2);
+        final Button btn_anim3=(Button)findViewById(R.id.btn_anim_3);
         final LinearLayout animContainer = (LinearLayout)findViewById(R.id.anim_container);
         btn_anim1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!start){
-                    start=true;
+                if(!anim1){
+                    anim1 =true;
                     btn_anim1.clearAnimation();
                     btn_anim1.startAnimation(scale);
                     animContainer.bringToFront();
                 }else{
-                    start=false;
+                    anim1 =false;
                     btn_anim1.clearAnimation();
                 }
             }
@@ -120,17 +121,36 @@ public class MainActivity extends AppCompatActivity {
         btn_anim2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                btn_anim2.clearAnimation();
-                btn_anim2.startAnimation(translate);
+                if(!anim2){
+                    btn_anim2.startAnimation(translate);
+                }else{
+                    btn_anim2.clearAnimation();
+                }
+                anim2=!anim2;
+
+            }
+        });
+
+        btn_anim3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!anim3){
+                    objAnim.start();
+                }else{
+                    objAnim.reverse();
+                }
+//                android.util.Log.d("XXXX","left:"+btn_anim3.getLeft()+",top:"+btn_anim3.getTop());
+                anim3 =!anim3;
+                btn_anim3.animate().x(0).y(0);
             }
         });
         final ViewTreeObserver.OnGlobalLayoutListener callback=new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                Log.d("XXXXani1","x:"+btn_anim1.getX()+",width:"+btn_anim1.getMeasuredWidth()+",left:"+btn_anim1.getLeft()+",right:"+btn_anim1.getRight());
-                Log.d("XXXXani1","y:"+btn_anim1.getY()+",height:"+btn_anim1.getMeasuredHeight()+",top:"+btn_anim1.getTop()+",bottom:"+btn_anim1.getBottom());
-                Log.d("XXXXani2","x:"+btn_anim2.getX()+",width:"+btn_anim2.getMeasuredWidth()+",left:"+btn_anim2.getLeft()+",right:"+btn_anim2.getRight());
-                Log.d("XXXXani2","y:"+btn_anim2.getY()+",height:"+btn_anim2.getMeasuredHeight()+",top:"+btn_anim2.getTop()+",bottom:"+btn_anim2.getBottom());
+//                Log.d("XXXXani1","x:"+btn_anim1.getX()+",width:"+btn_anim1.getMeasuredWidth()+",left:"+btn_anim1.getLeft()+",right:"+btn_anim1.getRight());
+//                Log.d("XXXXani1","y:"+btn_anim1.getY()+",height:"+btn_anim1.getMeasuredHeight()+",top:"+btn_anim1.getTop()+",bottom:"+btn_anim1.getBottom());
+//                Log.d("XXXXani2","x:"+btn_anim2.getX()+",width:"+btn_anim2.getMeasuredWidth()+",left:"+btn_anim2.getLeft()+",right:"+btn_anim2.getRight());
+//                Log.d("XXXXani2","y:"+btn_anim2.getY()+",height:"+btn_anim2.getMeasuredHeight()+",top:"+btn_anim2.getTop()+",bottom:"+btn_anim2.getBottom());
                 float left=btn_anim1.getX();
                 float top=btn_anim1.getTop();
                 float right=btn_anim1.getRight();
@@ -145,6 +165,7 @@ public class MainActivity extends AppCompatActivity {
                 scale.setFillEnabled(true);
 
                 translate=createTranslateAnimation(-btn_anim2.getWidth()/2,btn_anim2.getWidth()/2,0,btn_anim2.getHeight()/2);
+                objAnim=ObjectAnimator.ofFloat(btn_anim3,"x",btn_anim3.getLeft(),0f);
                 animContainer.getViewTreeObserver().removeGlobalOnLayoutListener(this);
             }
         };

@@ -1,7 +1,5 @@
-package com.arcsoft.closeli.draggableviewpager;
+package com.arcsoft.closeli.draggableviewpager.v10;
 
-import android.animation.TypeEvaluator;
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Point;
 import android.os.Handler;
@@ -19,8 +17,12 @@ import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 
+import com.arcsoft.closeli.draggableviewpager.DraggableViewPager;
+import com.arcsoft.closeli.draggableviewpager.DraggableViewPagerAdapter;
+import com.arcsoft.closeli.draggableviewpager.LockableScrollView;
+import com.arcsoft.closeli.draggableviewpager.ViewPagerContainer;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -28,8 +30,7 @@ import java.util.TimerTask;
 public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongClickListener {
 
     public static int ROW_HEIGHT = 300;
-    private static int DRAGGED_MOVE_ANIMATION_DURATION = 200;
-    private static int DRAGGED_ZOOM_IN_ANIMATION_DURATION = 200;
+    private static int ANIMATION_DURATION = 250;
     private static final long DOUBLE_CLICK_INTERVAL = 250; // in millis
     private boolean hasDoubleClick=false;
     private long lastClickTime=0L;
@@ -41,10 +42,12 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     private static final boolean noStatusBar=true;
 
     private static int EGDE_DETECTION_MARGIN = 35;
+    private final Handler edgeTimerHandler = new Handler();
     private DraggableViewPagerAdapter adapter;
     private OnDragDropGridItemClickListener onItemClickListener = null;
     private ViewPagerContainer container;
     private List<View> views = new ArrayList<View>();
+    private SparseIntArray newPositions = new SparseIntArray();// store the itemIndex-->position mapping
     private int gridPageWidth = 0;
     private int dragged = -1;
     private int columnWidthSize;
@@ -61,6 +64,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     private Timer edgeScrollTimer;
     private int lastTouchX;
     private int lastTouchY;
+    private int gridPageHeight;
 
     /**
      * The width of the screen.
@@ -225,7 +229,6 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     public void setDragZoomInAnimEnabled(boolean enabled){
         enableDragAnim=enabled;
     }
-
     private void addChildViews() {
         for (int page = 0; page < adapter.pageCount(); page++) {
             for (int item = 0; item < adapter.itemCountInPage(page); item++) {
@@ -274,7 +277,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     }
 
     private void cancelAnimations() {
-        for (int i = 0; i < getItemViewCount(); i++) {
+        for (int i = 0; i < getItemViewCount() - 2; i++) {
             View child = getChildAt(i);
             child.clearAnimation();
         }
@@ -500,10 +503,9 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     }
 
     private void reorderChildren() {
-        Point targetCoor=getCoorForIndex(dragged);
-        View targetView=getChildView(dragged);
-        targetView.layout(targetCoor.x,targetCoor.y,
-                targetCoor.x+targetView.getMeasuredWidth(),targetCoor.y+targetView.getMeasuredHeight());
+        List<View> children = cleanUnorderedChildren();
+        newPositions.clear();
+        addReorderedChildrenToParent(children);
     }
 
     private void tellAdapterDraggedIsDeleted(Integer newDraggedPosition) {
@@ -606,7 +608,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             public void run() {
                 if (wasOnEdgeJustNow) {
                     wasOnEdgeJustNow = false;
-                    post(new Runnable() {
+                    edgeTimerHandler.post(new Runnable() {
                         @Override
                         public void run() {
                             scroll(onRightEdge, onLeftEdge);
@@ -640,6 +642,14 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         moveDraggedToNextPage();
 
         container.scrollRight();
+        int currentPage = currentPage();
+
+        /*int lastItem = adapter.itemCountInPage(currentPage) - 1;
+        dragged = positionOfItem(currentPage, lastItem);*/
+
+        int firstItem = 0;
+        dragged = positionOfItem(currentPage, firstItem);
+
         stopAnimateOnTheEdge();
         lockableScrollView.scrollTo(0, 0);
     }
@@ -650,32 +660,45 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         moveDraggedToPreviousPage();
 
         container.scrollLeft();
+        int currentPage = currentPage();
+        int lastItem = adapter.itemCountInPage(currentPage) - 1;
+        dragged = positionOfItem(currentPage, lastItem);
+
         stopAnimateOnTheEdge();
         lockableScrollView.scrollTo(0, 0);
     }
 
     private void moveDraggedToPreviousPage() {
-        final Point draggedViewCoor = getCoorForIndex(dragged);
+        List<View> children = cleanUnorderedChildren();
+
+        List<View> reorderedViews = children;
+        int draggedEndPosition = newPositions.get(dragged, dragged);
+
+        View draggedView = reorderedViews.get(draggedEndPosition);
+        reorderedViews.remove(draggedEndPosition);
+
         int indexFirstElementInCurrentPage = findTheIndexOfFirstElementInCurrentPage();
+
         int indexOfDraggedOnNewPage = indexFirstElementInCurrentPage - 1;
-        final int targetIndex=indexOfDraggedOnNewPage;
-        final View targetView=getChildView(targetIndex);
-        final Point targetViewCoor = getCoorForIndex(targetIndex);
-        Collections.swap(views,targetIndex,dragged);
-        dragged=targetIndex;
-        animateLayout(draggedViewCoor,targetViewCoor,targetView);
+        reorderAndAddViews(reorderedViews, draggedView, indexOfDraggedOnNewPage);
     }
 
     private void moveDraggedToNextPage() {
-        final Point draggedViewCoor = getCoorForIndex(dragged);
+        List<View> children = cleanUnorderedChildren();
+
+        List<View> reorderedViews = children;
+        int draggedEndPosition = newPositions.get(dragged, dragged);
+
+        View draggedView = reorderedViews.get(draggedEndPosition);
+        reorderedViews.remove(draggedEndPosition);
+
+        /*int indexLastElementInNextPage = findTheIndexLastElementInNextPage();
+        int indexOfDraggedOnNewPage = indexLastElementInNextPage - 1;*/
+
         int indexFirstElementInNextPage = findTheIndexFirstElementInNextPage();
         int indexOfDraggedOnNewPage = indexFirstElementInNextPage;
-        int targetIndex=indexOfDraggedOnNewPage;
-        final View targetView = getChildView(targetIndex);
-        final Point targetViewCoor = getCoorForIndex(targetIndex);
-        Collections.swap(views,targetIndex,dragged);
-        dragged=targetIndex;
-        animateLayout(draggedViewCoor,targetViewCoor,targetView);
+
+        reorderAndAddViews(reorderedViews, draggedView, indexOfDraggedOnNewPage);
     }
 
     private int findTheIndexOfFirstElementInCurrentPage() {
@@ -713,6 +736,21 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         return indexFirstElementInNextPage;
     }
 
+    private void reorderAndAddViews(List<View> reorderedViews, View draggedView, int indexOfDraggedOnNewPage) {
+        reorderedViews.add(indexOfDraggedOnNewPage, draggedView);
+        newPositions.clear();
+
+        for (View view : reorderedViews) {
+            if (view != null) {
+                removeView(view);
+                addView(view);
+
+                views.add(view);
+            }
+        }
+
+    }
+
     private boolean onLeftEdgeOfScreen(int x) {
         int currentPage = container.currentPage();
 
@@ -744,40 +782,76 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     }
 
     private void animateGap(int targetLocationInGrid) {
-        int viewAtPosition = targetLocationInGrid;
+        int viewAtPosition = currentViewAtPosition(targetLocationInGrid);
+
         if (viewAtPosition == dragged) {
             return;
         }
-        final View targetView = getChildView(viewAtPosition);
-        final Point draggedViewCoor = getCoorForIndex(dragged);
-        final Point targetViewCoor = getCoorForIndex(viewAtPosition);
-        Collections.swap(views,dragged,viewAtPosition);
-        tellAdapterToSwapDraggedWithTarget(dragged, viewAtPosition);
-        dragged=viewAtPosition;
+        View targetView = getChildView(viewAtPosition);
 
-        /*targetView.layout(draggedViewCoor.x,draggedViewCoor.y,
-                draggedViewCoor.x+targetView.getMeasuredWidth(),draggedViewCoor.y+targetView.getMeasuredHeight());*/
-        animateLayout(draggedViewCoor,targetViewCoor,targetView);
+        Point oldXY = getCoorForIndex(viewAtPosition);
+        Point newXY = getCoorForIndex(newPositions.get(dragged, dragged));
+
+        Point oldOffset = computeTranslationStartDeltaRelativeToRealViewPosition(targetLocationInGrid, viewAtPosition, oldXY);
+        Point newOffset = computeTranslationEndDeltaRelativeToRealViewPosition(oldXY, newXY);
+
+        animateMoveToNewPosition(targetView, oldOffset, newOffset);
+        saveNewPositions(targetLocationInGrid, viewAtPosition);
     }
 
-    private void animateLayout(Point draggedViewCoor,Point targetViewCoor,final View targetView){
-        ValueAnimator animLayout=ValueAnimator.ofObject(new TypeEvaluator() {
-            @Override
-            public Object evaluate(float fraction, Object startValue, Object endValue) {
-                float x=((Point)startValue).x+fraction*(((Point)endValue).x-((Point)startValue).x);
-                float y=((Point)startValue).y+fraction*(((Point)endValue).y-((Point)startValue).y);
-                return new Point((int)x,(int)y);
+    private Point computeTranslationEndDeltaRelativeToRealViewPosition(Point oldXY, Point newXY) {
+        return new Point(newXY.x - oldXY.x, newXY.y - oldXY.y);
+    }
+
+    private Point computeTranslationStartDeltaRelativeToRealViewPosition(int targetLocation, int viewAtPosition, Point oldXY) {
+        Point oldOffset;
+        if (viewWasAlreadyMoved(targetLocation, viewAtPosition)) {
+            Point targetLocationPoint = getCoorForIndex(targetLocation);
+            oldOffset = computeTranslationEndDeltaRelativeToRealViewPosition(oldXY, targetLocationPoint);
+        } else {
+            oldOffset = new Point(0, 0);
+        }
+        return oldOffset;
+    }
+
+    private void saveNewPositions(int targetLocation, int viewAtPosition) {
+        newPositions.put(viewAtPosition, newPositions.get(dragged, dragged));
+        newPositions.put(dragged, targetLocation);
+        tellAdapterToSwapDraggedWithTarget(newPositions.get(dragged, dragged), newPositions.get(viewAtPosition, viewAtPosition));
+    }
+
+    private boolean viewWasAlreadyMoved(int targetLocation, int viewAtPosition) {
+        return viewAtPosition != targetLocation;
+    }
+
+    private void animateMoveToNewPosition(View targetView, Point oldOffset, Point newOffset) {
+        Animation translate = createTranslateAnimation(oldOffset, newOffset);
+        targetView.clearAnimation();
+        targetView.startAnimation(translate);
+    }
+
+    private TranslateAnimation createTranslateAnimation(Point oldOffset, Point newOffset) {
+        TranslateAnimation translate = new TranslateAnimation(Animation.ABSOLUTE, oldOffset.x,
+                Animation.ABSOLUTE, newOffset.x,
+                Animation.ABSOLUTE, oldOffset.y,
+                Animation.ABSOLUTE, newOffset.y);
+        translate.setDuration(ANIMATION_DURATION);
+        translate.setFillEnabled(true);
+        translate.setFillAfter(true);
+        translate.setInterpolator(new AccelerateDecelerateInterpolator());
+        return translate;
+    }
+
+    private int currentViewAtPosition(int targetLocation) {
+        int viewAtPosition = targetLocation;
+        for (int i = 0; i < newPositions.size(); i++) {
+            int value = newPositions.valueAt(i);
+            if (value == targetLocation) {
+                viewAtPosition = newPositions.keyAt(i);
+                break;
             }
-        },targetViewCoor,draggedViewCoor);
-        animLayout.setDuration(DRAGGED_MOVE_ANIMATION_DURATION).addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                Point layoutCoor=(Point)animation.getAnimatedValue();
-                targetView.layout(layoutCoor.x,layoutCoor.y,
-                        layoutCoor.x+targetView.getMeasuredWidth(),layoutCoor.y+targetView.getMeasuredHeight());
-            }
-        });
-        animLayout.start();
+        }
+        return viewAtPosition;
     }
 
     private Point getCoorForIndex(int index) {
@@ -828,6 +902,40 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
 
     private int currentPage() {
         return container.currentPage();
+    }
+
+    private List<View> cleanUnorderedChildren() {
+        List<View> children = saveChildren();
+        removeItemChildren(children);
+        return children;
+    }
+
+    private void addReorderedChildrenToParent(List<View> children) {
+        List<View> reorderedViews = children;
+        for (View view : reorderedViews) {
+            if (view != null) {
+                addView(view);
+            }
+        }
+        views.addAll(children);
+    }
+
+    private List<View> saveChildren() {
+        List<View> children = new ArrayList<View>();
+        for (int i = 0; i < getItemViewCount(); i++) {
+            View child;
+
+            int viewPosition = i;
+            int index = newPositions.indexOfValue(i);
+            if (index >= 0) {
+                viewPosition = newPositions.keyAt(index);
+            }
+            child = getChildView(viewPosition);
+
+            child.clearAnimation();
+            children.add(child);
+        }
+        return children;
     }
 
     private boolean childHasMoved(int position) {
@@ -966,8 +1074,8 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             dragged = positionForView(v);
 
             bringDraggedToFront();
-            animateDragged();
 
+            animateDragged();
             return true;
         }
 
@@ -990,12 +1098,14 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
 
         if(!enableDragAnim)return;
         ScaleAnimation scale = new ScaleAnimation(1f, 1.1f, 1f, 1.1f, displayWidth / 2, ROW_HEIGHT / 2);
-        scale.setDuration(DRAGGED_ZOOM_IN_ANIMATION_DURATION);
+        scale.setDuration(200);
         scale.setFillAfter(true);
         scale.setFillEnabled(true);
 
         if (aViewIsDragged()) {
             View draggedView = getDraggedView();
+//			Log.e("animateDragged", ((TextView)draggedView.findViewWithTag("text")).getText().toString());
+
             draggedView.clearAnimation();
             draggedView.startAnimation(scale);
         }
@@ -1022,6 +1132,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         }else{
             return null;
         }
+
     }
 
     private boolean isPointInsideView(float x, float y, View view) {

@@ -1,12 +1,10 @@
-package com.arcsoft.closeli.draggableviewpager;
+package com.arcsoft.closeli.draggableviewpager.v12;
 
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Point;
-import android.os.Handler;
 import android.util.AttributeSet;
-import android.util.SparseIntArray;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,10 +12,13 @@ import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
-import android.view.animation.TranslateAnimation;
+
+import com.arcsoft.closeli.draggableviewpager.DraggableViewPager;
+import com.arcsoft.closeli.draggableviewpager.DraggableViewPagerAdapter;
+import com.arcsoft.closeli.draggableviewpager.LockableScrollView;
+import com.arcsoft.closeli.draggableviewpager.ViewPagerContainer;
 
 import java.util.ArrayList;
 import java.util.Collections;

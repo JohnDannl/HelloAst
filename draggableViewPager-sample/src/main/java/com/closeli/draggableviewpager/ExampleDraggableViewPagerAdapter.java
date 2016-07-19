@@ -129,6 +129,7 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
     @Override
     public void swapItems(int pageIndex, int itemIndexA, int itemIndexB) {
         getPage(pageIndex).swapItems(itemIndexA, itemIndexB);
+        printLayout();
     }
 
     @Override
@@ -143,6 +144,7 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
             landingPage.addItem(item);
             startpage.addItem(itemIndex,landingPageLastItem);
         }
+        printLayout();
     }
 
     @Override
@@ -157,6 +159,7 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
             landingPage.addItem(0,item);
             startpage.addItem(itemIndex,landingPageFirstItem);
         }
+        printLayout();
     }
 
     @Override
@@ -177,6 +180,6 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
 
     @Override
     public boolean disableZoomAnimationsOnChangePage() {
-        return true;
+        return false;
     }
 }
