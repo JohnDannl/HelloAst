@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
                 float bottom=btn_anim1.getBottom();
                 int width=btn_anim1.getMeasuredWidth();
                 int height=btn_anim1.getMeasuredHeight();
-                scale = new ScaleAnimation(1.0f, 1.5f, 1.0f, 1.5f, Animation.ABSOLUTE,displayWidth, Animation.ABSOLUTE, height);
+                scale = new ScaleAnimation(1.0f, 1.5f, 1.0f, 1.5f, Animation.ABSOLUTE,0, Animation.ABSOLUTE,0);
                 scale.setDuration(200);
 //        scale.setRepeatMode(Animation.REVERSE);
 //        scale.setRepeatCount(Animation.INFINITE);
