@@ -1,4 +1,4 @@
-package com.arcsoft.closeli.draggableviewpager;
+package com.arcsoft.closeli.draggableviewpager.v13;
 
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
@@ -15,6 +15,11 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 
+import com.arcsoft.closeli.draggableviewpager.DraggableViewPager;
+import com.arcsoft.closeli.draggableviewpager.DraggableViewPagerAdapter;
+import com.arcsoft.closeli.draggableviewpager.LockableScrollView;
+import com.arcsoft.closeli.draggableviewpager.ViewPagerContainer;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,7 +31,6 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     public static int ROW_HEIGHT = 300;
     private static int DRAGGED_MOVE_ANIMATION_DURATION = 200;
     private static int DRAGGED_ZOOM_IN_ANIMATION_DURATION = 200;
-    private static int FULLSCREEN_ANIMATION_DURATION=200;
     private static final long DOUBLE_CLICK_INTERVAL = 250; // in millis
     private boolean hasDoubleClick=false;
     private long lastClickTime=0L;
@@ -375,15 +379,13 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         if(!hasFullScreen&&clickedView != null&&itemPosition!=null){
             fullScreenItem =childIndex;
             //extendToFullScreen();
-            //extendToFullScreenWithViewAnimation();
-            extendToFullScreenWithPropertyAnimation();
+            extendToFullScreenWithAnimation();
             if(onItemClickListener != null&&clickedView != null&&itemPosition!=null){
                 onItemClickListener.onFullScreenChange(clickedView, itemPosition.pageIndex, itemPosition.itemIndex,true);
             }
         }else{
             //shrinkToNormalScreen();
-            //shrinkToNormalScreenWithViewAnimation();
-            shrinkToNormalScreenWithPropertyAnimation();
+            shrinkToNormalScreenWithAnimation();
             ItemPosition shrinkItemPosition=itemInformationAtPosition(fullScreenItem);
             View shrinkItemView = getChildView(fullScreenItem);
             if(onItemClickListener != null&&shrinkItemView != null&&shrinkItemPosition!=null){
@@ -465,7 +467,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         lockableScrollView.setScrollingEnabled(true);
         container.enableScroll();
     }
-    private void extendToFullScreenWithViewAnimation(){
+    private void extendToFullScreenWithAnimation(){
         container.disableScroll();
         lockableScrollView.setScrollingEnabled(false);
 
@@ -497,14 +499,14 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
                     break;
             }
             ScaleAnimation scale = new ScaleAnimation(1f, 2.0f, 1f, 2.0f, Animation.ABSOLUTE,left,Animation.ABSOLUTE,top);
-            scale.setDuration(FULLSCREEN_ANIMATION_DURATION);
+            scale.setDuration(200);
             scale.setFillAfter(true);
             scale.setFillEnabled(true);
             fullView.clearAnimation();
             fullView.startAnimation(scale);
         }
     }
-    private void shrinkToNormalScreenWithViewAnimation(){
+    private void shrinkToNormalScreenWithAnimation(){
         if(fullScreenItem!=-1){
             View fullView=getChildView(fullScreenItem);
             //fullView.clearAnimation();
@@ -533,7 +535,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
                     break;
             }
             ScaleAnimation scale = new ScaleAnimation(2f, 1.0f, 2f, 1.0f, Animation.ABSOLUTE,left,Animation.ABSOLUTE,top);
-            scale.setDuration(FULLSCREEN_ANIMATION_DURATION);
+            scale.setDuration(200);
             scale.setFillAfter(true);
             scale.setFillEnabled(true);
             fullView.clearAnimation();
@@ -542,77 +544,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         lockableScrollView.setScrollingEnabled(true);
         container.enableScroll();
     }
-    private void extendToFullScreenWithPropertyAnimation(){
-        container.disableScroll();
-        lockableScrollView.setScrollingEnabled(false);
 
-        if (fullScreenItem != -1) {
-            View fullView=getChildView(fullScreenItem);
-            bringFullScreenItemToFront();
-            int width=fullView.getMeasuredWidth();
-            int height=fullView.getMeasuredHeight();
-            int left=0;
-            int top=0;
-            switch(itemInformationAtPosition(fullScreenItem).itemIndex){
-                case 0:
-                    left=0;
-                    top=0;
-                    break;
-                case 1:
-                    left=width;
-                    top=0;
-                    break;
-                case 2:
-                    left=0;
-                    top=height;
-                    break;
-                case 3:
-                    left=width;
-                    top=height;
-                    break;
-                default:
-                    break;
-            }
-            fullView.setPivotX(left);
-            fullView.setPivotY(top);
-            fullView.animate().setDuration(FULLSCREEN_ANIMATION_DURATION).scaleX(2.0f).scaleY(2.0f);
-        }
-    }
-    private void shrinkToNormalScreenWithPropertyAnimation(){
-        if(fullScreenItem!=-1){
-            View fullView=getChildView(fullScreenItem);
-            //fullView.clearAnimation();
-            int width=fullView.getWidth();
-            int height=fullView.getHeight();
-            int left=0;
-            int top=0;
-            switch(itemInformationAtPosition(fullScreenItem).itemIndex){
-                case 0:
-                    left=0;
-                    top=0;
-                    break;
-                case 1:
-                    left=width;
-                    top=0;
-                    break;
-                case 2:
-                    left=0;
-                    top=height;
-                    break;
-                case 3:
-                    left=width;
-                    top=height;
-                    break;
-                default:
-                    break;
-            }
-            fullView.setPivotX(left);
-            fullView.setPivotY(top);
-            fullView.animate().setDuration(FULLSCREEN_ANIMATION_DURATION).scaleX(1.0f).scaleY(1.0f);
-        }
-        lockableScrollView.setScrollingEnabled(true);
-        container.enableScroll();
-    }
     private void reorderChildren() {
         Point targetCoor=getCoorForIndex(dragged);
         View targetView=getChildView(dragged);
