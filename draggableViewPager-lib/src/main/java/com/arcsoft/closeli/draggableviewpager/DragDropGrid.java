@@ -587,6 +587,31 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
                 ViewGroup.LayoutParams layoutParam=fullView.getLayoutParams();
                 layoutParam.width=tmpLayoutParam.width;
                 layoutParam.height=tmpLayoutParam.height;
+                int page=currentPage();
+                int pageWidth=displayWidth;
+                int left=page*pageWidth;
+                int top=0;
+                switch(getItemPositionOf(fullScreenItem).itemIndex){
+                    case 0:
+                        left=page*pageWidth;
+                        top=0;
+                        break;
+                    case 1:
+                        left=page*pageWidth + pageWidth-layoutParam.width;
+                        top=0;
+                        break;
+                    case 2:
+                        left=page*pageWidth;
+                        top=displayHeight-layoutParam.height;
+                        break;
+                    case 3:
+                        left=page*pageWidth + pageWidth-layoutParam.width;
+                        top=displayHeight-layoutParam.height;
+                        break;
+                    default:
+                        break;
+                }
+                fullView.layout(left,top,left+layoutParam.width,top+layoutParam.height);
                 fullView.setLayoutParams(layoutParam);
             }
         });
@@ -1066,6 +1091,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             left = computePageEdgeXCoor(child);
             top = lastTouchY - (child.getMeasuredHeight() / 2);
         } else if(position == fullScreenItem){
+            android.util.Log.d("XXXX","w:"+child.getMeasuredWidth()+",h:"+child.getMeasuredHeight());
             switch(getItemPositionOf(fullScreenItem).itemIndex){
                 case 0:
                     left=page*pageWidth;
