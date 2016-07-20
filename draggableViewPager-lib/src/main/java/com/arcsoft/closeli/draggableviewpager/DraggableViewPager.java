@@ -193,7 +193,7 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
     public void setItemDoubleClickFullScreenEnabled(boolean enabled){
         grid.setItemDoubleClickFullScreenEnabled(enabled);
     }
-    public void setOnItemAnimationListener(DragDropGrid.IDragDropGridItemAnimationListener listener){
+    public void setOnItemAnimationListener(DragDropGrid.OnDragDropGridItemAnimationListener listener){
         grid.setOnItemAnimationListener(listener);
     }
     /**

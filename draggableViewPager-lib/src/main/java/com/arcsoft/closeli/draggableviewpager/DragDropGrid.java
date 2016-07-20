@@ -42,7 +42,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     private static int EGDE_DETECTION_MARGIN = 35;
     private DraggableViewPagerAdapter adapter;
     private OnDragDropGridItemClickListener onItemClickListener = null;
-    private IDragDropGridItemAnimationListener mItemAnimationListener=null;
+    private OnDragDropGridItemAnimationListener mItemAnimationListener=null;
     private ViewPagerContainer container;
     private List<View> views = new ArrayList<View>();
     private int gridPageWidth = 0;
@@ -218,7 +218,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         onItemClickListener = l;
     }
 
-    public void setOnItemAnimationListener(IDragDropGridItemAnimationListener listener){
+    public void setOnItemAnimationListener(OnDragDropGridItemAnimationListener listener){
         mItemAnimationListener=listener;
     }
     public void setDragEnabled(boolean enabled){
@@ -1276,7 +1276,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         public void onDoubleClick(View view, int page, int item);
         public void onFullScreenChange(View view, int page, int item, boolean isFullScreen);
     }
-    public interface IDragDropGridItemAnimationListener{
+    public interface OnDragDropGridItemAnimationListener {
         public void onDraggedViewAnimationStart(View view, int page, int item);
         public void onDraggedViewAnimationEnd(View view, int page, int item);
         public void onFullScreenChangeAnimationStart(View view,int page,int item,boolean toFullScreen);

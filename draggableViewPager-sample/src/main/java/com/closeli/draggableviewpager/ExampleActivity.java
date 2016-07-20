@@ -100,7 +100,7 @@ public class ExampleActivity extends Activity  {
                 if(isFullScreen)hideNavBar();
             }
         });
-        mDrgVpg.setOnItemAnimationListener(new DragDropGrid.IDragDropGridItemAnimationListener() {
+        mDrgVpg.setOnItemAnimationListener(new DragDropGrid.OnDragDropGridItemAnimationListener() {
             @Override
             public void onDraggedViewAnimationStart(View view, int page, int item) {
                 //android.util.Log.d("XXXX","drag start page:"+page+",item:"+item);
