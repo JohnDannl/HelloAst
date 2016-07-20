@@ -100,6 +100,27 @@ public class ExampleActivity extends Activity  {
                 if(isFullScreen)hideNavBar();
             }
         });
+        mDrgVpg.setOnItemAnimationListener(new DragDropGrid.IDragDropGridItemAnimationListener() {
+            @Override
+            public void onDraggedViewAnimationStart(View view, int page, int item) {
+                //android.util.Log.d("XXXX","drag start page:"+page+",item:"+item);
+            }
+
+            @Override
+            public void onDraggedViewAnimationEnd(View view, int page, int item) {
+                //android.util.Log.d("XXXX","drag end page:"+page+",item:"+item);
+            }
+
+            @Override
+            public void onFullScreenChangeAnimationStart(View view, int page, int item, boolean toFullScreen) {
+                //android.util.Log.d("XXXX","fullscreen start page:"+page+",item:"+item);
+            }
+
+            @Override
+            public void onFullScreenChangeAnimationEnd(View view, int page, int item, boolean toFullScreen) {
+                //android.util.Log.d("XXXX","fullscreen end page:"+page+",item:"+item);
+            }
+        });
         mDrgVpg.setOnPageChangedListener(new OnPageChangedListener() {
             @Override
             public void onPageChanged(DraggableViewPager draggableViewPager, int newPageNumber) {
@@ -110,6 +131,7 @@ public class ExampleActivity extends Activity  {
         mDrgVpg.setBackgroundColor(Color.BLACK);
 
         mDrgVpg.setDragEnabled(true);
+        mDrgVpg.setItemDoubleClickFullScreenEnabled(true);
 //        mDrgVpg.setPageScrollAnimationEnabled(true);
 //        mDrgVpg.setPageScrollSpeed(500);
         mDrgVpg.setPageScrollAnimationEnabled(false);

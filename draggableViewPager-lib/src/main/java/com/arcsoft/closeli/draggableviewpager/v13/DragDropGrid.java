@@ -39,6 +39,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     private boolean hasFullScreen=false;
     private boolean enableDrag=true;
     private boolean enableDragAnim=false;
+    private boolean enableFullScreen=false;
     private static final boolean noStatusBar=true;
 
     private static int EGDE_DETECTION_MARGIN = 35;
@@ -227,6 +228,10 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         enableDragAnim=enabled;
     }
 
+    public void setItemDoubleClickFullScreenEnabled(boolean enabled){
+        enableFullScreen=enabled;
+    }
+
     private void addChildViews() {
         for (int page = 0; page < adapter.pageCount(); page++) {
             for (int item = 0; item < adapter.itemCountInPage(page); item++) {
@@ -333,7 +338,9 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             final int childIndex=getTargetAtCoor((int) event.getX(), (int) event.getY());
             if(clickTime-lastClickTime<=DOUBLE_CLICK_INTERVAL&&childIndex==lastClickItem){
                 hasDoubleClick=true;
-                onItemDoubleClick(childIndex);
+                if(enableFullScreen){
+                    onItemDoubleClick(childIndex);
+                }
             }else{
                 hasDoubleClick=false;
                 postDelayed(new Runnable() {
@@ -410,7 +417,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     }
 
     public void exitFullScreen() {
-        if (fullScreenItem >= 0) {
+        if (fullScreenItem >= 0 && enableFullScreen) {
             onItemDoubleClick(fullScreenItem);
         }
     }

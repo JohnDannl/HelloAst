@@ -1,5 +1,6 @@
 package com.arcsoft.closeli.draggableviewpager;
 
+import android.animation.Animator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
@@ -26,7 +27,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     public static int ROW_HEIGHT = 300;
     private static int DRAGGED_MOVE_ANIMATION_DURATION = 200;
     private static int DRAGGED_ZOOM_IN_ANIMATION_DURATION = 200;
-    private static int FULLSCREEN_ANIMATION_DURATION=200;
+    private static int FULLSCREEN_ANIMATION_DURATION=100;
     private static final long DOUBLE_CLICK_INTERVAL = 250; // in millis
     private boolean hasDoubleClick=false;
     private long lastClickTime=0L;
@@ -35,11 +36,13 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     private boolean hasFullScreen=false;
     private boolean enableDrag=true;
     private boolean enableDragAnim=false;
+    private boolean enableFullScreen=false;
     private static final boolean noStatusBar=true;
 
     private static int EGDE_DETECTION_MARGIN = 35;
     private DraggableViewPagerAdapter adapter;
     private OnDragDropGridItemClickListener onItemClickListener = null;
+    private IDragDropGridItemAnimationListener mItemAnimationListener=null;
     private ViewPagerContainer container;
     private List<View> views = new ArrayList<View>();
     private int gridPageWidth = 0;
@@ -215,12 +218,19 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         onItemClickListener = l;
     }
 
+    public void setOnItemAnimationListener(IDragDropGridItemAnimationListener listener){
+        mItemAnimationListener=listener;
+    }
     public void setDragEnabled(boolean enabled){
         this.enableDrag=enabled;
     }
 
     public void setDragZoomInAnimEnabled(boolean enabled){
         enableDragAnim=enabled;
+    }
+
+    public void setItemDoubleClickFullScreenEnabled(boolean enabled){
+        enableFullScreen=enabled;
     }
 
     private void addChildViews() {
@@ -329,7 +339,9 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             final int childIndex=getTargetAtCoor((int) event.getX(), (int) event.getY());
             if(clickTime-lastClickTime<=DOUBLE_CLICK_INTERVAL&&childIndex==lastClickItem){
                 hasDoubleClick=true;
-                onItemDoubleClick(childIndex);
+                if(enableFullScreen){
+                    onItemDoubleClick(childIndex);
+                }
             }else{
                 hasDoubleClick=false;
                 postDelayed(new Runnable() {
@@ -346,7 +358,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         } else {
             cancelAnimations();
             cancelEdgeTimer();
-            reorderChildren();
+            restoreDraggedItem();
 
             lockableScrollView.setScrollingEnabled(true);
             container.enableScroll();
@@ -358,7 +370,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     }
     private void onItemClick(int childIndex){
         if (onItemClickListener != null) {
-            ItemPosition itemPosition=itemInformationAtPosition(childIndex);
+            ItemPosition itemPosition= getItemPositionOf(childIndex);
             View clickedView = getChildView(childIndex);
             if (clickedView != null&&itemPosition!=null){
                 onItemClickListener.onClick(clickedView,itemPosition.pageIndex,itemPosition.itemIndex);
@@ -369,29 +381,30 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         }
     }
     private void onItemDoubleClick(int childIndex){
-        ItemPosition itemPosition=itemInformationAtPosition(childIndex);
+        ItemPosition itemPosition= getItemPositionOf(childIndex);
         View clickedView = getChildView(childIndex);
 
         if(!hasFullScreen&&clickedView != null&&itemPosition!=null){
             fullScreenItem =childIndex;
+            hasFullScreen=true;
             //extendToFullScreen();
             //extendToFullScreenWithViewAnimation();
-            extendToFullScreenWithPropertyAnimation();
+            extendToFullScreenWithValueAnimation();
             if(onItemClickListener != null&&clickedView != null&&itemPosition!=null){
                 onItemClickListener.onFullScreenChange(clickedView, itemPosition.pageIndex, itemPosition.itemIndex,true);
             }
         }else{
             //shrinkToNormalScreen();
             //shrinkToNormalScreenWithViewAnimation();
-            shrinkToNormalScreenWithPropertyAnimation();
-            ItemPosition shrinkItemPosition=itemInformationAtPosition(fullScreenItem);
+            shrinkToNormalScreenWithValueAnimation();
+            ItemPosition shrinkItemPosition= getItemPositionOf(fullScreenItem);
             View shrinkItemView = getChildView(fullScreenItem);
             if(onItemClickListener != null&&shrinkItemView != null&&shrinkItemPosition!=null){
                 onItemClickListener.onFullScreenChange(shrinkItemView, shrinkItemPosition.pageIndex, shrinkItemPosition.itemIndex,false);
             }
             fullScreenItem = -1;
+            hasFullScreen=false;
         }
-        hasFullScreen=!hasFullScreen;
 
         if(onItemClickListener != null){
             if (clickedView != null&&itemPosition!=null) {
@@ -408,7 +421,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     }
 
     public void exitFullScreen() {
-        if (fullScreenItem >= 0) {
+        if (fullScreenItem >= 0 && enableFullScreen) {
             onItemDoubleClick(fullScreenItem);
         }
     }
@@ -476,7 +489,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             int height=fullView.getMeasuredHeight();
             int left=0;
             int top=0;
-            switch(itemInformationAtPosition(fullScreenItem).itemIndex){
+            switch(getItemPositionOf(fullScreenItem).itemIndex){
                 case 0:
                     left=0;
                     top=0;
@@ -512,7 +525,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             int height=fullView.getMeasuredHeight();
             int left=0;
             int top=0;
-            switch(itemInformationAtPosition(fullScreenItem).itemIndex){
+            switch(getItemPositionOf(fullScreenItem).itemIndex){
                 case 0:
                     left=0;
                     top=0;
@@ -542,86 +555,93 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         lockableScrollView.setScrollingEnabled(true);
         container.enableScroll();
     }
-    private void extendToFullScreenWithPropertyAnimation(){
+    private void extendToFullScreenWithValueAnimation(){
         container.disableScroll();
         lockableScrollView.setScrollingEnabled(false);
 
         if (fullScreenItem != -1) {
-            View fullView=getChildView(fullScreenItem);
+            final View fullView=getChildView(fullScreenItem);
             bringFullScreenItemToFront();
-            int width=fullView.getMeasuredWidth();
-            int height=fullView.getMeasuredHeight();
-            int left=0;
-            int top=0;
-            switch(itemInformationAtPosition(fullScreenItem).itemIndex){
-                case 0:
-                    left=0;
-                    top=0;
-                    break;
-                case 1:
-                    left=width;
-                    top=0;
-                    break;
-                case 2:
-                    left=0;
-                    top=height;
-                    break;
-                case 3:
-                    left=width;
-                    top=height;
-                    break;
-                default:
-                    break;
-            }
-            fullView.setPivotX(left);
-            fullView.setPivotY(top);
-            fullView.animate().setDuration(FULLSCREEN_ANIMATION_DURATION).scaleX(2.0f).scaleY(2.0f);
+            final ViewGroup.LayoutParams layoutAnimateScale=fullView.getLayoutParams();
+            final ViewGroup.LayoutParams newLayoutParam=new ViewGroup.LayoutParams(displayWidth,displayHeight);
+            layoutAnimateScale(layoutAnimateScale,newLayoutParam,fullView,fullScreenItem,true);
         }
     }
-    private void shrinkToNormalScreenWithPropertyAnimation(){
+    private void layoutAnimateScale( ViewGroup.LayoutParams oldLayoutParam, ViewGroup.LayoutParams newLayoutParam,
+                                     final View fullView,final int fullScreenItem,final boolean toFullScreen){
+        ValueAnimator layoutAnim=ValueAnimator.ofObject(new TypeEvaluator() {
+            @Override
+            public Object evaluate(float fraction, Object startValue, Object endValue) {
+                float width=((ViewGroup.LayoutParams)startValue).width
+                        +fraction*(((ViewGroup.LayoutParams)endValue).width-((ViewGroup.LayoutParams)startValue).width);
+                float height=((ViewGroup.LayoutParams)startValue).height
+                        +fraction*(((ViewGroup.LayoutParams)endValue).height-((ViewGroup.LayoutParams)startValue).height);
+                ViewGroup.LayoutParams tmpLayoutParam=new ViewGroup.LayoutParams((int)width,(int)height);
+                return tmpLayoutParam;
+            }
+        },oldLayoutParam,newLayoutParam);
+        layoutAnim.setDuration(FULLSCREEN_ANIMATION_DURATION).addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                ViewGroup.LayoutParams tmpLayoutParam=(ViewGroup.LayoutParams)animation.getAnimatedValue();
+                ViewGroup.LayoutParams layoutParam=fullView.getLayoutParams();
+                layoutParam.width=tmpLayoutParam.width;
+                layoutParam.height=tmpLayoutParam.height;
+                fullView.setLayoutParams(layoutParam);
+            }
+        });
+        layoutAnim.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                ItemPosition itemPos= getItemPositionOf(fullScreenItem);
+                if(mItemAnimationListener!=null&&itemPos!=null){
+                    mItemAnimationListener.onFullScreenChangeAnimationStart(fullView,itemPos.pageIndex,itemPos.itemIndex,toFullScreen);
+                }
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                ItemPosition itemPos= getItemPositionOf(fullScreenItem);
+                if(mItemAnimationListener!=null&&itemPos!=null){
+                    mItemAnimationListener.onFullScreenChangeAnimationEnd(fullView,itemPos.pageIndex,itemPos.itemIndex,toFullScreen);
+                }
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        layoutAnim.start();
+    }
+    private void shrinkToNormalScreenWithValueAnimation(){
         if(fullScreenItem!=-1){
             View fullView=getChildView(fullScreenItem);
-            //fullView.clearAnimation();
-            int width=fullView.getWidth();
-            int height=fullView.getHeight();
-            int left=0;
-            int top=0;
-            switch(itemInformationAtPosition(fullScreenItem).itemIndex){
-                case 0:
-                    left=0;
-                    top=0;
-                    break;
-                case 1:
-                    left=width;
-                    top=0;
-                    break;
-                case 2:
-                    left=0;
-                    top=height;
-                    break;
-                case 3:
-                    left=width;
-                    top=height;
-                    break;
-                default:
-                    break;
-            }
-            fullView.setPivotX(left);
-            fullView.setPivotY(top);
-            fullView.animate().setDuration(FULLSCREEN_ANIMATION_DURATION).scaleX(1.0f).scaleY(1.0f);
+            final ViewGroup.LayoutParams layoutAnimateScale=fullView.getLayoutParams();
+            final ViewGroup.LayoutParams newLayoutParam=new ViewGroup.LayoutParams(columnWidthSize,rowHeightSize);
+            layoutAnimateScale(layoutAnimateScale,newLayoutParam,fullView,fullScreenItem,false);
         }
         lockableScrollView.setScrollingEnabled(true);
         container.enableScroll();
     }
-    private void reorderChildren() {
+    private void restoreDraggedItem() {
         Point targetCoor=getCoorForIndex(dragged);
         View targetView=getChildView(dragged);
         targetView.layout(targetCoor.x,targetCoor.y,
                 targetCoor.x+targetView.getMeasuredWidth(),targetCoor.y+targetView.getMeasuredHeight());
+        if(mItemAnimationListener!=null){
+            ItemPosition itemPos=getItemPositionOf(dragged);
+            mItemAnimationListener.onDraggedViewAnimationEnd(targetView,itemPos.pageIndex,itemPos.itemIndex);
+        }
     }
 
     private void tellAdapterDraggedIsDeleted(Integer newDraggedPosition) {
-        ItemPosition position = itemInformationAtPosition(newDraggedPosition);
+        ItemPosition position = getItemPositionOf(newDraggedPosition);
         adapter.deleteItem(position.pageIndex, position.itemIndex);
     }
 
@@ -777,7 +797,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         final Point targetViewCoor = getCoorForIndex(targetIndex);
         Collections.swap(views,targetIndex,dragged);
         dragged=targetIndex;
-        animateLayout(draggedViewCoor,targetViewCoor,targetView);
+        animateMoveView(draggedViewCoor,targetViewCoor,targetView);
     }
 
     private void moveDraggedToNextPage() {
@@ -789,7 +809,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         final Point targetViewCoor = getCoorForIndex(targetIndex);
         Collections.swap(views,targetIndex,dragged);
         dragged=targetIndex;
-        animateLayout(draggedViewCoor,targetViewCoor,targetView);
+        animateMoveView(draggedViewCoor,targetViewCoor,targetView);
     }
 
     private int findTheIndexOfFirstElementInCurrentPage() {
@@ -871,11 +891,11 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
 
         /*targetView.layout(draggedViewCoor.x,draggedViewCoor.y,
                 draggedViewCoor.x+targetView.getMeasuredWidth(),draggedViewCoor.y+targetView.getMeasuredHeight());*/
-        animateLayout(draggedViewCoor,targetViewCoor,targetView);
+        animateMoveView(draggedViewCoor,targetViewCoor,targetView);
     }
 
-    private void animateLayout(Point draggedViewCoor,Point targetViewCoor,final View targetView){
-        ValueAnimator animLayout=ValueAnimator.ofObject(new TypeEvaluator() {
+    private void animateMoveView(Point draggedViewCoor, Point targetViewCoor, final View targetView){
+        ValueAnimator animMove=ValueAnimator.ofObject(new TypeEvaluator() {
             @Override
             public Object evaluate(float fraction, Object startValue, Object endValue) {
                 float x=((Point)startValue).x+fraction*(((Point)endValue).x-((Point)startValue).x);
@@ -883,7 +903,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
                 return new Point((int)x,(int)y);
             }
         },targetViewCoor,draggedViewCoor);
-        animLayout.setDuration(DRAGGED_MOVE_ANIMATION_DURATION).addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        animMove.setDuration(DRAGGED_MOVE_ANIMATION_DURATION).addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 Point layoutCoor=(Point)animation.getAnimatedValue();
@@ -891,11 +911,11 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
                         layoutCoor.x+targetView.getMeasuredWidth(),layoutCoor.y+targetView.getMeasuredHeight());
             }
         });
-        animLayout.start();
+        animMove.start();
     }
 
     private Point getCoorForIndex(int index) {
-        ItemPosition page = itemInformationAtPosition(index);
+        ItemPosition page = getItemPositionOf(index);
 
         int row = page.itemIndex / computedColumnCount;
         int col = page.itemIndex - (row * computedColumnCount);
@@ -1045,10 +1065,28 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         if (position == dragged && lastTouchOnEdge()) {
             left = computePageEdgeXCoor(child);
             top = lastTouchY - (child.getMeasuredHeight() / 2);
-        }/* else if(position == fullScreenItem){
-            left=(page * pageWidth);
-            top=0;
-        }*/else {
+        } else if(position == fullScreenItem){
+            switch(getItemPositionOf(fullScreenItem).itemIndex){
+                case 0:
+                    left=page*pageWidth;
+                    top=0;
+                    break;
+                case 1:
+                    left=page*pageWidth + pageWidth-child.getMeasuredWidth();
+                    top=0;
+                    break;
+                case 2:
+                    left=page*pageWidth;
+                    top=displayHeight-child.getMeasuredHeight();
+                    break;
+                case 3:
+                    left=page*pageWidth + pageWidth-child.getMeasuredWidth();
+                    top=displayHeight-child.getMeasuredHeight();
+                    break;
+                default:
+                    break;
+            }
+        }else {
             left = (page * pageWidth) + (col * columnWidthSize) + ((columnWidthSize - child.getMeasuredWidth()) / 2);
             top = (row * rowHeightSize) + ((rowHeightSize - child.getMeasuredHeight()) / 2);
         }
@@ -1102,6 +1140,10 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
 
     private void animateDragged() {
 
+        if(mItemAnimationListener!=null){
+            ItemPosition itemPos=getItemPositionOf(dragged);
+            mItemAnimationListener.onDraggedViewAnimationStart(getChildView(dragged),itemPos.pageIndex,itemPos.itemIndex);
+        }
         if(!enableDragAnim)return;
         ScaleAnimation scale = new ScaleAnimation(1f, 1.1f, 1f, 1.1f, displayWidth / 2, ROW_HEIGHT / 2);
         scale.setDuration(DRAGGED_ZOOM_IN_ANIMATION_DURATION);
@@ -1177,7 +1219,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         return -1;
     }
 
-    private ItemPosition itemInformationAtPosition(int position) {
+    private ItemPosition getItemPositionOf(int position) {
         int currentGlobalIndex = 0;
         for (int currentPageIndex = 0; currentPageIndex < adapter.pageCount(); currentPageIndex++) {
             int itemCount = adapter.itemCountInPage(currentPageIndex);
@@ -1185,26 +1227,32 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
                 currentGlobalIndex+=itemCount;
                 continue;
             }
-            return new ItemPosition(currentPageIndex,position-currentGlobalIndex);
+            for(int itemIndex=0;itemIndex<itemCount;itemIndex++){
+                if(currentGlobalIndex==position){
+                    return new ItemPosition(currentPageIndex,itemIndex);
+                }
+                currentGlobalIndex++;
+            }
+
         }
         return null;
     }
 
     private void tellAdapterToSwapDraggedWithTarget(int dragged, int target) {
-        ItemPosition draggedItemPositionInPage = itemInformationAtPosition(dragged);
-        ItemPosition targetItemPositionInPage = itemInformationAtPosition(target);
+        ItemPosition draggedItemPositionInPage = getItemPositionOf(dragged);
+        ItemPosition targetItemPositionInPage = getItemPositionOf(target);
         if (draggedItemPositionInPage != null && targetItemPositionInPage != null) {
             adapter.swapItems(draggedItemPositionInPage.pageIndex, draggedItemPositionInPage.itemIndex, targetItemPositionInPage.itemIndex);
         }
     }
 
     private void tellAdapterToMoveItemToPreviousPage(int itemIndex) {
-        ItemPosition itemPosition = itemInformationAtPosition(itemIndex);
+        ItemPosition itemPosition = getItemPositionOf(itemIndex);
         adapter.moveItemToPreviousPage(itemPosition.pageIndex, itemPosition.itemIndex);
     }
 
     private void tellAdapterToMoveItemToNextPage(int itemIndex) {
-        ItemPosition itemPosition = itemInformationAtPosition(itemIndex);
+        ItemPosition itemPosition = getItemPositionOf(itemIndex);
         adapter.moveItemToNextPage(itemPosition.pageIndex, itemPosition.itemIndex);
     }
 
@@ -1227,5 +1275,11 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         public void onClick(View view, int page, int item);
         public void onDoubleClick(View view, int page, int item);
         public void onFullScreenChange(View view, int page, int item, boolean isFullScreen);
+    }
+    public interface IDragDropGridItemAnimationListener{
+        public void onDraggedViewAnimationStart(View view, int page, int item);
+        public void onDraggedViewAnimationEnd(View view, int page, int item);
+        public void onFullScreenChangeAnimationStart(View view,int page,int item,boolean toFullScreen);
+        public void onFullScreenChangeAnimationEnd(View view,int page,int item,boolean toFullScreen);
     }
 }

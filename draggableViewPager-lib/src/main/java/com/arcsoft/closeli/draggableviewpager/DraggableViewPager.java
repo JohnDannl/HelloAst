@@ -190,6 +190,12 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
     public void setPageScrollAnimationEnabled(boolean enabled){
         this.isPageScrollAnimationEnabled=enabled;
     }
+    public void setItemDoubleClickFullScreenEnabled(boolean enabled){
+        grid.setItemDoubleClickFullScreenEnabled(enabled);
+    }
+    public void setOnItemAnimationListener(DragDropGrid.IDragDropGridItemAnimationListener listener){
+        grid.setOnItemAnimationListener(listener);
+    }
     /**
      * set page scroll time in millisecond if scroll animation is enabled,default:500ms
      * @param milliSeconds
