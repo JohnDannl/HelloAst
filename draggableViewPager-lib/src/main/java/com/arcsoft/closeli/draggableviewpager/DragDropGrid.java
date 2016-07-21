@@ -402,8 +402,8 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             if(onItemClickListener != null&&shrinkItemView != null&&shrinkItemPosition!=null){
                 onItemClickListener.onFullScreenChange(shrinkItemView, shrinkItemPosition.pageIndex, shrinkItemPosition.itemIndex,false);
             }
-            fullScreenItem = -1;
-            hasFullScreen=false;
+            //fullScreenItem = -1;      // these two lines should execute after the animation finished
+            //hasFullScreen=false;
         }
 
         if(onItemClickListener != null){
@@ -562,13 +562,13 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         if (fullScreenItem != -1) {
             final View fullView=getChildView(fullScreenItem);
             bringFullScreenItemToFront();
-            final ViewGroup.LayoutParams layoutAnimateScale=fullView.getLayoutParams();
+            final ViewGroup.LayoutParams oldLayoutParam=fullView.getLayoutParams();
             final ViewGroup.LayoutParams newLayoutParam=new ViewGroup.LayoutParams(displayWidth,displayHeight);
-            layoutAnimateScale(layoutAnimateScale,newLayoutParam,fullView,fullScreenItem,true);
+            layoutAnimateScale(oldLayoutParam,newLayoutParam,fullView,true);
         }
     }
     private void layoutAnimateScale( ViewGroup.LayoutParams oldLayoutParam, ViewGroup.LayoutParams newLayoutParam,
-                                     final View fullView,final int fullScreenItem,final boolean toFullScreen){
+                                     final View fullView,final boolean toFullScreen){
         ValueAnimator layoutAnim=ValueAnimator.ofObject(new TypeEvaluator() {
             @Override
             public Object evaluate(float fraction, Object startValue, Object endValue) {
@@ -587,31 +587,6 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
                 ViewGroup.LayoutParams layoutParam=fullView.getLayoutParams();
                 layoutParam.width=tmpLayoutParam.width;
                 layoutParam.height=tmpLayoutParam.height;
-                int page=currentPage();
-                int pageWidth=displayWidth;
-                int left=page*pageWidth;
-                int top=0;
-                switch(getItemPositionOf(fullScreenItem).itemIndex){
-                    case 0:
-                        left=page*pageWidth;
-                        top=0;
-                        break;
-                    case 1:
-                        left=page*pageWidth + pageWidth-layoutParam.width;
-                        top=0;
-                        break;
-                    case 2:
-                        left=page*pageWidth;
-                        top=displayHeight-layoutParam.height;
-                        break;
-                    case 3:
-                        left=page*pageWidth + pageWidth-layoutParam.width;
-                        top=displayHeight-layoutParam.height;
-                        break;
-                    default:
-                        break;
-                }
-                fullView.layout(left,top,left+layoutParam.width,top+layoutParam.height);
                 fullView.setLayoutParams(layoutParam);
             }
         });
@@ -630,6 +605,10 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
                 if(mItemAnimationListener!=null&&itemPos!=null){
                     mItemAnimationListener.onFullScreenChangeAnimationEnd(fullView,itemPos.pageIndex,itemPos.itemIndex,toFullScreen);
                 }
+                if(!toFullScreen){
+                    fullScreenItem = -1;      // these two lines should execute after the animation finished
+                    hasFullScreen=false;
+                }
             }
 
             @Override
@@ -647,9 +626,9 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     private void shrinkToNormalScreenWithValueAnimation(){
         if(fullScreenItem!=-1){
             View fullView=getChildView(fullScreenItem);
-            final ViewGroup.LayoutParams layoutAnimateScale=fullView.getLayoutParams();
+            final ViewGroup.LayoutParams oldLayoutParam=fullView.getLayoutParams();
             final ViewGroup.LayoutParams newLayoutParam=new ViewGroup.LayoutParams(columnWidthSize,rowHeightSize);
-            layoutAnimateScale(layoutAnimateScale,newLayoutParam,fullView,fullScreenItem,false);
+            layoutAnimateScale(oldLayoutParam,newLayoutParam,fullView,false);
         }
         lockableScrollView.setScrollingEnabled(true);
         container.enableScroll();
@@ -1091,14 +1070,13 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             left = computePageEdgeXCoor(child);
             top = lastTouchY - (child.getMeasuredHeight() / 2);
         } else if(position == fullScreenItem){
-            android.util.Log.d("XXXX","w:"+child.getMeasuredWidth()+",h:"+child.getMeasuredHeight());
             switch(getItemPositionOf(fullScreenItem).itemIndex){
                 case 0:
                     left=page*pageWidth;
                     top=0;
                     break;
                 case 1:
-                    left=page*pageWidth + pageWidth-child.getMeasuredWidth();
+                    left=(page+1)*pageWidth - child.getMeasuredWidth();
                     top=0;
                     break;
                 case 2:
@@ -1106,7 +1084,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
                     top=displayHeight-child.getMeasuredHeight();
                     break;
                 case 3:
-                    left=page*pageWidth + pageWidth-child.getMeasuredWidth();
+                    left=(page+1)*pageWidth - child.getMeasuredWidth();
                     top=displayHeight-child.getMeasuredHeight();
                     break;
                 default:
@@ -1116,7 +1094,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             left = (page * pageWidth) + (col * columnWidthSize) + ((columnWidthSize - child.getMeasuredWidth()) / 2);
             top = (row * rowHeightSize) + ((rowHeightSize - child.getMeasuredHeight()) / 2);
         }
-        child.layout(left, top, left + child.getMeasuredWidth(), top + child.getMeasuredHeight());
+        child.layout(left, top, left + child.getMeasuredWidth(),top + child.getMeasuredHeight());
     }
 
     private boolean lastTouchOnEdge() {
