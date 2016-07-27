@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import com.arcsoft.closeli.draggableviewpager.DraggableViewPager;
 import com.arcsoft.closeli.draggableviewpager.DraggableViewPagerAdapter;
-import com.closeli.draggableviewpager.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +23,7 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
      * 每列item个数
      */
     private static final int COLUMN_SIZE = 2;
+    private static final int PAGE_SIZE = 4;
 
     List<Page> pages = new ArrayList<Page>();
     private Context context;
@@ -34,38 +34,17 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
         this.context = context;
         this.gridview = gridview;
 
-        Page page1 = new Page();
-        int totalCount=0;
-        List<Item> items = new ArrayList<Item>();
-        for(totalCount=1;totalCount<=4;totalCount++){
-            items.add(new Item(totalCount, "Item "+totalCount, R.drawable.ic_launcher));
+        int totalCount = 0;
+        for (int i = 0; i < 1000; i++) {
+            Page page = new Page();
+            List<Item> items = new ArrayList<Item>();
+            for (int j = 0; j < PAGE_SIZE; j++){
+                totalCount +=1;
+                items.add(new Item(totalCount, "Item"+totalCount, R.drawable.ic_launcher));
+            }
+            page.setItems(items);
+            pages.add(page);
         }
-        page1.setItems(items);
-        pages.add(page1);
-
-        Page page2 = new Page();
-        items = new ArrayList<Item>();
-        for(;totalCount<=8;totalCount++){
-            items.add(new Item(totalCount, "Item "+totalCount, R.drawable.ic_launcher));
-        }
-        page2.setItems(items);
-        pages.add(page2);
-
-        Page page3 = new Page();
-        items = new ArrayList<Item>();
-        for(;totalCount<=11;totalCount++){
-            items.add(new Item(totalCount, "Item "+totalCount, R.drawable.ic_launcher));
-        }
-        page3.setItems(items);
-        pages.add(page3);
-
-        Page page4 = new Page();
-        items = new ArrayList<Item>();
-        for(;totalCount<=13;totalCount++){
-            items.add(new Item(totalCount, "Item "+totalCount, R.drawable.ic_launcher));
-        }
-        page4.setItems(items);
-        pages.add(page4);
     }
 
     @Override
@@ -87,7 +66,7 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
         final TextView textView = (TextView) view.findViewById(R.id.info_text);
         Item item = getItem(page, index);
         textView.setText(item.getName());
-        //textView.setBackgroundDrawable(context.getResources().getDrawable(item.getDrawable()));
+        textView.setBackgroundDrawable(context.getResources().getDrawable(item.getDrawable()));
         return view;
     }
 

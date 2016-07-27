@@ -2,11 +2,11 @@ package com.arcsoft.jd5737.helloworld;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Point;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -171,6 +171,14 @@ public class MainActivity extends AppCompatActivity {
         };
         animContainer.getViewTreeObserver().addOnGlobalLayoutListener(callback);
 
+        Button btnToViewPager=(Button)findViewById(R.id.btn_to_view_pager);
+        btnToViewPager.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,ViewPagerActivity.class);
+                startActivity(intent);
+            }
+        });
     }
     private TranslateAnimation createTranslateAnimation(int oldX,int newX,int oldY,int newY) {
         TranslateAnimation translate = new TranslateAnimation(Animation.ABSOLUTE, oldX,
