@@ -35,7 +35,7 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
         this.gridview = gridview;
 
         int totalCount = 0;
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 2000; i++) {
             Page page = new Page();
             List<Item> items = new ArrayList<Item>();
             for (int j = 0; j < PAGE_SIZE; j++){
