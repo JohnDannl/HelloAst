@@ -55,8 +55,6 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     private int computedRowCount;
     private LockableScrollView lockableScrollView;
 
-    private int initialX;
-    private int initialY;
     private boolean movingView;
     private int lastTarget = -1;
     private boolean wasOnEdgeJustNow = false;
@@ -660,9 +658,6 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     }
 
     private void touchDown(MotionEvent event) {
-        initialX = (int) event.getRawX();
-        initialY = (int) event.getRawY();
-
         //lastTouchX = (int) event.getRawX() + (currentPage() * gridPageWidth);
         lastTouchX = (int) event.getX();
         lastTouchY = (int) event.getRawY();
@@ -1119,15 +1114,13 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
 
     @Override
     public boolean onLongClick(View v) {
-        int viewPosition = positionForView(v);
-        int targetPosition = getTargetAtCoor(initialX,initialY);
-        android.util.Log.d("XXXX","viewP:"+viewPosition+",targetP:"+targetPosition);
-        if (viewPosition != -1&&enableDrag&&!isFullScreen()) {
+        int targetPosition = getTargetAtCoor(lastTouchX, lastTouchY);
+        if (targetPosition != -1&&enableDrag&&!isFullScreen()) {
             container.disableScroll();
             lockableScrollView.setScrollingEnabled(false);
 
             movingView = true;
-            dragged = viewPosition;
+            dragged = targetPosition;
 
             bringDraggedToFront();
             animateDragged();
@@ -1173,16 +1166,6 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         return weWereMovingDragged();
     }
 
-    private int positionForView(View v) {
-        for (int index = 0; index < getChildViewCount(); index++) {
-            View child = getChildView(index);
-            if (child != null && isPointInsideView(initialX, initialY, child)) {
-                return index;
-            }
-        }
-        return -1;
-    }
-
     private View getChildView(int index) {
         if (index>=0&&index<views.size()){
             return views.get(index);
@@ -1193,23 +1176,6 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
 
     private int getChildViewCount() {
         return views.size();
-    }
-
-    private boolean isPointInsideView(float x, float y, View view) {
-        int location[] = new int[2];
-        view.getLocationOnScreen(location);
-        int viewX = location[0];
-        int viewY = location[1];
-
-        if (pointIsInsideViewBounds(x, y, view, viewX, viewY)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private boolean pointIsInsideViewBounds(float x, float y, View view, int viewX, int viewY) {
-        return (x > viewX && x < (viewX + view.getWidth())) && (y > viewY && y < (viewY + view.getHeight()));
     }
 
     public void setContainer(DraggableViewPager container) {
@@ -1317,7 +1283,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     private void addViewsOfPage(int page) {
         int firstIndex = positionOfItem(page, 0);
         int item = 0;
-        for (int i = firstIndex; i< firstIndex + adapter.itemCountInPage(page); i++) {
+        for (int i = firstIndex; i < firstIndex + adapter.itemCountInPage(page); i++) {
             View v = adapter.view(page, item);
             v.setTag(adapter.getItemAt(page, item));
             LayoutParams layoutParams = new LayoutParams((displayWidth - getPaddingLeft() - getPaddingRight())/adapter.columnCount(),ROW_HEIGHT);
