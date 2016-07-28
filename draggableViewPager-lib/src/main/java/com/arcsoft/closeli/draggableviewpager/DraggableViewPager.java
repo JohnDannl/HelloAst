@@ -218,18 +218,21 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
 
     @Override
     public void scrollToPage(int page) {
+        grid.updateCachedPages(page, page < activePage, page > activePage);
         activePage = page;
         int onePageWidth = getMeasuredWidth();
         int scrollTo = page * onePageWidth;
-        if(isPageScrollAnimationEnabled){
+        if (isPageScrollAnimationEnabled) {
             ObjectAnimator animator= ObjectAnimator.ofInt(this, "scrollX",scrollTo);
             animator.setDuration(PAGE_SCROLL_SPEED);
             animator.start();
-        }else{
+        } else {
             smoothScrollTo(scrollTo, 0);
         }
-        if (pageChangedListener != null)
+        if (pageChangedListener != null) {
             pageChangedListener.onPageChanged(this, page);
+        }
+
     }
 
     @Override
