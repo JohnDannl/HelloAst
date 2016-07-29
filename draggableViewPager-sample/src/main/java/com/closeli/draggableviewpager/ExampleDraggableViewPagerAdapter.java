@@ -35,7 +35,7 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
         this.gridview = gridview;
 
         int totalCount = 0;
-        for (int i = 0; i < 2000; i++) {
+        for (int i = 0; i < 9000; i++) {
             Page page = new Page();
             List<Item> items = new ArrayList<Item>();
             for (int j = 0; j < PAGE_SIZE; j++){
@@ -45,6 +45,14 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
             page.setItems(items);
             pages.add(page);
         }
+        /*Page page = new Page();
+        List<Item> items = new ArrayList<Item>();
+        for (int j = 0; j < PAGE_SIZE - 1; j++){
+            totalCount +=1;
+            items.add(new Item(totalCount, "Item"+totalCount, R.drawable.ic_launcher));
+        }
+        page.setItems(items);
+        pages.add(page);*/
     }
 
     @Override

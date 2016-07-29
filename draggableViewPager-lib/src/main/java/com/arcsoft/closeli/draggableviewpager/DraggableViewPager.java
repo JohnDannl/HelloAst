@@ -18,9 +18,9 @@ import java.util.List;
 public class DraggableViewPager extends HorizontalScrollView implements ViewPagerContainer, OnGestureListener {
 
     private static final int FLING_VELOCITY = 500;
-    private int PAGE_SCROLL_SPEED=500;
-    private boolean isPageScrollAnimationEnabled=true;
-    private boolean isScrollEnalbed=true;
+    private int PAGE_SCROLL_SPEED = 500;
+    private boolean isPageScrollAnimationEnabled = true;
+    private boolean isScrollEnalbed = true;
     private int activePage = 0;
     private boolean activePageRestored = false;
 
@@ -128,15 +128,31 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
                     int scrollX = getScrollX();
                     int onePageWidth = v.getMeasuredWidth();
                     //int page = ((scrollX + (onePageWidth *1/2)) / onePageWidth);
-                    int hoverPageWidth=onePageWidth*1/3;
+                    int hoverPageWidth = onePageWidth * 1 / 3;
                     int page=currentPage();
-                    if(scrollX-onePageWidth*page>=hoverPageWidth){
-                        page = (scrollX + onePageWidth -hoverPageWidth) / onePageWidth;
-                    }else if(scrollX-onePageWidth*page<=-hoverPageWidth){
-                        page=scrollX / onePageWidth;
+                    if (scrollX-onePageWidth*page >= hoverPageWidth) {
+                        page = (scrollX + onePageWidth - hoverPageWidth) / onePageWidth;
+                    } else if (scrollX-onePageWidth*page <= - hoverPageWidth) {
+                        page = scrollX / onePageWidth;
                     }
                     scrollToPage(page);
                     return true;
+                } else if (!specialEventUsed && event.getAction() == MotionEvent.ACTION_MOVE) {
+                    int scrollX = getScrollX();
+                    int onePageWidth = v.getMeasuredWidth();
+                    int hoverPageWidth = onePageWidth * 3 / 4;  // the key factor to get away the hover area
+                    int page = currentPage();
+                    if (scrollX - onePageWidth * page >= hoverPageWidth) {
+                        page = (scrollX + onePageWidth -hoverPageWidth) / onePageWidth;
+                    } else if (scrollX - onePageWidth*page <= - hoverPageWidth){
+                        page = scrollX / onePageWidth;
+                    }
+                    if (page != activePage) {
+                        android.util.Log.d("XXXX","move page:"+page+",toLeft:"+(page < activePage)+", toRight:"+(page > activePage));
+                        grid.updateCachedPages(page, page < activePage, page > activePage);
+                        activePage = page;
+                    }
+                    return false;
                 } else {
                     return specialEventUsed;
                 }
@@ -218,6 +234,7 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
 
     @Override
     public void scrollToPage(int page) {
+        android.util.Log.d("XXXX","scroll page:"+page+",toLeft:"+(page < activePage)+", toRight:"+(page > activePage));
         grid.updateCachedPages(page, page < activePage, page > activePage);
         activePage = page;
         int onePageWidth = getMeasuredWidth();

@@ -29,6 +29,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     private static int DRAGGED_ZOOM_IN_ANIMATION_DURATION = 200;
     private static int FULLSCREEN_ANIMATION_DURATION=10;
     private static int OFFSCREEN_PAGE_LIMIT = 1;
+    private List<Integer> loadedPages = new ArrayList<Integer>();
     private static final long DOUBLE_CLICK_INTERVAL = 250; // in millis
     private boolean hasDoubleClick = false;
     private long lastClickTime = 0L;
@@ -39,6 +40,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     private boolean enableDragAnim = false;
     private boolean enableFullScreen = false;
     private static final boolean noStatusBar = true;
+    private int offsetPosition = 0; // the index of firs item in views,support a small size views and dynamic store address
 
     private static int EGDE_DETECTION_MARGIN = 35;
     private DraggableViewPagerAdapter adapter;
@@ -233,18 +235,16 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     }
 
     private void addChildViews() {
-        for (int page = 0; page < adapter.pageCount(); page++) {
+        offsetPosition = 0;
+        for (int page = 0; page <= OFFSCREEN_PAGE_LIMIT; page++) {
             for (int item = 0; item < adapter.itemCountInPage(page); item++) {
-                if (page <= OFFSCREEN_PAGE_LIMIT){
-                    View v = adapter.view(page, item);
-                    v.setTag(adapter.getItemAt(page, item));
-                    LayoutParams layoutParams = new LayoutParams((displayWidth - getPaddingLeft() - getPaddingRight())/adapter.columnCount(),ROW_HEIGHT);
-                    addView(v, layoutParams);
-                    views.add(v);
-                } else {
-                    views.add(null);
-                }
+            View v = adapter.view(page, item);
+            v.setTag(adapter.getItemAt(page, item));
+            LayoutParams layoutParams = new LayoutParams((displayWidth - getPaddingLeft() - getPaddingRight())/adapter.columnCount(),ROW_HEIGHT);
+            addView(v, layoutParams);
+            views.add(v);
             }
+            loadedPages.add(page);
         }
     }
 
@@ -435,7 +435,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         lockableScrollView.setScrollingEnabled(false);
 
         if (fullScreenItem != -1) {
-            View fullScreenView = views.get(fullScreenItem);
+            View fullScreenView = getChildView(fullScreenItem);
             LayoutParams vlp=fullScreenView.getLayoutParams();
             vlp.width=displayWidth;
             vlp.height=displayHeight;
@@ -471,7 +471,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
                 }
             }*/
 
-            View fullScreenView = views.get(fullScreenItem);
+            View fullScreenView = getChildView(fullScreenItem);
             LayoutParams vlp =fullScreenView.getLayoutParams();
             vlp.width=(displayWidth - getPaddingLeft() - getPaddingRight())/adapter.columnCount();
             vlp.height=ROW_HEIGHT;
@@ -799,7 +799,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         final int targetIndex=indexOfDraggedOnNewPage;
         final View targetView=getChildView(targetIndex);
         final Point targetViewCoor = getCoorForIndex(targetIndex);
-        Collections.swap(views,targetIndex,dragged);
+        swapViewsItems(targetIndex, dragged);
         dragged=targetIndex;
         animateMoveView(draggedViewCoor,targetViewCoor,targetView);
     }
@@ -811,7 +811,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         int targetIndex=indexOfDraggedOnNewPage;
         final View targetView = getChildView(targetIndex);
         final Point targetViewCoor = getCoorForIndex(targetIndex);
-        Collections.swap(views,targetIndex,dragged);
+        swapViewsItems(targetIndex, dragged);
         dragged=targetIndex;
         animateMoveView(draggedViewCoor,targetViewCoor,targetView);
     }
@@ -880,7 +880,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         final View targetView = getChildView(viewAtPosition);
         final Point draggedViewCoor = getCoorForIndex(dragged);
         final Point targetViewCoor = getCoorForIndex(viewAtPosition);
-        Collections.swap(views,dragged,viewAtPosition);
+        swapViewsItems(dragged, viewAtPosition);
         tellAdapterToSwapDraggedWithTarget(dragged, viewAtPosition);
         dragged=viewAtPosition;
 
@@ -1051,7 +1051,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     private void layoutAChild(int pageWidth, int page, int col, int row, int childIndex) {
         int position = positionOfItem(page, childIndex);
 
-        View child = views.get(position);
+        View child = getChildView(position);
 
         if (child == null || child.getVisibility()==View.GONE)return;
 
@@ -1131,7 +1131,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         fullScreenView.bringToFront();
     }
     private View getDraggedView() {
-        return views.get(dragged);
+        return getChildView(dragged);
     }
 
     private void animateDragged() {
@@ -1157,17 +1157,16 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     }
 
     private View getChildView(int index) {
+        index -= offsetPosition;
         if (index>=0&&index<views.size()){
             return views.get(index);
         }else{
             return null;
         }
     }
-
     private int getChildViewCount() {
         return views.size();
     }
-
     public void setContainer(DraggableViewPager container) {
         this.container = container;
     }
@@ -1261,27 +1260,109 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         }
     }
 
+    /**
+     * removes items of certain page in a certain order
+     * @param page
+     */
     private void removeChildViewsOfPage(int page) {
+        if (!loadedPages.contains(page)) return;;
         int firstIndex = positionOfItem(page, 0);
-        for (int i = firstIndex; i< firstIndex + adapter.itemCountInPage(page); i++) {
-            removeView(views.get(i));
-            views.set(i, null);
+        if (firstIndex - offsetPosition == 0) {     // remove from the left to right
+            for (int i = firstIndex; i < firstIndex + adapter.itemCountInPage(page); i++) {
+                removeView(getChildView(i));
+                removeFromViews(i);
+            }
+            loadedPages.remove(0);
+        } else {        // remove from the right to left
+            int lastIndex = firstIndex + adapter.itemCountInPage(page) - 1;
+            for (int i = lastIndex; i >= firstIndex; i--) {
+                removeView(getChildView(i));
+                removeFromViews(i);
+            }
+            loadedPages.remove(loadedPages.size() - 1);
         }
+        String leftPages = "";
+        for (int i : loadedPages) {
+            leftPages += i + ",";
+        }
+        android.util.Log.d("XXXX","remove page:" + page+"views:"+getChildViewCount()+", child:"+getChildCount()+" ,left:"+leftPages);
     }
 
+    /**
+     * removes items of certain page in a certain order
+     * @param page
+     */
     private void addChildViewsOfPage(int page) {
+        if (loadedPages.contains(page)) return;
         int firstIndex = positionOfItem(page, 0);
-        int item = 0;
-        for (int i = firstIndex; i < firstIndex + adapter.itemCountInPage(page); i++) {
-            View v = adapter.view(page, item);
-            v.setTag(adapter.getItemAt(page, item));
-            LayoutParams layoutParams = new LayoutParams((displayWidth - getPaddingLeft() - getPaddingRight())/adapter.columnCount(),ROW_HEIGHT);
-            views.set(i,v);
-            addView(v, 0, layoutParams); // to keep the existed items on the top of viewGroup
-            item++;
+        if (firstIndex - offsetPosition == views.size()) {    // add items at the end of views
+            for (int i = firstIndex, item = 0; i < firstIndex + adapter.itemCountInPage(page); i++, item++) {
+                View v = adapter.view(page, item);
+                v.setTag(adapter.getItemAt(page, item));
+                LayoutParams layoutParams = new LayoutParams((displayWidth - getPaddingLeft() - getPaddingRight())/adapter.columnCount(),ROW_HEIGHT);
+                addToViews(i,v);
+                addView(v, 0, layoutParams); // to keep the existed items on the top of viewGroup
+            }
+            loadedPages.add(page);
+        } else {    // add items at the beginning of views
+            int lastIndex = firstIndex + adapter.itemCountInPage(page) -1;
+            for (int i = lastIndex, item = adapter.itemCountInPage(page) -1; i >= firstIndex; i--, item--) {
+                View v = adapter.view(page, item);
+                v.setTag(adapter.getItemAt(page, item));
+                LayoutParams layoutParams = new LayoutParams((displayWidth - getPaddingLeft() - getPaddingRight())/adapter.columnCount(),ROW_HEIGHT);
+                addToViews(i,v);
+                addView(v, 0, layoutParams); // to keep the existed items on the top of viewGroup
+            }
+            loadedPages.add(0,page);
+        }
+        String leftPages = "";
+        for (int i : loadedPages) {
+            leftPages += i + ",";
+        }
+        android.util.Log.d("XXXX","add page:" + page+"views:"+getChildViewCount()+", child:"+getChildCount()+" ,left:"+leftPages);
+    }
+
+    /**
+     * Calculates the real restore position of item and inserts into views
+     * @param index
+     * @param v
+     */
+    private void addToViews(int index, View v) {
+        int position = index - offsetPosition;
+        if (position == -1) {     // add at the beginning, update the offset
+            views.add(0, v);
+            offsetPosition--;
+        } else if (position == views.size()) {      // add at the end
+            views.add(v);
         }
     }
 
+    /**
+     * Calculates the real restore position of item and removes from views
+     * @param index
+     */
+    private void removeFromViews(int index) {
+        int position = index - offsetPosition;
+        if (position == 0) {        // remove the beginning item ,update the offset
+            views.remove(0);
+            offsetPosition++;
+        } else if (position == views.size()-1) {
+            views.remove(position);
+        }
+    }
+
+    /**
+     * Calculate the restore position of items and swaps them
+     * @param index1
+     * @param index2
+     */
+    private void swapViewsItems(int index1, int index2){
+        int position1 = index1 - offsetPosition;
+        int position2 = index2 - offsetPosition;
+        if (position1 >=0 && position1 < views.size() && position2 >=0 && position2 < views.size()) {
+            Collections.swap(views, position1, position2);
+        }
+    }
     public interface OnDragDropGridItemClickListener {
         public void onClick(View view, int page, int item);
         public void onDoubleClick(View view, int page, int item);
