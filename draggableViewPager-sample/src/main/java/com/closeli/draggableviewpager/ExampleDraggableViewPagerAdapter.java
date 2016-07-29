@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapter {
+        public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapter {
 
     /**
      * 每行item个数
@@ -168,5 +168,10 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
     @Override
     public boolean disableZoomAnimationsOnChangePage() {
         return false;
+    }
+
+    @Override
+    public void destroyPage(int page) {
+        android.util.Log.d("XXXX","destroy page: "+page);
     }
 }

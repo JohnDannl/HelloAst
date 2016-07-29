@@ -104,5 +104,9 @@ public interface DraggableViewPagerAdapter {
      */
     public boolean disableZoomAnimationsOnChangePage();
 
-
+    /**
+     * You may want to release the invisible pages' resources or do nothing
+     * @param page
+     */
+    public void destroyPage(int page);
 }

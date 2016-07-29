@@ -210,6 +210,11 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             public boolean disableZoomAnimationsOnChangePage() {
                 return false;
             }
+
+            @Override
+            public void destroyPage(int page) {
+
+            }
         };
     }
 

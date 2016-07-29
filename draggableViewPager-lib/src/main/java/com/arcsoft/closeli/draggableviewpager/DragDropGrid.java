@@ -45,7 +45,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     private static int EGDE_DETECTION_MARGIN = 35;
     private DraggableViewPagerAdapter adapter;
     private OnDragDropGridItemClickListener onItemClickListener = null;
-    private OnDragDropGridItemAnimationListener mItemAnimationListener=null;
+    private OnDragDropGridItemAnimationListener mItemAnimationListener = null;
     private ViewPagerContainer container;
     private List<View> views = new ArrayList<View>();
     private int gridPageWidth = 0;
@@ -207,6 +207,11 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             public boolean disableZoomAnimationsOnChangePage() {
                 return false;
             }
+
+            @Override
+            public void destroyPage(int page) {
+
+            }
         };
     }
 
@@ -219,9 +224,10 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         onItemClickListener = l;
     }
 
-    public void setOnItemAnimationListener(OnDragDropGridItemAnimationListener listener){
-        mItemAnimationListener=listener;
+    public void setOnItemAnimationListener(OnDragDropGridItemAnimationListener listener) {
+        mItemAnimationListener = listener;
     }
+
     public void setDragEnabled(boolean enabled){
         this.enableDrag=enabled;
     }
@@ -652,6 +658,9 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         adapter.deleteItem(position.pageIndex, position.itemIndex);
     }
 
+    private void tellAdapterPageIsDestroyed(int page) {
+        adapter.destroyPage(page);
+    }
     private void touchDown(MotionEvent event) {
         //lastTouchX = (int) event.getRawX() + (currentPage() * gridPageWidth);
         lastTouchX = (int) event.getX();
@@ -1281,6 +1290,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             }
             loadedPages.remove(loadedPages.size() - 1);
         }
+        tellAdapterPageIsDestroyed(page);
         String leftPages = "";
         for (int i : loadedPages) {
             leftPages += i + ",";
