@@ -132,9 +132,11 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
                     int page=currentPage();
                     if (scrollX-onePageWidth*page >= hoverPageWidth) {
                         page = (scrollX + onePageWidth - hoverPageWidth) / onePageWidth;
-                    } else if (scrollX-onePageWidth*page <= - hoverPageWidth) {
+                    } else if (scrollX - onePageWidth*page <= - hoverPageWidth) {
                         page = scrollX / onePageWidth;
                     }
+                    android.util.Log.d("XXXX","active:"+activePage+",x:"+scrollX+",p:"+String.format("%.3f",(float)getScrollX()/getMeasuredWidth()));
+                    android.util.Log.d("XXXX","page to:"+page+"-scroll, toLeft:"+(page < activePage)+", toRight:"+(page > activePage));
                     scrollToPage(page);
                     return true;
                 } else if (!specialEventUsed && event.getAction() == MotionEvent.ACTION_MOVE) {
@@ -142,15 +144,23 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
                     int onePageWidth = v.getMeasuredWidth();
                     int hoverPageWidth = onePageWidth * 3 / 4;  // the key factor to get away the hover area
                     int page = currentPage();
-                    if (scrollX - onePageWidth * page >= hoverPageWidth) {
+                    int roundPage = scrollX / onePageWidth;
+                    if (scrollX - onePageWidth * roundPage >= hoverPageWidth) {
+                        page = (scrollX + onePageWidth - hoverPageWidth) / onePageWidth;
+                    } else if (scrollX - onePageWidth * (roundPage + 1) <= - hoverPageWidth){
+                        page = scrollX / onePageWidth;
+                    }
+                   /* if (scrollX - onePageWidth * page >= hoverPageWidth) {
                         page = (scrollX + onePageWidth -hoverPageWidth) / onePageWidth;
                     } else if (scrollX - onePageWidth*page <= - hoverPageWidth){
                         page = scrollX / onePageWidth;
-                    }
+                    }*/
                     if (page != activePage) {
-                        android.util.Log.d("XXXX","move page:"+page+",toLeft:"+(page < activePage)+", toRight:"+(page > activePage));
+                        android.util.Log.d("XXXX","active:"+activePage+",x:"+scrollX+",p:"+String.format("%.3f",(float)getScrollX()/getMeasuredWidth()));
+                        android.util.Log.d("XXXX","page to:"+page+"-move, toLeft:"+(page < activePage)+", toRight:"+(page > activePage));
                         grid.updateCachedPages(page, page < activePage, page > activePage);
                         activePage = page;
+                        return true;
                     }
                     return false;
                 } else {
@@ -234,7 +244,6 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
 
     @Override
     public void scrollToPage(int page) {
-        android.util.Log.d("XXXX","scroll page:"+page+",toLeft:"+(page < activePage)+", toRight:"+(page > activePage));
         grid.updateCachedPages(page, page < activePage, page > activePage);
         activePage = page;
         int onePageWidth = getMeasuredWidth();
@@ -249,11 +258,12 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
         if (pageChangedListener != null) {
             pageChangedListener.onPageChanged(this, page);
         }
-
     }
 
     @Override
     public void scrollLeft() {
+        android.util.Log.d("XXXX","active:"+activePage+",x:"+getScrollX()+",p:"+String.format("%.3f",(float)getScrollX()/getMeasuredWidth()));
+        android.util.Log.d("XXXX","page to:"+(activePage - 1) +"-scroll toLeft:");
         int newPage = activePage - 1;
         if (canScrollToPreviousPage()) {
             scrollToPage(newPage);
@@ -264,6 +274,8 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
 
     @Override
     public void scrollRight() {
+        android.util.Log.d("XXXX","active:"+activePage+",x:"+getScrollX()+",p:"+String.format("%.3f",(float)getScrollX()/getMeasuredWidth()));
+        android.util.Log.d("XXXX","page to:"+(activePage + 1) +"-scroll toRight:");
         int newPage = activePage + 1;
         if (canScrollToNextPage()) {
             scrollToPage(newPage);
