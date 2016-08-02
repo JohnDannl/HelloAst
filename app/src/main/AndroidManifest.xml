@@ -10,6 +10,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
+            android:launchMode="singleInstance"
             android:configChanges="orientation|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -17,7 +18,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ViewPagerActivity"></activity>
+        <activity android:name=".ViewPagerActivity" />
+        <activity
+            android:name=".ThirdActivity"
+            android:label="@string/title_activity_third"></activity>
     </application>
 
 </manifest>

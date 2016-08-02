@@ -33,6 +33,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
@@ -56,7 +57,8 @@ public class ExampleActivity extends Activity  {
     private ImageView imgNavLeft;
     private ImageView imgNavRight;
     private boolean isNavBarShow=false;
-
+    private static final int REQUEST_LAYOUT = 0;
+    private static final int INTERVAL_REQUEST_LAYOUT = 1000;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -150,7 +152,22 @@ public class ExampleActivity extends Activity  {
                 mDrgVpg.scrollRight();
             }
         });
+
+        // simulate a loop layout request
+        mHandler.sendEmptyMessageDelayed(REQUEST_LAYOUT, INTERVAL_REQUEST_LAYOUT);
     }
+    Handler mHandler = new Handler() {
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case REQUEST_LAYOUT:
+                    //mDrgVpg.requestGridLayout();
+                    //sendEmptyMessageDelayed(REQUEST_LAYOUT, INTERVAL_REQUEST_LAYOUT);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
     public static float dipToPixels(Context context, float dipValue) {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, metrics);
@@ -178,7 +195,6 @@ public class ExampleActivity extends Activity  {
         super.onSaveInstanceState(outState);
     }
 
-    Handler mHandler=new Handler();
     private Runnable hideNavBarCallback =new Runnable() {
         @Override
         public void run() {

@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams.WRAP_CONTENT,1);
         viewContainer.addView(searchView,llp);*/
         viewContainer.addView(searchView);
+        searchView.setText(this.toString()+"@"+this.getTaskId());
         final Button btn_add=(Button)findViewById(R.id.btn_add_view);
         btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -141,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 //                android.util.Log.d("XXXX","left:"+btn_anim3.getLeft()+",top:"+btn_anim3.getTop());
                 anim3 =!anim3;
-                btn_anim3.animate().x(0).y(0);
+                //btn_anim3.animate().x(0).y(0);
             }
         });
         final ViewTreeObserver.OnGlobalLayoutListener callback=new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -165,6 +166,8 @@ public class MainActivity extends AppCompatActivity {
                 scale.setFillEnabled(true);
 
                 translate=createTranslateAnimation(-btn_anim2.getWidth()/2,btn_anim2.getWidth()/2,0,btn_anim2.getHeight()/2);
+                // note : the viewAnimation's location is related to view's left and top,
+                // but objectAnimator's location is related to view's parent's left and top
                 objAnim=ObjectAnimator.ofFloat(btn_anim3,"x",btn_anim3.getLeft(),0f);
                 animContainer.getViewTreeObserver().removeGlobalOnLayoutListener(this);
             }

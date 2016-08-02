@@ -1066,9 +1066,9 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
 
         int left = 0;
         int top = 0;
-        if (position == dragged && lastTouchOnEdge()) {
-            left = computePageEdgeXCoor(child);
-            top = lastTouchY - (child.getMeasuredHeight() / 2);
+        if (position == dragged) {
+            left = lastTouchX - child.getMeasuredWidth() / 2;
+            top = lastTouchY - child.getMeasuredHeight() / 2;
         } else if (position == fullScreenItem){
             switch(getItemPositionOf(fullScreenItem).itemIndex){
                 case 0:
@@ -1099,17 +1099,6 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
 
     private boolean lastTouchOnEdge() {
         return onRightEdgeOfScreen(lastTouchX) || onLeftEdgeOfScreen(lastTouchX);
-    }
-
-    private int computePageEdgeXCoor(View child) {
-        int left;
-        left = lastTouchX - (child.getMeasuredWidth() / 2);
-        if (onRightEdgeOfScreen(lastTouchX)) {
-            left = left - gridPageWidth;
-        } else if (onLeftEdgeOfScreen(lastTouchX)) {
-            left = left + gridPageWidth;
-        }
-        return left;
     }
 
     @Override

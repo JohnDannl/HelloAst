@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,20 +7,20 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.arcsoft.jd5737.helloworld.ViewPagerActivity">
+    android:orientation="vertical"
+    tools:context="com.arcsoft.jd5737.helloworld.ThirdActivity">
     <TextView
-        android:id="@+id/vpg_tv_msg"
+        android:id="@+id/third_tv_msg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <Button
-        android:id="@+id/vpg_btn_go"
-        android:text="@string/to_third"
-        android:layout_below="@id/vpg_tv_msg"
+        android:id="@+id/third_btn_to_main"
+        android:text="@string/to_main"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
-
-    <android.support.v4.view.ViewPager
-        android:id="@+id/view_pager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-</RelativeLayout>
+    <Button
+        android:id="@+id/third_btn_to_third"
+        android:text="@string/to_third"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</LinearLayout>
