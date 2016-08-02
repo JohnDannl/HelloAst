@@ -135,8 +135,6 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
                     } else if (scrollX - onePageWidth*page <= - hoverPageWidth) {
                         page = scrollX / onePageWidth;
                     }
-                    android.util.Log.d("XXXX","active:"+activePage+",x:"+scrollX+",p:"+String.format("%.3f",(float)getScrollX()/getMeasuredWidth()));
-                    android.util.Log.d("XXXX","page to:"+page+"-scroll, toLeft:"+(page < activePage)+", toRight:"+(page > activePage));
                     scrollToPage(page);
                     return true;
                 } else if (!specialEventUsed && event.getAction() == MotionEvent.ACTION_MOVE) {
@@ -152,15 +150,7 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
                         page = scrollX / onePageWidth;
                     }
 
-                    /*if (scrollX - onePageWidth * page >= hoverPageWidth) {
-                        page = (scrollX + onePageWidth -hoverPageWidth) / onePageWidth;
-                    } else if (scrollX - onePageWidth*page <= - hoverPageWidth){
-                        page = scrollX / onePageWidth;
-                    }*/
-
                     if (page != activePage) {
-                        android.util.Log.d("XXXX","active:"+activePage+",x:"+scrollX+",p:"+String.format("%.3f",(float)getScrollX()/getMeasuredWidth()));
-                        android.util.Log.d("XXXX","page to:"+page+"-move, toLeft:"+(page < activePage)+", toRight:"+(page > activePage));
                         grid.updateCachedPages(page, page < activePage, page > activePage);
                         activePage = page;
                         return true;
@@ -265,8 +255,6 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
 
     @Override
     public void scrollLeft() {
-        android.util.Log.d("XXXX","active:"+activePage+",x:"+getScrollX()+",p:"+String.format("%.3f",(float)getScrollX()/getMeasuredWidth()));
-        android.util.Log.d("XXXX","page to:"+(activePage - 1) +"-scroll toLeft:");
         int newPage = activePage - 1;
         if (canScrollToPreviousPage()) {
             scrollToPage(newPage);
@@ -277,8 +265,6 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
 
     @Override
     public void scrollRight() {
-        android.util.Log.d("XXXX","active:"+activePage+",x:"+getScrollX()+",p:"+String.format("%.3f",(float)getScrollX()/getMeasuredWidth()));
-        android.util.Log.d("XXXX","page to:"+(activePage + 1) +"-scroll toRight:");
         int newPage = activePage + 1;
         if (canScrollToNextPage()) {
             scrollToPage(newPage);

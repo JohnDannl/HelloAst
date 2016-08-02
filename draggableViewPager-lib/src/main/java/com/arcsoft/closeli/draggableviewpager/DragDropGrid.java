@@ -1324,21 +1324,6 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
                 }
             }
         }
-        /*if (toLeft) {
-            if (newPage + OFFSCREEN_PAGE_LIMIT + 1 < adapter.pageCount()) {
-                removeChildViewsOfPage(newPage + OFFSCREEN_PAGE_LIMIT + 1);
-            }
-            if (newPage - OFFSCREEN_PAGE_LIMIT >= 0) {
-                addChildViewsOfPage(newPage - OFFSCREEN_PAGE_LIMIT);
-            }
-        } else if (toRight){
-            if (newPage - OFFSCREEN_PAGE_LIMIT - 1 >= 0) {
-                removeChildViewsOfPage(newPage - OFFSCREEN_PAGE_LIMIT - 1);
-            }
-            if (newPage + OFFSCREEN_PAGE_LIMIT < adapter.pageCount()) {
-                addChildViewsOfPage(newPage + OFFSCREEN_PAGE_LIMIT);
-            }
-        }*/
     }
 
     /**
@@ -1367,7 +1352,6 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         for (int i : loadedPages) {
             leftPages += i + ",";
         }
-        android.util.Log.d("XXXX","remove page:" + page+", views:"+getChildViewCount()+", child:"+getChildCount()+" ,remain:"+leftPages);
     }
 
     /**
@@ -1401,7 +1385,6 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         for (int i : loadedPages) {
             leftPages += i + ",";
         }
-        android.util.Log.d("XXXX","add page:" + page+", views:"+getChildViewCount()+", child:"+getChildCount()+" ,remain:"+leftPages);
     }
 
     /**
