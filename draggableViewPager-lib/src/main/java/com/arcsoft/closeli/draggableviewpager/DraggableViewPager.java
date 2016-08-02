@@ -144,17 +144,20 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
                     int onePageWidth = v.getMeasuredWidth();
                     int hoverPageWidth = onePageWidth * 3 / 4;  // the key factor to get away the hover area
                     int page = currentPage();
+
                     int roundPage = scrollX / onePageWidth;
                     if (scrollX - onePageWidth * roundPage >= hoverPageWidth) {
                         page = (scrollX + onePageWidth - hoverPageWidth) / onePageWidth;
-                    } else if (scrollX - onePageWidth * (roundPage + 1) <= - hoverPageWidth){
+                    } else if (scrollX - onePageWidth * roundPage <= onePageWidth - hoverPageWidth){
                         page = scrollX / onePageWidth;
                     }
-                   /* if (scrollX - onePageWidth * page >= hoverPageWidth) {
+
+                    /*if (scrollX - onePageWidth * page >= hoverPageWidth) {
                         page = (scrollX + onePageWidth -hoverPageWidth) / onePageWidth;
                     } else if (scrollX - onePageWidth*page <= - hoverPageWidth){
                         page = scrollX / onePageWidth;
                     }*/
+
                     if (page != activePage) {
                         android.util.Log.d("XXXX","active:"+activePage+",x:"+scrollX+",p:"+String.format("%.3f",(float)getScrollX()/getMeasuredWidth()));
                         android.util.Log.d("XXXX","page to:"+page+"-move, toLeft:"+(page < activePage)+", toRight:"+(page > activePage));

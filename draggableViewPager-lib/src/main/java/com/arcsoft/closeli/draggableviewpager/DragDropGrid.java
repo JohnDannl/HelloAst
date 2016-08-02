@@ -1251,8 +1251,80 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         }
     }
 
+    /**
+     * Moves to show newPage and updates the cached pages according to OFFSCREEN_PAGE_LIMIT
+     * @param newPage the new page to move to
+     * @param toLeft whether scrolls to left
+     * @param toRight whether scrolls to right
+     */
     public void updateCachedPages(int newPage, boolean toLeft, boolean toRight) {
+        if (!toLeft && !toRight) return;
+        List<Integer> newPages = new ArrayList<Integer>();
+        for (int i = newPage; i <= newPage + OFFSCREEN_PAGE_LIMIT; i++) {
+            if (i < adapter.pageCount()) {
+                newPages.add(i);
+            } else {
+                break;
+            }
+        }
+        for (int i = newPage - 1; i >= newPage - OFFSCREEN_PAGE_LIMIT; i--) {
+            if (i >= 0) {
+                newPages.add(0,i);
+            } else {
+                break;
+            }
+        }
+        if (newPages.isEmpty()) return;
         if (toLeft) {
+            int oldSize = loadedPages.size();
+            int oldPageMin = loadedPages.get(0);
+            int newPageMax = newPages.get(newPages.size() - 1);
+            // removes obsolete pages which not included in newPages
+            for (int i = oldSize - 1; i >= 0; i--) {
+                if (!newPages.contains(loadedPages.get(i))) { // remove from right to left
+                    removeChildViewsOfPage(loadedPages.get(i));
+                } else {
+                    break;
+                }
+            }
+            // adjusts the offsetPosition for example, 4,5,6 <= 8,9,10
+            if (oldPageMin - 1 > newPageMax) {
+                for (int page = oldPageMin - 1; page > newPageMax; page--) {
+                    offsetPosition -= adapter.itemCountInPage(page);
+                }
+            }
+            // adds new pages which not included in loadedPages
+            for (int i = newPages.size() - 1; i >= 0; i--) {
+                if (!loadedPages.contains(newPages.get(i))) {
+                    addChildViewsOfPage(newPages.get(i));
+                }
+            }
+        } else if (toRight){
+            int oldSize = loadedPages.size();
+            int oldPageMax = loadedPages.get(oldSize - 1);
+            int newPageMin = newPages.get(0);
+            // removes obsolete pages which not included in newPages
+            for (int i = 0; i < oldSize; i++) {
+                if (!newPages.contains(loadedPages.get(0))) {
+                    removeChildViewsOfPage(loadedPages.get(0));
+                } else {
+                    break;
+                }
+            }
+            // adjusts the offsetPosition for example, 4,5,6 => 8,9,10
+            if (oldPageMax + 1 < newPageMin) {
+                for (int page = oldPageMax + 1; page < newPageMin; page++) {
+                    offsetPosition += adapter.itemCountInPage(page);
+                }
+            }
+            // adds new pages which not included in loadedPages
+            for (int i = 0; i < newPages.size(); i++) {
+                if (!loadedPages.contains(newPages.get(i))) {
+                    addChildViewsOfPage(newPages.get(i));
+                }
+            }
+        }
+        /*if (toLeft) {
             if (newPage + OFFSCREEN_PAGE_LIMIT + 1 < adapter.pageCount()) {
                 removeChildViewsOfPage(newPage + OFFSCREEN_PAGE_LIMIT + 1);
             }
@@ -1266,7 +1338,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             if (newPage + OFFSCREEN_PAGE_LIMIT < adapter.pageCount()) {
                 addChildViewsOfPage(newPage + OFFSCREEN_PAGE_LIMIT);
             }
-        }
+        }*/
     }
 
     /**
