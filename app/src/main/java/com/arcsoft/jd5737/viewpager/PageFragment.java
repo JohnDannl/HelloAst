@@ -27,36 +27,43 @@ public class PageFragment extends Fragment {
     }
 
     @Override
-    public  View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_view_page,container,false);
+    public  View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState){
+        final ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_view_page,container,false);
         TextView tv = (TextView) rootView.findViewById(R.id.fragment_view_page_tv_title);
         Bundle args = getArguments();
         index = args.getInt(PAGE_FRAGMENT_INDEX);
         tv.setText("Fragment " + index);
+        tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                android.util.Log.d("XXXX","x:"+rootView.getX()+",left:"+rootView.getLeft());
+                android.util.Log.d("XXXX","w:"+container.getWidth()+",h:"+container.getHeight());
+            }
+        });
         return rootView;
     }
 
     @Override
     public void onStart(){
         super.onStart();
-        Log.d("XXXX","onStart() : " + index);
+        //Log.d("XXXX","onStart() : " + index);
     }
 
     @Override
     public void onResume(){
         super.onResume();
-        Log.d("XXXX","onResume() : " + index);
+        //Log.d("XXXX","onResume() : " + index);
     }
 
     @Override
     public void onStop(){
         super.onStop();
-        Log.d("XXXX","onStop() : " + index);
+        //Log.d("XXXX","onStop() : " + index);
     }
 
     @Override
     public void onDestroy(){
         super.onDestroy();
-        Log.d("XXXX","onDestroy() : " + index);
+        //Log.d("XXXX","onDestroy() : " + index);
     }
 }

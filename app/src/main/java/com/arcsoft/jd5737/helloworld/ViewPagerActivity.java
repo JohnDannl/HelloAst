@@ -5,6 +5,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -16,8 +18,8 @@ public class ViewPagerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_pager);
-        ViewPager pager = (ViewPager) findViewById(R.id.view_pager);
-        pager.setAdapter(new MyViewPagerAdapter(getSupportFragmentManager(),8));
+        final ViewPager pager = (ViewPager) findViewById(R.id.view_pager);
+        pager.setAdapter(new MyViewPagerAdapter(getSupportFragmentManager(),16));
         pager.setOffscreenPageLimit(1);
         pager.setCurrentItem(2);
 
@@ -32,5 +34,14 @@ public class ViewPagerActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        final ViewTreeObserver.OnGlobalLayoutListener callback = new ViewTreeObserver.OnGlobalLayoutListener() {
+
+            @Override
+            public void onGlobalLayout() {
+                android.util.Log.d("XXXX","w:" + pager.getMeasuredWidth() + ",h:" + pager.getMeasuredHeight());
+            }
+        };
+        pager.getViewTreeObserver().addOnGlobalLayoutListener(callback);
     }
 }

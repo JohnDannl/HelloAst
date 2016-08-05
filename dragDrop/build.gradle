@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 24
+    compileSdkVersion 23
     buildToolsVersion "24.0.0"
 
     defaultConfig {
         applicationId "com.javapapers.android.drag_drop"
         minSdkVersion 11
-        targetSdkVersion 24
+        targetSdkVersion 23
     }
 
     buildTypes {
@@ -19,5 +19,5 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:24.0.0'
+    compile 'com.android.support:support-v4:23.0.1'
 }
