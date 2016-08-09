@@ -6,8 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
-import com.arcsoft.closeli.draggableviewpager.DraggableViewPager;
-import com.arcsoft.closeli.draggableviewpager.DraggableViewPagerAdapter;
+import com.closeli.widget.draggableviewpager.DraggableViewPager;
+import com.closeli.widget.draggableviewpager.DraggableViewPagerAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;

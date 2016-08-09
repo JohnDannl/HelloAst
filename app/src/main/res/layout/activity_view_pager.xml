@@ -7,7 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.arcsoft.jd5737.helloworld.ViewPagerActivity">
+    tools:context="com.closeli.jd5737.helloworld.ViewPagerActivity">
     <TextView
         android:id="@+id/vpg_tv_msg"
         android:layout_width="match_parent"

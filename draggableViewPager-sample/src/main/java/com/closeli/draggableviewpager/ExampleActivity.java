@@ -44,9 +44,9 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import com.arcsoft.closeli.draggableviewpager.DragDropGrid;
-import com.arcsoft.closeli.draggableviewpager.DraggableViewPager;
-import com.arcsoft.closeli.draggableviewpager.callbacks.OnPageChangedListener;
+import com.closeli.widget.draggableviewpager.DragDropGrid;
+import com.closeli.widget.draggableviewpager.DraggableViewPager;
+import com.closeli.widget.draggableviewpager.callbacks.OnPageChangedListener;
 
 public class ExampleActivity extends Activity  {
 
