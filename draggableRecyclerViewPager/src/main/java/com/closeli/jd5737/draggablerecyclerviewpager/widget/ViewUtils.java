@@ -20,6 +20,21 @@ public class ViewUtils {
         }
         return null;
     }
+    /**
+     * Gets child on top and left of recyclerview
+     */
+    public static View getTopLeftChild(RecyclerView recyclerView) {
+        int childCount = recyclerView.getChildCount();
+        if (childCount > 0) {
+            for (int i = 0; i < childCount; i++) {
+                View child = recyclerView.getChildAt(i);
+                if (isChildAtTopLeft(recyclerView, child)) {
+                    return child;
+                }
+            }
+        }
+        return null;
+    }
 
     /**
      * get the position of child which locates on top and left of the recyclerview

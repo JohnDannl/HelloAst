@@ -12,6 +12,8 @@ import android.view.ViewGroup;
  */
 public class RecyclerViewPagerAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
     private final RecyclerViewPager mViewPager;
+    private static int ITEM_COUNT_OF_PAGE = 4;
+
     RecyclerView.Adapter<VH> mAdapter;
 
 
@@ -102,6 +104,13 @@ public class RecyclerViewPagerAdapter<VH extends RecyclerView.ViewHolder> extend
         return mAdapter.getItemCount();
     }
 
+    public int getPageCount() {
+        return (mAdapter.getItemCount()  + getItemCountOfPage() - 1) / getItemCountOfPage();
+    }
+
+    public int getItemCountOfPage() {
+        return ITEM_COUNT_OF_PAGE;
+    }
     @Override
     public int getItemViewType(int position) {
         return mAdapter.getItemViewType(position);
