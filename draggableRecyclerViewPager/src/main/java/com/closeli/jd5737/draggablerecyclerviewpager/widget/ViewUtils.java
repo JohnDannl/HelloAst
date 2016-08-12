@@ -22,6 +22,24 @@ public class ViewUtils {
     }
 
     /**
+     * get the position of child which locates on top and left of the recyclerview
+     * @param recyclerView
+     * @return
+     */
+    public static int getTopLeftChildPosition(RecyclerView recyclerView) {
+        int childCount = recyclerView.getChildCount();
+        if (childCount > 0) {
+            for (int i = 0; i < childCount; i++) {
+                View child = recyclerView.getChildAt(i);
+                if (isChildAtTopLeft(recyclerView, child)) {
+                    return recyclerView.getChildAdapterPosition(child);
+                }
+            }
+        }
+        return childCount;
+    }
+
+    /**
      * Get position of center child in X Axes
      */
     public static int getCenterXChildPosition(RecyclerView recyclerView) {
@@ -67,6 +85,23 @@ public class ViewUtils {
             }
         }
         return childCount;
+    }
+
+    public static boolean isChildAtTopLeft(RecyclerView recyclerView, View view) {
+        int childCount = recyclerView.getChildCount();
+        if (childCount > 0) {
+            int[] rvLocationOnScreen = new int[2];
+            int[] vLocationOnScreen = new int[2];
+            recyclerView.getLocationOnScreen(rvLocationOnScreen);
+            int leftMiddle = rvLocationOnScreen[0] + recyclerView.getWidth() / 4;
+            int topMiddle = rvLocationOnScreen[1] + recyclerView.getHeight() / 4;
+            view.getLocationOnScreen(vLocationOnScreen);
+            if (vLocationOnScreen[0] <= leftMiddle && vLocationOnScreen[0] + view.getWidth() >= leftMiddle
+                    && vLocationOnScreen[1] <= topMiddle && vLocationOnScreen[1] + view.getHeight() >= topMiddle) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static boolean isChildInCenterX(RecyclerView recyclerView, View view) {

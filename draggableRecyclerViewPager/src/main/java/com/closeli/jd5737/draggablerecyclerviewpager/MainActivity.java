@@ -46,8 +46,8 @@ public class MainActivity extends Activity {
         RecyclerViewPager viewPager = (RecyclerViewPager) findViewById(R.id.recycler_view_pager);
         viewPager.setHasFixedSize(true);
         viewPager.setAdapter(new RecyclerGridAdapter());
-        //GridLayoutManager layoutManager = new GridLayoutManager(this, COLUMN_SIZE, LinearLayoutManager.HORIZONTAL, false);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, COLUMN_SIZE, LinearLayoutManager.HORIZONTAL, false);
+//        LinearLayoutManager layoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
         viewPager.setLayoutManager(layoutManager);
     }
     class RecyclerGridAdapter extends RecyclerView.Adapter<RecyclerGridAdapter.ItemViewHolder> {
@@ -72,7 +72,7 @@ public class MainActivity extends Activity {
         }
 
         public RecyclerGridAdapter() {
-            for (int i = 0; i < 12; i++) {
+            for (int i = 0; i < 13; i++) {
                 mItems.add("Item " + (i + 1));
             }
         }
