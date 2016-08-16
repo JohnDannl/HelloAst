@@ -29,7 +29,8 @@ public class RecyclerViewPager extends RecyclerView {
     private static final String TAG = "RecyclerViewPager";
     public static final boolean DEBUG = BuildConfig.DEBUG;
 
-    private RecyclerViewPagerAdapter<?> mViewPagerAdapter;
+    private static final int ITEM_COUNT_OF_PAGE = 4;
+    private RecyclerView.Adapter mViewPagerAdapter;
     private static float mTriggerOffset = 0.25f;
     private float mFlingFactor = 0.15f;
     private boolean mSinglePageFling = false;
@@ -80,48 +81,19 @@ public class RecyclerViewPager extends RecyclerView {
     }
 
     @Override
-    protected void onRestoreInstanceState(Parcelable state) {
-        try {
-            Field fLayoutState = state.getClass().getDeclaredField("mLayoutState");
-            fLayoutState.setAccessible(true);
-            Object layoutState = fLayoutState.get(state);
-            Field fAnchorOffset = layoutState.getClass().getDeclaredField("mAnchorOffset");
-            Field fAnchorPosition = layoutState.getClass().getDeclaredField("mAnchorPosition");
-            fAnchorPosition.setAccessible(true);
-            fAnchorOffset.setAccessible(true);
-            if (fAnchorOffset.getInt(layoutState) > 0) {
-                fAnchorPosition.set(layoutState, fAnchorPosition.getInt(layoutState) - 1);
-            } else if (fAnchorOffset.getInt(layoutState) < 0) {
-                fAnchorPosition.set(layoutState, fAnchorPosition.getInt(layoutState) + 1);
-            }
-            fAnchorOffset.setInt(layoutState, 0);
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-        super.onRestoreInstanceState(state);
-    }
-
-    @Override
     public void setAdapter(Adapter adapter) {
-        mViewPagerAdapter = ensureRecyclerViewPagerAdapter(adapter);
+        mViewPagerAdapter = adapter;
         super.setAdapter(mViewPagerAdapter);
     }
 
     @Override
     public void swapAdapter(Adapter adapter, boolean removeAndRecycleExistingViews) {
-        mViewPagerAdapter = ensureRecyclerViewPagerAdapter(adapter);
+        mViewPagerAdapter = adapter;
         super.swapAdapter(mViewPagerAdapter, removeAndRecycleExistingViews);
     }
 
     @Override
     public Adapter getAdapter() {
-        if (mViewPagerAdapter != null) {
-            return mViewPagerAdapter.mAdapter;
-        }
-        return null;
-    }
-
-    public RecyclerViewPagerAdapter getWrapperAdapter() {
         return mViewPagerAdapter;
     }
 
@@ -260,10 +232,10 @@ public class RecyclerViewPager extends RecyclerView {
             int curPosition = getTopLeftChildPosition();
             int pageWidth = getWidth() - getPaddingLeft() - getPaddingRight();
             int flingCount = getFlingCount(velocityX, pageWidth);
-            int targetPosition = (curPosition / mViewPagerAdapter.getItemCountOfPage() + flingCount) * mViewPagerAdapter.getItemCountOfPage();
+            int targetPosition = (curPosition / ITEM_COUNT_OF_PAGE + flingCount) * ITEM_COUNT_OF_PAGE;
             if (mSinglePageFling) {
                 flingCount = Math.max(-1, Math.min(1, flingCount));
-                targetPosition = (mPositionOnTouchDown / mViewPagerAdapter.getItemCountOfPage() + flingCount) * mViewPagerAdapter.getItemCountOfPage();
+                targetPosition = (mPositionOnTouchDown / ITEM_COUNT_OF_PAGE + flingCount) * ITEM_COUNT_OF_PAGE;
             }
             targetPosition = Math.min(Math.max(targetPosition, 0), mViewPagerAdapter.getItemCount() - 1);
 
@@ -325,12 +297,8 @@ public class RecyclerViewPager extends RecyclerView {
                     mPositionBeforeScroll = getChildLayoutPosition(child);
                     mHasCalledOnPageChanged = false;
                 }
-                Log.d(TAG,"layout position:" + getChildLayoutPosition(child) + ",adapter pos:" + getChildAdapterPosition(child));
             } else {
                 mPositionBeforeScroll = -1;
-            }
-            if (DEBUG) {
-                Log.d(TAG, "mPositionBeforeScroll:" + mPositionBeforeScroll);
             }
         } else if (state == SCROLL_STATE_SETTLING) {
             Log.d(TAG,"onScrollStateChange : setting");
@@ -342,7 +310,6 @@ public class RecyclerViewPager extends RecyclerView {
                 if (targetView != null) {
                     int targetPosition = getChildAdapterPosition(targetView);
                     targetPosition = adjustTargetPosition(targetView,targetPosition);
-                    Log.d(TAG, "targetPosition:" + targetPosition);
                     smoothScrollToPosition(safeTargetPosition(targetPosition, mViewPagerAdapter.getItemCount()));
                     mNeedAdjust = false;
                 }
@@ -350,7 +317,7 @@ public class RecyclerViewPager extends RecyclerView {
 
             if (mSmoothScrollTargetPosition != mPositionBeforeScroll) {
                 if (DEBUG) {
-                    Log.d(TAG, "onPageChanged:" + mPositionBeforeScroll / 4 + " to " + mSmoothScrollTargetPosition / 4);
+                    Log.d(TAG, "onPageChanged position:" + mPositionBeforeScroll  + " to " + mSmoothScrollTargetPosition);
                 }
                 if (mOnPageChangedListeners != null) {
                     for (OnPageChangedListener onPageChangedListener : mOnPageChangedListeners) {
@@ -368,25 +335,16 @@ public class RecyclerViewPager extends RecyclerView {
     private int adjustTargetPosition(View targetView, int targetPosition) {
         int rvMid = this.getLeft() + this.getWidth() / 2;
         int triggerSpan = (int) (mTriggerOffset * this.getWidth());
-        if (targetPosition % 4 == 0) {      // the top-left one, scroll to left
-            Log.d(TAG, "top left one, mid:" + rvMid + "trig:" + triggerSpan);
+        if (targetPosition % ITEM_COUNT_OF_PAGE == 0) {      // the top-left one, scroll to left
             if (rvMid - targetView.getLeft() < triggerSpan) {
-                return targetPosition - mViewPagerAdapter.getItemCountOfPage();
+                return targetPosition - ITEM_COUNT_OF_PAGE;
             }
-        } else if (targetPosition % 4 == 2){        // the top-right one, scroll to right
-            Log.d(TAG, "top right one, mid:" + rvMid + "trig:" + triggerSpan);
+        } else if (targetPosition % ITEM_COUNT_OF_PAGE == 2){        // the top-right one, scroll to right
             if (targetView.getRight() - rvMid < triggerSpan) {
-                return (targetPosition + mViewPagerAdapter.getItemCountOfPage()) / 4 * 4;
+                return (targetPosition + ITEM_COUNT_OF_PAGE) / ITEM_COUNT_OF_PAGE * ITEM_COUNT_OF_PAGE;
             }
         }
-        return targetPosition / 4 * 4; // keeps origin location
-    }
-    @NonNull
-    protected RecyclerViewPagerAdapter ensureRecyclerViewPagerAdapter(Adapter adapter) {
-        return (adapter instanceof RecyclerViewPagerAdapter)
-                ? (RecyclerViewPagerAdapter) adapter
-                : new RecyclerViewPagerAdapter(this, adapter);
-
+        return targetPosition / ITEM_COUNT_OF_PAGE * ITEM_COUNT_OF_PAGE; // keeps origin location
     }
 
     private int getFlingCount(int velocity, int cellSize) {
