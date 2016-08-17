@@ -3,20 +3,18 @@ package com.closeli.jd5737.draggablerecyclerviewpager.widget;
 import android.content.Context;
 import android.graphics.PointF;
 import android.os.Build;
-import android.os.Parcelable;
-import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
 import com.closeli.jd5737.draggablerecyclerviewpager.BuildConfig;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,47 +27,54 @@ public class RecyclerViewPager extends RecyclerView {
     private static final String TAG = "RecyclerViewPager";
     public static final boolean DEBUG = BuildConfig.DEBUG;
 
+    private int lastClickItem = -1;
+    private long lastClickTime = 0;
+    private boolean hasDoubleClick = false;
+    private static final long DOUBLE_CLICK_INTERVAL = 250; // in millis
+    private OnItemClickListener mItemClickListener = null;
+
     private static final int ITEM_COUNT_OF_PAGE = 4;
     private RecyclerView.Adapter mViewPagerAdapter;
-    private static float mTriggerOffset = 0.25f;
-    private float mFlingFactor = 0.15f;
+    private static final float TRIGGER_OFFSET = 0.25f;
+    private static final float FLING_FACTOR = 0.15f;
     private boolean mSinglePageFling = false;
     private List<OnPageChangedListener> mOnPageChangedListeners;
-    private int mSmoothScrollTargetPosition = -1;
-    private int mPositionBeforeScroll = -1;
+    private int mSmoothScrollTargetPosition = 0;
+    private int mPositionBeforeScroll = 0;
 
     boolean mNeedAdjust;
     private int mPositionOnTouchDown = -1;
     private boolean mHasCalledOnPageChanged = true;
     private boolean reverseLayout = false;
+    private Context mContext;
+    private GestureDetector mGestureDetector;
 
     public RecyclerViewPager(Context context) {
         this(context, null);
+        mContext = context;
+        init();
     }
 
     public RecyclerViewPager(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
+        mContext = context;
+        init();
     }
 
     public RecyclerViewPager(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         setNestedScrollingEnabled(false);
+        mContext = context;
+        init();
     }
 
-    public void setFlingFactor(float flingFactor) {
-        mFlingFactor = flingFactor;
+    private void init() {
+        //setOnTouchListener(this);
+        mGestureDetector = new GestureDetector(mContext,new OnClickGestureListener());
     }
 
-    public float getFlingFactor() {
-        return mFlingFactor;
-    }
-
-    public void setTriggerOffset(float triggerOffset) {
-        mTriggerOffset = triggerOffset;
-    }
-
-    public float getTriggerOffset() {
-        return mTriggerOffset;
+    public void setOnClickListener(OnItemClickListener listener) {
+        mItemClickListener = listener;
     }
 
     public void setSinglePageFling(boolean singlePageFling) {
@@ -108,15 +113,12 @@ public class RecyclerViewPager extends RecyclerView {
 
     @Override
     public boolean fling(int velocityX, int velocityY) {
-        boolean flinging = super.fling((int) (velocityX * mFlingFactor), (int) (velocityY * mFlingFactor));
+        boolean flinging = super.fling((int) (velocityX * FLING_FACTOR), (int) (velocityY * FLING_FACTOR));
         if (flinging && getLayoutManager().canScrollHorizontally()) {
             adjustFlingPosition(velocityX);
-            Log.d(TAG, "fling, velocityX:" + velocityX + ",velocityY:" + velocityY
-                    + ",minVx:" + getMinFlingVelocity() + ",maxVx:" + getMaxFlingVelocity());
-        } else {
-            Log.d(TAG, "no fling, velocityX:" + velocityX + ",velocityY:" + velocityY
-                    + ",minVx:" + getMinFlingVelocity() + ",maxVx:" + getMaxFlingVelocity());
         }
+        Log.d(TAG, "fling:" + flinging +", velocityX:" + velocityX + ",velocityY:" + velocityY
+                + ",minVx:" + getMinFlingVelocity() + ",maxVx:" + getMaxFlingVelocity());
         return flinging;
     }
 
@@ -187,7 +189,6 @@ public class RecyclerViewPager extends RecyclerView {
         if (DEBUG) {
             Log.d(TAG, "scrollToPosition:" + position);
         }
-        mPositionBeforeScroll = getTopLeftChildPosition();
         mSmoothScrollTargetPosition = position;
         super.scrollToPosition(position);
 
@@ -238,10 +239,6 @@ public class RecyclerViewPager extends RecyclerView {
                 targetPosition = (mPositionOnTouchDown / ITEM_COUNT_OF_PAGE + flingCount) * ITEM_COUNT_OF_PAGE;
             }
             targetPosition = Math.min(Math.max(targetPosition, 0), mViewPagerAdapter.getItemCount() - 1);
-
-            if (DEBUG) {
-                Log.d(TAG,"adjustFlingPosition:" + targetPosition);
-            }
             smoothScrollToPosition(safeTargetPosition(targetPosition, mViewPagerAdapter.getItemCount()));
         }
     }
@@ -281,6 +278,7 @@ public class RecyclerViewPager extends RecyclerView {
         // recording the max/min value in touch track
         if (e.getAction() == MotionEvent.ACTION_MOVE) {
         }
+        mGestureDetector.onTouchEvent(e);
         return super.onTouchEvent(e);
     }
 
@@ -288,7 +286,7 @@ public class RecyclerViewPager extends RecyclerView {
     public void onScrollStateChanged(int state) {
         super.onScrollStateChanged(state);
         if (state == SCROLL_STATE_DRAGGING) {
-            Log.d(TAG,"onScrollStateChange : dragging");
+            //Log.d(TAG,"onScrollStateChange : dragging");
             mNeedAdjust = true;
             View child = ViewUtils.getTopLeftChild(this);
             if (child != null) {
@@ -298,13 +296,13 @@ public class RecyclerViewPager extends RecyclerView {
                     mHasCalledOnPageChanged = false;
                 }
             } else {
-                mPositionBeforeScroll = -1;
+                mPositionBeforeScroll = 0;
             }
         } else if (state == SCROLL_STATE_SETTLING) {
-            Log.d(TAG,"onScrollStateChange : setting");
+            //Log.d(TAG,"onScrollStateChange : setting");
             mNeedAdjust = false;
         } else if (state == SCROLL_STATE_IDLE) {
-            Log.d(TAG,"onScrollStateChange : idle");
+            //Log.d(TAG,"onScrollStateChange : idle");
             if (mNeedAdjust) {
                 View targetView = ViewUtils.getTopCenterChild(this);
                 if (targetView != null) {
@@ -330,21 +328,31 @@ public class RecyclerViewPager extends RecyclerView {
                 mPositionBeforeScroll = mSmoothScrollTargetPosition;
             }
         }
-
     }
+
     private int adjustTargetPosition(View targetView, int targetPosition) {
         int rvMid = this.getLeft() + this.getWidth() / 2;
-        int triggerSpan = (int) (mTriggerOffset * this.getWidth());
-        if (targetPosition % ITEM_COUNT_OF_PAGE == 0) {      // the top-left one, scroll to left
-            if (rvMid - targetView.getLeft() < triggerSpan) {
-                return targetPosition - ITEM_COUNT_OF_PAGE;
-            }
-        } else if (targetPosition % ITEM_COUNT_OF_PAGE == 2){        // the top-right one, scroll to right
-            if (targetView.getRight() - rvMid < triggerSpan) {
-                return (targetPosition + ITEM_COUNT_OF_PAGE) / ITEM_COUNT_OF_PAGE * ITEM_COUNT_OF_PAGE;
+        int triggerSpan = (int) (TRIGGER_OFFSET * this.getWidth());
+        // whether is in the same page
+        boolean isInSamePage = mPositionBeforeScroll / ITEM_COUNT_OF_PAGE == targetPosition / ITEM_COUNT_OF_PAGE;
+        boolean isToRight = mPositionBeforeScroll / ITEM_COUNT_OF_PAGE < targetPosition / ITEM_COUNT_OF_PAGE;
+        boolean isToLeft = mPositionBeforeScroll / ITEM_COUNT_OF_PAGE > targetPosition / ITEM_COUNT_OF_PAGE;
+        boolean targetOnLeft = targetPosition % ITEM_COUNT_OF_PAGE == 0;
+        boolean targetOnRight = targetPosition % ITEM_COUNT_OF_PAGE == 2;
+        if (isInSamePage
+                || (isToRight && targetOnRight)
+                || (isToLeft && targetOnLeft)) {
+            if (targetOnLeft) {      // the top-left one, scroll to left
+                if (rvMid - targetView.getLeft() < triggerSpan) {
+                    return targetPosition - ITEM_COUNT_OF_PAGE;
+                }
+            } else if (targetOnRight){        // the top-right one, scroll to right
+                if (targetView.getRight() - rvMid < triggerSpan) {
+                    return (targetPosition + ITEM_COUNT_OF_PAGE) / ITEM_COUNT_OF_PAGE * ITEM_COUNT_OF_PAGE;
+                }
             }
         }
-        return targetPosition / ITEM_COUNT_OF_PAGE * ITEM_COUNT_OF_PAGE; // keeps origin location
+        return targetPosition / ITEM_COUNT_OF_PAGE * ITEM_COUNT_OF_PAGE; // stays in the same page
     }
 
     private int getFlingCount(int velocity, int cellSize) {
@@ -352,8 +360,8 @@ public class RecyclerViewPager extends RecyclerView {
             return 0;
         }
         int sign = velocity > 0 ? 1 : -1;
-        return (int) (sign * Math.ceil((velocity * sign * mFlingFactor / cellSize)
-                - mTriggerOffset));
+        return (int) (sign * Math.ceil((velocity * sign * FLING_FACTOR / cellSize)
+                - TRIGGER_OFFSET));
     }
 
     private int safeTargetPosition(int position, int count) {
@@ -366,8 +374,132 @@ public class RecyclerViewPager extends RecyclerView {
         return position;
     }
 
+    public boolean canScrollLeft() {
+        if (mSmoothScrollTargetPosition - ITEM_COUNT_OF_PAGE >= 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean canScrollRight() {
+        if (mSmoothScrollTargetPosition + ITEM_COUNT_OF_PAGE < mViewPagerAdapter.getItemCount()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void scrollLeft() {
+        int targetPosition = mSmoothScrollTargetPosition - ITEM_COUNT_OF_PAGE;
+        smoothScrollToPosition(safeTargetPosition(targetPosition, mViewPagerAdapter.getItemCount()));
+    }
+
+    public void scrollRight() {
+        int targetPosition = mSmoothScrollTargetPosition + ITEM_COUNT_OF_PAGE;
+        smoothScrollToPosition(safeTargetPosition(targetPosition, mViewPagerAdapter.getItemCount()));
+    }
+
+    public boolean isFullScreen() {
+        return false;
+    }
+
+   /* @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        int action = event.getAction();
+        switch (action & MotionEvent.ACTION_MASK) {
+            case MotionEvent.ACTION_DOWN :
+                touchDown(event);
+                break;
+            case MotionEvent.ACTION_MOVE :
+                touchMove(event);
+                break;
+            case MotionEvent.ACTION_UP :
+                touchUp(event);
+                break;
+            default:
+                break;
+        }
+        return false;
+    }*/
+
+    private void touchDown(MotionEvent event) {
+        float rx = event.getRawX();
+        float ry = event.getRawY();
+        Log.d(TAG,"touch down");
+    }
+
+    private void touchMove(MotionEvent event) {
+    }
+    private void touchUp(MotionEvent event) {
+        Log.d(TAG,"touch up");
+        long clickTime = event.getEventTime();
+        float rx = event.getRawX();
+        float ry = event.getRawY();
+        View child = findChildViewUnder(rx, ry);
+        final int childIndex = getChildLayoutPosition(child);
+        if(clickTime - lastClickTime <= DOUBLE_CLICK_INTERVAL && childIndex == lastClickItem){
+            hasDoubleClick = true;
+            onItemDoubleClick(childIndex);
+        }else{
+            hasDoubleClick = false;
+            postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if(!hasDoubleClick){
+                        onItemClick(childIndex);
+                    }
+                }
+            },DOUBLE_CLICK_INTERVAL);
+        }
+        lastClickTime=clickTime;
+        lastClickItem=childIndex;
+    }
+
+    private void onItemDoubleClick(int childIndex) {
+        if (mItemClickListener != null) {
+            mItemClickListener.onItemDoubleClick(childIndex);
+        }
+    }
+
+    private void onItemClick(int childIndex) {
+        if (mItemClickListener != null) {
+            mItemClickListener.onItemClick(childIndex);
+        }
+    }
+    class OnClickGestureListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onDown(MotionEvent e) {
+            return  true;
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            float x = e.getRawX();
+            float y = e.getRawY();
+            View child = findChildViewUnder(x, y);
+            final int childIndex = getChildLayoutPosition(child);
+            onItemClick(childIndex);
+            return false;
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            float x = e.getRawX();
+            float y = e.getRawY();
+            View child = findChildViewUnder(x, y);
+            final int childIndex = getChildLayoutPosition(child);
+            onItemDoubleClick(childIndex);
+            return false;
+        }
+    }
+
     public interface OnPageChangedListener {
         void OnPageChanged(int oldPosition, int newPosition);
     }
 
+    public interface OnItemClickListener {
+        void onItemClick(int childIndex);
+        void onItemDoubleClick(int childIndex);
+    }
 }

@@ -4,7 +4,9 @@ import android.content.Context;
 import android.graphics.Point;
 import android.support.v7.widget.RecyclerView;
 import android.view.Display;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -17,7 +19,7 @@ import java.util.List;
 /**
  * Created by jd5737 on 2016/8/16.
  */
-public class RecyclerViewPagerAdapter extends RecyclerView.Adapter<RecyclerViewPagerAdapter.ItemViewHolder>{
+public class RecyclerViewPagerAdapter extends RecyclerView.Adapter<RecyclerViewPagerAdapter.ItemViewHolder> {
 
     private final List<Item> mItems = new ArrayList<Item>();
     private Context mContext;
@@ -36,12 +38,12 @@ public class RecyclerViewPagerAdapter extends RecyclerView.Adapter<RecyclerViewP
             lp.width = displayWidth / 2;
             lp.height = displayHeight / 2;
             textView.setLayoutParams(lp);
-            textView.setOnClickListener(new View.OnClickListener() {
+            /*textView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Toast.makeText(mContext,"Click " + ((TextView) v).getText(),Toast.LENGTH_SHORT).show();
                 }
-            });
+            });*/
         }
     }
 
