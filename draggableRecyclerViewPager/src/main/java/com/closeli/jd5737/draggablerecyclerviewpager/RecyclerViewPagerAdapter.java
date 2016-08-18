@@ -3,24 +3,26 @@ package com.closeli.jd5737.draggablerecyclerviewpager;
 import android.content.Context;
 import android.graphics.Point;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Display;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.closeli.jd5737.draggablerecyclerviewpager.widget.DraggableItemTouchHelperAdapter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by jd5737 on 2016/8/16.
  */
-public class RecyclerViewPagerAdapter extends RecyclerView.Adapter<RecyclerViewPagerAdapter.ItemViewHolder> {
+public class RecyclerViewPagerAdapter extends RecyclerView.Adapter<RecyclerViewPagerAdapter.ItemViewHolder> implements DraggableItemTouchHelperAdapter {
 
+    private static final String TAG = "RecyclerViewPagerAdp";
     private final List<Item> mItems = new ArrayList<Item>();
     private Context mContext;
     private static final int ITEM_COUNT_OF_PAGE = 4;
@@ -101,5 +103,35 @@ public class RecyclerViewPagerAdapter extends RecyclerView.Adapter<RecyclerViewP
         } else {
             return TYPE_NORMAL;
         }
+    }
+    @Override
+    public boolean onItemMove(int fromPosition, int toPosition) {
+        // Notify that item reflected at fromPosition has been moved to toPosition.
+        // This is a structural change event. Representations of other existing items in the data set
+        // are still considered up to date and will not be rebound,though their positions may be
+        // altered, so you need to swap one by one to move the item to target position
+        if (fromPosition < toPosition) {
+            for (int i = fromPosition; i < toPosition; i++) {
+                Collections.swap(mItems, i, i+1);
+            }
+        } else if (fromPosition > toPosition) {
+            for (int i = fromPosition; i > toPosition; i--) {
+                Collections.swap(mItems, i, i-1);
+            }
+        }
+        notifyItemMoved(fromPosition, toPosition);
+        Log.d(TAG, String.format("onItemMove %s to %s", fromPosition, toPosition));
+        /*String msg = "";
+        for (int i = 0; i <  mItems.size(); i++) {
+            msg += mItems.get(i).getId() + ",";
+        }
+        Log.d(TAG, msg);*/
+        return true;
+    }
+
+    @Override
+    public void onItemDismiss(int position) {
+        mItems.remove(position);
+        notifyItemRemoved(position);
     }
 }

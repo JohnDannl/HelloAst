@@ -1,28 +1,19 @@
 package com.closeli.jd5737.draggablerecyclerviewpager;
 
 import android.app.Activity;
-import android.content.Context;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.Display;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.closeli.jd5737.draggablerecyclerviewpager.widget.DraggableItemTouchHelperCallback;
 import com.closeli.jd5737.draggablerecyclerviewpager.widget.RecyclerViewPager;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends Activity {
 
@@ -31,7 +22,9 @@ public class MainActivity extends Activity {
     private ImageView imgNavLeft;
     private ImageView imgNavRight;
     private boolean isNavBarShow = false;
-    private RecyclerViewPager recyclerViewPager;
+    private RecyclerViewPager mRecyclerViewPager;
+    private RecyclerViewPagerAdapter mAdapter;
+    private ItemTouchHelper mItemTouchHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,13 +36,14 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.activity_main);
 
-        recyclerViewPager = (RecyclerViewPager) findViewById(R.id.recycler_view_pager);
-        recyclerViewPager.setHasFixedSize(true);
-        recyclerViewPager.setAdapter(new RecyclerViewPagerAdapter(this));
+        mRecyclerViewPager = (RecyclerViewPager) findViewById(R.id.recycler_view_pager);
+        mRecyclerViewPager.setHasFixedSize(true);
+        mAdapter = new RecyclerViewPagerAdapter(this);
+        mRecyclerViewPager.setAdapter(mAdapter);
         GridLayoutManager layoutManager = new GridLayoutManager(this, COLUMN_SIZE, LinearLayoutManager.HORIZONTAL, false);
 //        LinearLayoutManager layoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
-        recyclerViewPager.setLayoutManager(layoutManager);
-        recyclerViewPager.addOnPageChangedListener(new RecyclerViewPager.OnPageChangedListener() {
+        mRecyclerViewPager.setLayoutManager(layoutManager);
+        mRecyclerViewPager.addOnPageChangedListener(new RecyclerViewPager.OnPageChangedListener() {
             @Override
             public void OnPageChanged(int oldPosition, int newPosition) {
                 if(isNavBarShow) {
@@ -58,7 +52,7 @@ public class MainActivity extends Activity {
             }
         });
 
-        recyclerViewPager.setOnClickListener(new RecyclerViewPager.OnItemClickListener() {
+        mRecyclerViewPager.setOnClickListener(new RecyclerViewPager.OnItemClickListener() {
             @Override
             public void onItemClick(int childIndex) {
                 //Toast.makeText(MainActivity.this,"click:" + childIndex, Toast.LENGTH_SHORT).show();
@@ -71,18 +65,22 @@ public class MainActivity extends Activity {
             }
         });
 
+        ItemTouchHelper.Callback itemTouchCallback = new DraggableItemTouchHelperCallback(mAdapter);
+        mItemTouchHelper = new ItemTouchHelper(itemTouchCallback);
+        mItemTouchHelper.attachToRecyclerView(mRecyclerViewPager);
+
         imgNavLeft=(ImageView)findViewById(R.id.navi_bar_left);
         imgNavLeft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                recyclerViewPager.scrollLeft();
+                mRecyclerViewPager.scrollLeft();
             }
         });
         imgNavRight=(ImageView)findViewById(R.id.navi_bar_right);
         imgNavRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                recyclerViewPager.scrollRight();
+                mRecyclerViewPager.scrollRight();
             }
         });
     }
@@ -101,15 +99,15 @@ public class MainActivity extends Activity {
         isNavBarShow=false;
     }
     private void showNavBar(){
-        if(recyclerViewPager.isFullScreen())return;
+        if(mRecyclerViewPager.isFullScreen())return;
         mHandler.removeCallbacks(hideNavBarCallback);
         mHandler.postDelayed(hideNavBarCallback,DELAY_TIME);
-        if(recyclerViewPager.canScrollLeft()){
+        if(mRecyclerViewPager.canScrollLeft()){
             imgNavLeft.setVisibility(View.VISIBLE);
         }else{
             imgNavLeft.setVisibility(View.GONE);
         }
-        if(recyclerViewPager.canScrollRight()){
+        if(mRecyclerViewPager.canScrollRight()){
             imgNavRight.setVisibility(View.VISIBLE);
         }else{
             imgNavRight.setVisibility(View.GONE);

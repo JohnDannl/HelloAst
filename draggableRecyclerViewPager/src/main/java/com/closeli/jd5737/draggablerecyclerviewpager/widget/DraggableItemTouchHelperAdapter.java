@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.closeli.jd5737.draggablerecyclerviewpager.helper;
+package com.closeli.jd5737.draggablerecyclerviewpager.widget;
 
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -24,7 +24,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
  *
  * @author Paul Burke (ipaulpro)
  */
-public interface ItemTouchHelperAdapter {
+public interface DraggableItemTouchHelperAdapter {
 
     /**
      * Called when an item has been dragged far enough to trigger a move. This is called every time

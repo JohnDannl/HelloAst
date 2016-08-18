@@ -27,13 +27,9 @@ public class RecyclerViewPager extends RecyclerView {
     private static final String TAG = "RecyclerViewPager";
     public static final boolean DEBUG = BuildConfig.DEBUG;
 
-    private int lastClickItem = -1;
-    private long lastClickTime = 0;
-    private boolean hasDoubleClick = false;
-    private static final long DOUBLE_CLICK_INTERVAL = 250; // in millis
     private OnItemClickListener mItemClickListener = null;
 
-    private static final int ITEM_COUNT_OF_PAGE = 4;
+    public static final int ITEM_COUNT_OF_PAGE = 4;
     private RecyclerView.Adapter mViewPagerAdapter;
     private static final float TRIGGER_OFFSET = 0.25f;
     private static final float FLING_FACTOR = 0.15f;
@@ -69,7 +65,6 @@ public class RecyclerViewPager extends RecyclerView {
     }
 
     private void init() {
-        //setOnTouchListener(this);
         mGestureDetector = new GestureDetector(mContext,new OnClickGestureListener());
     }
 
@@ -238,7 +233,6 @@ public class RecyclerViewPager extends RecyclerView {
                 flingCount = Math.max(-1, Math.min(1, flingCount));
                 targetPosition = (mPositionOnTouchDown / ITEM_COUNT_OF_PAGE + flingCount) * ITEM_COUNT_OF_PAGE;
             }
-            targetPosition = Math.min(Math.max(targetPosition, 0), mViewPagerAdapter.getItemCount() - 1);
             smoothScrollToPosition(safeTargetPosition(targetPosition, mViewPagerAdapter.getItemCount()));
         }
     }
@@ -275,9 +269,7 @@ public class RecyclerViewPager extends RecyclerView {
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
-        // recording the max/min value in touch track
-        if (e.getAction() == MotionEvent.ACTION_MOVE) {
-        }
+        // Passes all the motion events to the gesture detector instance
         mGestureDetector.onTouchEvent(e);
         return super.onTouchEvent(e);
     }
@@ -299,18 +291,13 @@ public class RecyclerViewPager extends RecyclerView {
                 mPositionBeforeScroll = 0;
             }
         } else if (state == SCROLL_STATE_SETTLING) {
-            //Log.d(TAG,"onScrollStateChange : setting");
+            //Log.d(TAG, "onScrollStateChange : setting");
             mNeedAdjust = false;
         } else if (state == SCROLL_STATE_IDLE) {
-            //Log.d(TAG,"onScrollStateChange : idle");
+            //Log.d(TAG, "onScrollStateChange : idle");
             if (mNeedAdjust) {
-                View targetView = ViewUtils.getTopCenterChild(this);
-                if (targetView != null) {
-                    int targetPosition = getChildAdapterPosition(targetView);
-                    targetPosition = adjustTargetPosition(targetView,targetPosition);
-                    smoothScrollToPosition(safeTargetPosition(targetPosition, mViewPagerAdapter.getItemCount()));
-                    mNeedAdjust = false;
-                }
+                adjustScrollPosition();
+                mNeedAdjust = false;
             }
 
             if (mSmoothScrollTargetPosition != mPositionBeforeScroll) {
@@ -330,6 +317,17 @@ public class RecyclerViewPager extends RecyclerView {
         }
     }
 
+    /**
+     * Adjusts the display page according to the centerX item and scrolling direction
+     */
+    public void adjustScrollPosition() {
+        View targetView = ViewUtils.getTopCenterChild(this);
+        if (targetView != null) {
+            int targetPosition = getChildAdapterPosition(targetView);
+            targetPosition = adjustTargetPosition(targetView,targetPosition);
+            smoothScrollToPosition(safeTargetPosition(targetPosition, mViewPagerAdapter.getItemCount()));
+        }
+    }
     private int adjustTargetPosition(View targetView, int targetPosition) {
         int rvMid = this.getLeft() + this.getWidth() / 2;
         int triggerSpan = (int) (TRIGGER_OFFSET * this.getWidth());
@@ -355,6 +353,7 @@ public class RecyclerViewPager extends RecyclerView {
         return targetPosition / ITEM_COUNT_OF_PAGE * ITEM_COUNT_OF_PAGE; // stays in the same page
     }
 
+
     private int getFlingCount(int velocity, int cellSize) {
         if (velocity == 0) {
             return 0;
@@ -365,13 +364,7 @@ public class RecyclerViewPager extends RecyclerView {
     }
 
     private int safeTargetPosition(int position, int count) {
-        if (position < 0) {
-            return 0;
-        }
-        if (position >= count) {
-            return count - 1;
-        }
-        return position;
+       return  Math.min(Math.max(position, 0), mViewPagerAdapter.getItemCount() - 1);
     }
 
     public boolean canScrollLeft() {
@@ -402,58 +395,6 @@ public class RecyclerViewPager extends RecyclerView {
 
     public boolean isFullScreen() {
         return false;
-    }
-
-   /* @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        int action = event.getAction();
-        switch (action & MotionEvent.ACTION_MASK) {
-            case MotionEvent.ACTION_DOWN :
-                touchDown(event);
-                break;
-            case MotionEvent.ACTION_MOVE :
-                touchMove(event);
-                break;
-            case MotionEvent.ACTION_UP :
-                touchUp(event);
-                break;
-            default:
-                break;
-        }
-        return false;
-    }*/
-
-    private void touchDown(MotionEvent event) {
-        float rx = event.getRawX();
-        float ry = event.getRawY();
-        Log.d(TAG,"touch down");
-    }
-
-    private void touchMove(MotionEvent event) {
-    }
-    private void touchUp(MotionEvent event) {
-        Log.d(TAG,"touch up");
-        long clickTime = event.getEventTime();
-        float rx = event.getRawX();
-        float ry = event.getRawY();
-        View child = findChildViewUnder(rx, ry);
-        final int childIndex = getChildLayoutPosition(child);
-        if(clickTime - lastClickTime <= DOUBLE_CLICK_INTERVAL && childIndex == lastClickItem){
-            hasDoubleClick = true;
-            onItemDoubleClick(childIndex);
-        }else{
-            hasDoubleClick = false;
-            postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if(!hasDoubleClick){
-                        onItemClick(childIndex);
-                    }
-                }
-            },DOUBLE_CLICK_INTERVAL);
-        }
-        lastClickTime=clickTime;
-        lastClickItem=childIndex;
     }
 
     private void onItemDoubleClick(int childIndex) {

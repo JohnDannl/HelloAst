@@ -14,30 +14,35 @@
  * limitations under the License.
  */
 
-package com.closeli.jd5737.draggablerecyclerviewpager.helper;
+package com.closeli.jd5737.draggablerecyclerviewpager.widget;
 
 import android.graphics.Canvas;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
+
+import com.closeli.jd5737.draggablerecyclerviewpager.RecyclerViewPagerAdapter;
 
 /**
  * An implementation of {@link ItemTouchHelper.Callback} that enables basic drag & drop and
  * swipe-to-dismiss. Drag events are automatically started by an item long-press.<br/>
  * </br/>
  * Expects the <code>RecyclerView.Adapter</code> to listen for {@link
- * ItemTouchHelperAdapter} callbacks and the <code>RecyclerView.ViewHolder</code> to implement
- * {@link ItemTouchHelperViewHolder}.
+ * DraggableItemTouchHelperAdapter} callbacks.
  *
  * @author Paul Burke (ipaulpro)
  */
-public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
+public class DraggableItemTouchHelperCallback extends ItemTouchHelper.Callback {
+    private static final String TAG = "RecyclerViewPagerCbk";
 
+    private static int TYPE_NORMAL = 0;
+    private static int TYPE_FOOTER = 1;
     public static final float ALPHA_FULL = 1.0f;
 
-    private final ItemTouchHelperAdapter mAdapter;
+    private final DraggableItemTouchHelperAdapter mAdapter;
 
-    public SimpleItemTouchHelperCallback(ItemTouchHelperAdapter adapter) {
+    public DraggableItemTouchHelperCallback(DraggableItemTouchHelperAdapter adapter) {
         mAdapter = adapter;
     }
 
@@ -53,6 +58,10 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+        // Disable movement for decoration
+        if (viewHolder.getItemViewType() == TYPE_FOOTER) {
+            return 0;
+        }
         // Set movement flags based on the layout manager
         if (recyclerView.getLayoutManager() instanceof GridLayoutManager) {
             final int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
@@ -70,10 +79,8 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
         if (source.getItemViewType() != target.getItemViewType()) {
             return false;
         }
-
-        // Notify the adapter of the move
-        mAdapter.onItemMove(source.getAdapterPosition(), target.getAdapterPosition());
-        return true;
+        // Notify the adapter of the item move
+        return mAdapter.onItemMove(source.getAdapterPosition(), target.getAdapterPosition());
     }
 
     @Override
@@ -98,26 +105,16 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
     public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
         // We only want the active item to change
         if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
-            if (viewHolder instanceof ItemTouchHelperViewHolder) {
-                // Let the view holder know that this item is being moved or dragged
-                ItemTouchHelperViewHolder itemViewHolder = (ItemTouchHelperViewHolder) viewHolder;
-                itemViewHolder.onItemSelected();
-            }
         }
-
         super.onSelectedChanged(viewHolder, actionState);
     }
 
     @Override
     public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         super.clearView(recyclerView, viewHolder);
-
-        viewHolder.itemView.setAlpha(ALPHA_FULL);
-
-        if (viewHolder instanceof ItemTouchHelperViewHolder) {
-            // Tell the view holder it's time to restore the idle state
-            ItemTouchHelperViewHolder itemViewHolder = (ItemTouchHelperViewHolder) viewHolder;
-            itemViewHolder.onItemClear();
+        // Restores to display a whole page
+        if (recyclerView instanceof RecyclerViewPager) {
+            ((RecyclerViewPager) recyclerView).adjustScrollPosition();
         }
     }
 }
