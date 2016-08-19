@@ -1,3 +1,3 @@
 <resources>
-    <string name="app_name">DraggableRecyclerGrid</string>
+    <string name="app_name">DraggableRecyclerViewPager</string>
 </resources>
