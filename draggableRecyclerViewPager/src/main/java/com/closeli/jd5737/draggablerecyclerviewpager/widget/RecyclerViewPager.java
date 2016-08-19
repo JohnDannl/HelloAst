@@ -1,6 +1,7 @@
 package com.closeli.jd5737.draggablerecyclerviewpager.widget;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.os.Build;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,7 +12,11 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
 
 import com.closeli.jd5737.draggablerecyclerviewpager.BuildConfig;
 
@@ -45,6 +50,10 @@ public class RecyclerViewPager extends RecyclerView {
     private Context mContext;
     private GestureDetector mGestureDetector;
 
+    private static int displayWidth = 1280;     // Initializes to 720P
+    private static int displayHeight = 720;
+    private int mFullScreenItem = -1;
+
     public RecyclerViewPager(Context context) {
         this(context, null);
         mContext = context;
@@ -66,6 +75,11 @@ public class RecyclerViewPager extends RecyclerView {
 
     private void init() {
         mGestureDetector = new GestureDetector(mContext,new OnClickGestureListener());
+        final WindowManager windowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        final Point point = new Point();
+        windowManager.getDefaultDisplay().getSize(point);
+        displayWidth = point.x;
+        displayHeight = point.y;
     }
 
     public void setOnClickListener(OnItemClickListener listener) {
@@ -119,6 +133,9 @@ public class RecyclerViewPager extends RecyclerView {
 
     @Override
     public void smoothScrollToPosition(int position) {
+        if (isLayoutFrozen()) {
+            return;
+        }
         if (DEBUG) {
             Log.d(TAG, "smoothScrollToPosition:" + position);
         }
@@ -174,7 +191,7 @@ public class RecyclerViewPager extends RecyclerView {
             }
             getLayoutManager().startSmoothScroll(linearSmoothScroller);
         } else {
-            Log.d(TAG,"Is not LinearLayoutManage");
+            Log.d(TAG,"Is not LinearLayoutManager");
             super.smoothScrollToPosition(position);
         }
     }
@@ -260,9 +277,9 @@ public class RecyclerViewPager extends RecyclerView {
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN && getLayoutManager() != null) {
             mPositionOnTouchDown = getTopLeftChildPosition();
-            if (DEBUG) {
+           /* if (DEBUG) {
                 Log.d(TAG, "dispatchTouchEvent Position:" + mPositionOnTouchDown);
-            }
+            }*/
         }
         return super.dispatchTouchEvent(ev);
     }
@@ -397,17 +414,18 @@ public class RecyclerViewPager extends RecyclerView {
         return false;
     }
 
-    private void onItemDoubleClick(int childIndex) {
+    private void onItemDoubleClick(int childIndex, View child) {
         if (mItemClickListener != null) {
-            mItemClickListener.onItemDoubleClick(childIndex);
+            mItemClickListener.onItemDoubleClick(childIndex, child);
         }
     }
 
-    private void onItemClick(int childIndex) {
+    private void onItemClick(int childIndex, View child) {
         if (mItemClickListener != null) {
-            mItemClickListener.onItemClick(childIndex);
+            mItemClickListener.onItemClick(childIndex, child);
         }
     }
+
     class OnClickGestureListener extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onDown(MotionEvent e) {
@@ -420,7 +438,7 @@ public class RecyclerViewPager extends RecyclerView {
             float y = e.getRawY();
             View child = findChildViewUnder(x, y);
             final int childIndex = getChildLayoutPosition(child);
-            onItemClick(childIndex);
+            onItemClick(childIndex, child);
             return false;
         }
 
@@ -430,9 +448,47 @@ public class RecyclerViewPager extends RecyclerView {
             float y = e.getRawY();
             View child = findChildViewUnder(x, y);
             final int childIndex = getChildLayoutPosition(child);
-            onItemDoubleClick(childIndex);
+            if (mFullScreenItem == -1) {
+                mFullScreenItem = childIndex;
+                //propertyAnimationToFullScreen(child);
+                //viewAnimationToFullScreen(child);
+                //extendToFullScreen(child);
+            } else {
+                mFullScreenItem = -1;
+                //shrinkToNormalScreen(child);
+            }
+            onItemDoubleClick(childIndex, child);
             return false;
         }
+    }
+
+    private void propertyAnimationToFullScreen(View child) {
+        child.animate().scaleX(2.0f).scaleY(2.0f).start();
+    }
+
+    private void viewAnimationToFullScreen(View child) {
+        int left = 0;
+        int top = 0;
+        ScaleAnimation scale = new ScaleAnimation(1f, 2.0f, 1f, 2.0f, Animation.ABSOLUTE, left, Animation.ABSOLUTE, top);
+        scale.setDuration(200);
+        scale.setFillAfter(true);
+        scale.setFillEnabled(true);
+        child.clearAnimation();
+        child.startAnimation(scale);
+    }
+
+    private void extendToFullScreen(View child) {
+        RecyclerView.LayoutParams layoutParams =(RecyclerView.LayoutParams) child.getLayoutParams();
+        layoutParams.width = displayWidth;
+        layoutParams.height = displayHeight;
+        child.setLayoutParams(layoutParams);
+    }
+
+    private void shrinkToNormalScreen(View child) {
+        ViewGroup.LayoutParams layoutParams = child.getLayoutParams();
+        layoutParams.width = displayWidth / 2;
+        layoutParams.height = displayHeight / 2;
+        child.setLayoutParams(layoutParams);
     }
 
     public interface OnPageChangedListener {
@@ -440,7 +496,7 @@ public class RecyclerViewPager extends RecyclerView {
     }
 
     public interface OnItemClickListener {
-        void onItemClick(int childIndex);
-        void onItemDoubleClick(int childIndex);
+        void onItemClick(int childIndex, View child);
+        void onItemDoubleClick(int childIndex, View child);
     }
 }

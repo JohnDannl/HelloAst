@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -16,7 +18,7 @@ import com.closeli.jd5737.draggablerecyclerviewpager.widget.DraggableItemTouchHe
 import com.closeli.jd5737.draggablerecyclerviewpager.widget.RecyclerViewPager;
 
 public class MainActivity extends Activity {
-
+    private static final String TAG = "RecyclerViewPagerMain";
     private static int COLUMN_SIZE = 2;
     private static int DELAY_TIME = 5000;
     private ImageView imgNavLeft;
@@ -54,13 +56,15 @@ public class MainActivity extends Activity {
 
         mRecyclerViewPager.setOnClickListener(new RecyclerViewPager.OnItemClickListener() {
             @Override
-            public void onItemClick(int childIndex) {
+            public void onItemClick(int childIndex, View child) {
                 //Toast.makeText(MainActivity.this,"click:" + childIndex, Toast.LENGTH_SHORT).show();
                 showNavBar();
             }
 
             @Override
-            public void onItemDoubleClick(int childIndex) {
+            public void onItemDoubleClick(int childIndex, View child) {
+                int offset = mRecyclerViewPager.computeHorizontalScrollOffset();
+                Log.d(TAG, "offset:" + offset + ",left:" + child.getLeft());
                 Toast.makeText(MainActivity.this,"Double click:" + childIndex, Toast.LENGTH_SHORT).show();
             }
         });
