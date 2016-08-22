@@ -35,7 +35,7 @@ import java.util.List;
         this.gridview = gridview;
 
         int totalCount = 0;
-        for (int i = 0; i < 9000; i++) {
+        for (int i = 0; i < 4; i++) {
             Page page = new Page();
             List<Item> items = new ArrayList<Item>();
             for (int j = 0; j < PAGE_SIZE; j++){
@@ -172,6 +172,6 @@ import java.util.List;
 
     @Override
     public void destroyPage(int page) {
-        android.util.Log.d("XXXX","destroy page: "+page);
+        //android.util.Log.d("XXXX","destroy page: "+page);
     }
 }

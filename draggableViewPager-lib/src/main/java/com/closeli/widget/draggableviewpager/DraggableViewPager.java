@@ -152,10 +152,10 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
 
                     if (page != activePage) {
                         grid.updateCachedPages(page, page < activePage, page > activePage);
+                        activePage = page;
                         if (pageChangedListener != null) {
                             pageChangedListener.onPageChanged(DraggableViewPager.this, page);
                         }
-                        activePage = page;
                         return true;
                     }
                     return false;
@@ -241,6 +241,8 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
     @Override
     public void scrollToPage(int page) {
         grid.updateCachedPages(page, page < activePage, page > activePage);
+        int oldActivePage = activePage;
+        activePage = page;
         int onePageWidth = getMeasuredWidth();
         int scrollTo = page * onePageWidth;
         if (isPageScrollAnimationEnabled) {
@@ -250,10 +252,9 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
         } else {
             smoothScrollTo(scrollTo, 0);
         }
-        if (pageChangedListener != null && activePage != page) {
+        if (pageChangedListener != null && oldActivePage != page) {
             pageChangedListener.onPageChanged(this, page);
         }
-        activePage = page;
     }
 
     @Override
