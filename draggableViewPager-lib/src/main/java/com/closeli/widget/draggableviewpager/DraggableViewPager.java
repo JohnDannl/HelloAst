@@ -26,9 +26,7 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
 
     private DragDropGrid grid;
     private DraggableViewPagerAdapter adapter;
-    private DragDropGrid.OnDragDropGridItemClickListener listener;
     private GestureDetector gestureScanner;
-    private List<OnTouchListener> mOnTouchListeners = new ArrayList<OnTouchListener>();
 
     private OnPageChangedListener pageChangedListener;
     private int bgXmlRes;
@@ -117,11 +115,6 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
         setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (mOnTouchListeners != null) {
-                    for (OnTouchListener listener :  mOnTouchListeners) {
-                        listener.onTouch(v, event);
-                    }
-                }
                 if(!isScrollEnalbed)return true;
                 boolean specialEventUsed = gestureScanner.onTouchEvent(event);
                 if (!specialEventUsed && (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL)) {
@@ -166,16 +159,6 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
         });
     }
 
-    public void addOnTouchListener(final OnTouchListener listener) {
-        if (listener != null && !mOnTouchListeners.contains(listener)) {
-            mOnTouchListeners.add(listener);
-        }
-    }
-
-    public void removeOnTouchListener(final OnTouchListener listener) {
-        mOnTouchListeners.remove(listener);
-    }
-
     public boolean isFullScreen() {
         return grid.isFullScreen();
     }
@@ -195,7 +178,6 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
     }
 
     public void setClickListener(DragDropGrid.OnDragDropGridItemClickListener l) {
-        this.listener = l;
         grid.setOnItemClickListener(l);
     }
 
