@@ -398,14 +398,12 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             fullScreenItem =childIndex;
             hasFullScreen=true;
             //extendToFullScreen();
-            //extendToFullScreenWithViewAnimation();
             extendToFullScreenWithValueAnimation();
             if(onItemClickListener != null&&clickedView != null&&itemPosition!=null){
                 onItemClickListener.onFullScreenChange(clickedView, itemPosition.pageIndex, itemPosition.itemIndex,true);
             }
         }else{
             //shrinkToNormalScreen();
-            //shrinkToNormalScreenWithViewAnimation();
             shrinkToNormalScreenWithValueAnimation();
             ItemPosition shrinkItemPosition= getItemPositionOf(fullScreenItem);
             View shrinkItemView = getChildView(fullScreenItem);
@@ -470,8 +468,8 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
                 if(position!=fullScreenItem){
                     View childView=getChildView(position);
                     LayoutParams cvlp =childView.getLayoutParams();
-                    cvlp.width=(displayWidth - getPaddingLeft() - getPaddingRight())/adapter.columnCount();
-                    cvlp.height=ROW_HEIGHT;
+                    cvlp.width = columnWidth;
+                    cvlp.height = rowHeight;
                     childView.setLayoutParams(cvlp);
                     //childView.setVisibility(View.VISIBLE);
                 }
@@ -487,83 +485,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         lockableScrollView.setScrollingEnabled(true);
         container.enableScroll();
     }
-    private void extendToFullScreenWithViewAnimation(){
-        container.disableScroll();
-        lockableScrollView.setScrollingEnabled(false);
 
-        if (fullScreenItem != -1) {
-            View fullView=getChildView(fullScreenItem);
-            bringFullScreenItemToFront();
-            int width=fullView.getMeasuredWidth();
-            int height=fullView.getMeasuredHeight();
-            int left=0;
-            int top=0;
-            switch(getItemPositionOf(fullScreenItem).itemIndex){
-                case 0:
-                    left=0;
-                    top=0;
-                    break;
-                case 1:
-                    left=width;
-                    top=0;
-                    break;
-                case 2:
-                    left=0;
-                    top=height;
-                    break;
-                case 3:
-                    left=width;
-                    top=height;
-                    break;
-                default:
-                    break;
-            }
-            ScaleAnimation scale = new ScaleAnimation(1f, 2.0f, 1f, 2.0f, Animation.ABSOLUTE,left,Animation.ABSOLUTE,top);
-            scale.setDuration(FULLSCREEN_ANIMATION_DURATION);
-            scale.setFillAfter(true);
-            scale.setFillEnabled(true);
-            fullView.clearAnimation();
-            fullView.startAnimation(scale);
-        }
-    }
-    private void shrinkToNormalScreenWithViewAnimation(){
-        if(fullScreenItem!=-1){
-            View fullView=getChildView(fullScreenItem);
-            //fullView.clearAnimation();
-            int width=fullView.getMeasuredWidth();
-            int height=fullView.getMeasuredHeight();
-            int left=0;
-            int top=0;
-            switch(getItemPositionOf(fullScreenItem).itemIndex){
-                case 0:
-                    left=0;
-                    top=0;
-                    break;
-                case 1:
-                    left=width;
-                    top=0;
-                    break;
-                case 2:
-                    left=0;
-                    top=height;
-                    break;
-                case 3:
-                    left=width;
-                    top=height;
-                    break;
-                default:
-                    break;
-            }
-            ScaleAnimation scale = new ScaleAnimation(2f, 1.0f, 2f, 1.0f, Animation.ABSOLUTE,left,Animation.ABSOLUTE,top);
-            scale.setDuration(FULLSCREEN_ANIMATION_DURATION);
-            scale.setFillAfter(true);
-            scale.setFillEnabled(true);
-            fullView.clearAnimation();
-            fullView.startAnimation(scale);
-        }
-        lockableScrollView.setScrollingEnabled(true);
-        container.enableScroll();
-    }
     private void extendToFullScreenWithValueAnimation(){
         container.disableScroll();
         lockableScrollView.setScrollingEnabled(false);
@@ -576,6 +498,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             layoutAnimateScale(oldLayoutParam,newLayoutParam,fullView,true);
         }
     }
+
     private void layoutAnimateScale( LayoutParams oldLayoutParam, LayoutParams newLayoutParam,
                                      final View fullView,final boolean toFullScreen){
         ValueAnimator layoutAnim=ValueAnimator.ofObject(new TypeEvaluator() {
