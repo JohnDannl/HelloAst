@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.os.Build;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
@@ -125,9 +126,9 @@ public class RecyclerViewPager extends RecyclerView {
         boolean flinging = super.fling((int) (velocityX * FLING_FACTOR), (int) (velocityY * FLING_FACTOR));
         if (flinging && getLayoutManager().canScrollHorizontally()) {
             adjustFlingPosition(velocityX);
+            Log.d(TAG, "fling:" + flinging +", velocityX:" + velocityX + ",velocityY:" + velocityY
+                    + ",minVx:" + getMinFlingVelocity() + ",maxVx:" + getMaxFlingVelocity());
         }
-        Log.d(TAG, "fling:" + flinging +", velocityX:" + velocityX + ",velocityY:" + velocityY
-                + ",minVx:" + getMinFlingVelocity() + ",maxVx:" + getMaxFlingVelocity());
         return flinging;
     }
 
@@ -450,12 +451,16 @@ public class RecyclerViewPager extends RecyclerView {
             final int childIndex = getChildLayoutPosition(child);
             if (mFullScreenItem == -1) {
                 mFullScreenItem = childIndex;
+                ViewCompat.setElevation(child, 1);
                 //propertyAnimationToFullScreen(child);
-                //viewAnimationToFullScreen(child);
+                viewAnimationToFullScreen(child, childIndex);
                 //extendToFullScreen(child);
             } else {
                 mFullScreenItem = -1;
+                viewAnimationToNormalScreen(child);
                 //shrinkToNormalScreen(child);
+                ViewCompat.setElevation(child, 0);
+
             }
             onItemDoubleClick(childIndex, child);
             return false;
@@ -466,15 +471,45 @@ public class RecyclerViewPager extends RecyclerView {
         child.animate().scaleX(2.0f).scaleY(2.0f).start();
     }
 
-    private void viewAnimationToFullScreen(View child) {
-        int left = 0;
-        int top = 0;
-        ScaleAnimation scale = new ScaleAnimation(1f, 2.0f, 1f, 2.0f, Animation.ABSOLUTE, left, Animation.ABSOLUTE, top);
+    private void viewAnimationToFullScreen(View child, int childIndex) {
+        int pivotX = 0;
+        int pivotY = 0;
+        switch(childIndex % ITEM_COUNT_OF_PAGE) {
+            case 0:
+                pivotX = 0;
+                pivotY = 0;
+                break;
+            case 1:
+                pivotX = 0;
+                pivotY = child.getHeight();
+                break;
+            case 2:
+                pivotX = child.getWidth();
+                pivotY = 0;
+                break;
+            case 3:
+                pivotX = child.getWidth();
+                pivotY = child.getHeight();
+                break;
+        }
+        ScaleAnimation scale = new ScaleAnimation(1f, 2.0f, 1f, 2.0f, Animation.ABSOLUTE, pivotX, Animation.ABSOLUTE, pivotY);
         scale.setDuration(200);
         scale.setFillAfter(true);
         scale.setFillEnabled(true);
         child.clearAnimation();
         child.startAnimation(scale);
+    }
+
+    private void viewAnimationToNormalScreen(View child) {
+        child.clearAnimation();
+        /*int left = 0;
+        int top = 0;
+        ScaleAnimation scale = new ScaleAnimation(2.0f, 1.0f, 2.0f, 1.0f, Animation.ABSOLUTE, left, Animation.ABSOLUTE, top);
+        scale.setDuration(200);
+        scale.setFillAfter(true);
+        scale.setFillEnabled(true);
+        child.clearAnimation();
+        child.startAnimation(scale);*/
     }
 
     private void extendToFullScreen(View child) {

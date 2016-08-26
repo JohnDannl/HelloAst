@@ -64,7 +64,7 @@ public class MainActivity extends Activity {
             @Override
             public void onItemDoubleClick(int childIndex, View child) {
                 int offset = mRecyclerViewPager.computeHorizontalScrollOffset();
-                Log.d(TAG, "offset:" + offset + ",left:" + child.getLeft());
+                Log.d(TAG, "offset:" + offset + ",left:" + child.getLeft() + ",top:" + child.getTop());
                 Toast.makeText(MainActivity.this,"Double click:" + childIndex, Toast.LENGTH_SHORT).show();
             }
         });
