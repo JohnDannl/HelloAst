@@ -6,6 +6,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Point;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
@@ -24,6 +25,7 @@ import java.util.TimerTask;
 
 public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongClickListener {
 
+    private static final String TAG = "DragDropGrid";
     public static int ROW_HEIGHT = 300;
     private static int DRAGGED_MOVE_ANIMATION_DURATION = 200;
     private static int DRAGGED_ZOOM_IN_ANIMATION_DURATION = 200;
@@ -531,6 +533,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             final LayoutParams oldLayoutParam = fullView.getLayoutParams();
             final LayoutParams newLayoutParam = new LayoutParams(displayWidth, displayHeight);
             layoutAnimateScale(oldLayoutParam, newLayoutParam, fullView, true);
+            Log.d(TAG, String.format("ExtendsToFullScreen item:%d", fullScreenItem));
         }
     }
 
@@ -608,6 +611,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             final LayoutParams oldLayoutParam = fullView.getLayoutParams();
             final LayoutParams newLayoutParam = new LayoutParams(columnWidth, rowHeight);
             layoutAnimateScale(oldLayoutParam, newLayoutParam, fullView, false);
+            Log.d(TAG, String.format("ShrinksToNormalScreen item:%d", fullScreenItem));
         }
         lockableScrollView.setScrollingEnabled(true);
         container.enableScroll();
@@ -1126,6 +1130,8 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             top = (row * rowHeight) + ((rowHeight - child.getMeasuredHeight()) / 2);
         }
         child.layout(left, top, left + child.getMeasuredWidth(),top + child.getMeasuredHeight());
+        Log.d(TAG, String.format("Layout child(%d, %d), left:%d, top:%d, w:%d, h:%d",
+                page, childIndex, left, top, child.getMeasuredWidth(), child.getMeasuredHeight()));
     }
 
     private boolean lastTouchOnEdge() {
@@ -1314,6 +1320,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
      */
     public void updateCachedPages(int newPage, boolean toLeft, boolean toRight) {
         if (!toLeft && !toRight) return;
+        Log.d(TAG, String.format("ToLeft:%s, ToRight:%s, UpdateCachedPage:%d", toLeft, toRight, newPage));
         List<Integer> newPages = new ArrayList<Integer>();
         for (int i = newPage; i <= newPage + OFFSCREEN_PAGE_LIMIT; i++) {
             if (i < adapter.pageCount()) {
@@ -1407,6 +1414,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         for (int i : loadedPages) {
             leftPages += i + ",";
         }
+        Log.d(TAG, String.format("Removes page:%d,Retained pages:%s", page, leftPages));
     }
 
     /**
@@ -1440,6 +1448,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         for (int i : loadedPages) {
             leftPages += i + ",";
         }
+        Log.d(TAG, String.format("Adds page:%d,Retained pages:%s", page, leftPages));
     }
 
     /**
