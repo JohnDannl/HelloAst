@@ -69,12 +69,14 @@ import java.util.List;
 
     @Override
     public View view(int page, int index) {
-        final LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        /*final LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View view = layoutInflater.inflate(R.layout.my_text_view, null);
         final TextView textView = (TextView) view.findViewById(R.id.info_text);
         Item item = getItem(page, index);
         textView.setText(item.getName());
-        //textView.setBackgroundDrawable(context.getResources().getDrawable(item.getDrawable()));
+        //textView.setBackgroundDrawable(context.getResources().getDrawable(item.getDrawable()));*/
+        Item item = getItem(page, index);
+        final View view = new GridItemView(context, item.getName()).getView();
         return view;
     }
 
