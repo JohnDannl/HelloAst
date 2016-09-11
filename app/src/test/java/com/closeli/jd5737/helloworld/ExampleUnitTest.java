@@ -177,4 +177,9 @@ public class ExampleUnitTest {
         }
 
     }
+
+    @Test
+    public void stringFormat() {
+        System.out.println(String.format("%h",14));
+    }
 }

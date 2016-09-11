@@ -26,7 +26,6 @@ import java.util.TimerTask;
 public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongClickListener {
 
     private static final String TAG = "DragDropGrid";
-    public static int ROW_HEIGHT = 300;
     private static int DRAGGED_MOVE_ANIMATION_DURATION = 200;
     private static int DRAGGED_ZOOM_IN_ANIMATION_DURATION = 200;
     private static int FULLSCREEN_ANIMATION_DURATION=10;
@@ -50,12 +49,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     private OnDragDropGridItemAnimationListener mItemAnimationListener = null;
     private ViewPagerContainer container;
     private List<View> views = new ArrayList<View>();
-    private int gridPageWidth = 0;
     private int dragged = -1;
-    private int columnWidth;
-    private int rowHeight;
-    private int columnCount;
-    private int rowCount;
     private LockableScrollView lockableScrollView;
 
     private boolean movingView;
@@ -73,7 +67,19 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
      * The height of screen.
      */
     private int displayHeight;
+
+    private int gridPageWidth = 0;
+    private int columnWidth;
+    private int rowHeight;  // If you want to use a fixed row height, change the rowHeight = ROW_HEIGHT in confirmMeasuredSize()
+    private int columnCount = 2;
+    private int rowCount = 2;
     private int measuredHeight;
+    private int measuredWidth;
+
+    private static int rowSpacing = 0;      // in pixel
+    private static int columnSpacing = 0;   // in pixel
+    private static int pageSpacing = 0;    // in pixel
+    private static int halfPageSpacing = pageSpacing / 2;
 
     public DragDropGrid(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -130,12 +136,6 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         display.getSize(point);
         displayWidth = point.x;
         displayHeight = point.y;
-        if(noStatusBar){
-            ROW_HEIGHT = (displayHeight - getPaddingTop() - getPaddingBottom()) / 2;
-        }else{
-            int statusHeight = getStatusBarHeight();
-            ROW_HEIGHT = (displayHeight - getPaddingTop() - getPaddingBottom() - statusHeight) / 2;
-        }
     }
 
     /**
@@ -208,7 +208,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             }
 
             @Override
-            public int getPageWidth(int page) {
+            public int getPageWidth() {
                 return 0;
             }
 
@@ -226,12 +226,73 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             public void destroyPage(int page) {
 
             }
+
+            @Override
+            public int getColumnSpacing() {
+                return 0;
+            }
+
+            @Override
+            public int getRowSpacing() {
+                return 0;
+            }
+
+            @Override
+            public int getPageSpacing() {
+                return 0;
+            }
         };
     }
 
     public void setAdapter(DraggableViewPagerAdapter adapter) {
         this.adapter = adapter;
+        confirmMeasuredSize();
         addChildViews();
+    }
+
+    /**
+     * Calculates DragDropGrid and its children's widths and heights
+     */
+    private void confirmMeasuredSize() {
+        // Gets adapter information
+        if (adapter.getColumnSpacing() > 0) {
+            columnSpacing = adapter.getColumnSpacing();
+        }
+        if (adapter.getRowSpacing() > 0) {
+            rowSpacing = adapter.getRowSpacing();
+        }
+        if (adapter.getPageSpacing() > 0) {
+            pageSpacing = adapter.getPageSpacing();
+            halfPageSpacing = pageSpacing / 2;
+        }
+        if (adapter.rowCount() > 0) {
+            rowCount = adapter.rowCount();
+        }
+        if (adapter.columnCount() > 0) {
+            columnCount = adapter.columnCount();
+        }
+        if (adapter.getPageWidth() > 0) {
+            gridPageWidth = adapter.getPageWidth();
+        } else {
+            gridPageWidth = displayWidth - pageSpacing;
+        }
+        // Calculates children's size
+        //rowHeight = ROW_HEIGHT;
+        if(noStatusBar){
+            rowHeight = (displayHeight - getPaddingTop() - getPaddingBottom() - (rowCount - 1) * rowSpacing) / rowCount;
+        }else{
+            int statusHeight = getStatusBarHeight();
+            rowHeight = (displayHeight - getPaddingTop() - getPaddingBottom() - statusHeight - (rowCount - 1) * rowSpacing) / rowCount;
+        }
+        columnWidth = (gridPageWidth - (columnCount - 1) * columnSpacing) / columnCount;
+        // Calculates gird's size
+        int largestSize = getLargestPageSize();
+
+        measuredHeight = displayHeight;//(largestSize+columnCount-1)/columnCount * rowHeight;
+        measuredWidth = (gridPageWidth + pageSpacing) * adapter.pageCount();
+
+        Log.d(TAG,"rc:" + rowCount +",cc:" + columnCount + ",pw:" + gridPageWidth + ",cw:" + columnWidth + ",rh:" + rowHeight
+        + ",mw:" + measuredWidth + ",mh:" + measuredHeight +",dw:" + displayWidth);
     }
 
     public void setOnItemClickListener(OnDragDropGridItemClickListener l) {
@@ -261,11 +322,11 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         offsetPosition = 0;
         for (int page = 0; page <= OFFSCREEN_PAGE_LIMIT; page++) {
             for (int item = 0; item < adapter.itemCountInPage(page); item++) {
-            View v = adapter.view(page, item);
-            v.setTag(adapter.getItemAt(page, item));
-            LayoutParams layoutParams = new LayoutParams((displayWidth - getPaddingLeft() - getPaddingRight())/adapter.columnCount(),ROW_HEIGHT);
-            addView(v, layoutParams);
-            views.add(v);
+                View v = adapter.view(page, item);
+                v.setTag(adapter.getItemAt(page, item));
+                LayoutParams layoutParams = new LayoutParams(columnWidth, rowHeight);
+                addView(v, layoutParams);
+                views.add(v);
             }
             loadedPages.add(page);
         }
@@ -471,8 +532,8 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         if (fullScreenItem != -1) {
             View fullScreenView = getChildView(fullScreenItem);
             LayoutParams vlp = fullScreenView.getLayoutParams();
-            vlp.width=displayWidth;
-            vlp.height=displayHeight;
+            vlp.width = gridPageWidth;
+            vlp.height = displayHeight;
             fullScreenView.setLayoutParams(vlp);
             bringFullScreenItemToFront();
 
@@ -511,8 +572,8 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
 
             View fullScreenView = getChildView(fullScreenItem);
             LayoutParams vlp = fullScreenView.getLayoutParams();
-            vlp.width=(displayWidth - getPaddingLeft() - getPaddingRight())/adapter.columnCount();
-            vlp.height=ROW_HEIGHT;
+            vlp.width = columnWidth;
+            vlp.height = rowHeight;
             fullScreenView.setLayoutParams(vlp);
         }
 
@@ -531,7 +592,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             final View fullView = getChildView(fullScreenItem);
             bringFullScreenItemToFront();
             final LayoutParams oldLayoutParam = fullView.getLayoutParams();
-            final LayoutParams newLayoutParam = new LayoutParams(displayWidth, displayHeight);
+            final LayoutParams newLayoutParam = new LayoutParams(gridPageWidth, displayHeight);
             layoutAnimateScale(oldLayoutParam, newLayoutParam, fullView, true);
             Log.d(TAG, String.format("ExtendsToFullScreen item:%d", fullScreenItem));
         }
@@ -640,7 +701,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         adapter.destroyPage(page);
     }
     private void touchDown(MotionEvent event) {
-        //lastTouchX = (int) event.getRawX() + (currentPage() * gridPageWidth);
+        //lastTouchX = (int) event.getRawX() + (currentPage() * displayWidth);
         lastTouchX = (int) event.getX();
         lastTouchY = (int) event.getRawY();
     }
@@ -860,7 +921,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     private boolean onLeftEdgeOfScreen(int x) {
         int currentPage = container.currentPage();
 
-        int leftEdgeXCoor = currentPage * gridPageWidth;
+        int leftEdgeXCoor = currentPage * displayWidth;
         int distanceFromEdge = x - leftEdgeXCoor;
         return (x > 0 && distanceFromEdge <= EGDE_DETECTION_MARGIN);
     }
@@ -873,7 +934,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     private boolean onRightEdgeOfScreen(int x) {
         int currentPage = container.currentPage();
 
-        int rightEdgeXCoor = (currentPage * gridPageWidth) + gridPageWidth;
+        int rightEdgeXCoor = (currentPage * displayWidth) + displayWidth;
         int distanceFromEdge = rightEdgeXCoor - x;
         return (x > (rightEdgeXCoor - EGDE_DETECTION_MARGIN)) && (distanceFromEdge < EGDE_DETECTION_MARGIN);
     }
@@ -953,8 +1014,8 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         int row = itemPosition.itemIndex / columnCount;
         int col = itemPosition.itemIndex - (row * columnCount);
 
-        int x = (currentPage() * gridPageWidth) + (columnWidth * col);
-        int y = rowHeight * row;
+        int x = (itemPosition.pageIndex * displayWidth) + halfPageSpacing + (columnWidth + columnSpacing) * col;
+        int y = (rowHeight + rowSpacing) * row;
 
         return new Point(x, y);
     }
@@ -977,9 +1038,9 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
 
     private int getColumnOfCoordinate(int x, int page) {
         int col = 0;
-        int pageLeftBorder = (page) * gridPageWidth;
+        int pageLeftBorder = page * displayWidth + halfPageSpacing;
         for (int i = 1; i <= columnCount; i++) {
-            int colRightBorder = (i * columnWidth) + pageLeftBorder;
+            int colRightBorder = (i * columnWidth + (i - 1) * columnSpacing) + pageLeftBorder;
             if (x < colRightBorder) {
                 break;
             }
@@ -991,7 +1052,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     private int getRowOfCoordinate(int y) {
         int row = 0;
         for (int i = 1; i <= rowCount; i++) {
-            if (y < i * rowHeight) {
+            if (y < i * rowHeight + (i - 1) * rowSpacing) {
                 break;
             }
             row++;
@@ -1011,22 +1072,17 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int widthMode = MeasureSpec.getMode(widthMeasureSpec);
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
 
-        widthSize = remeasure(widthMode, widthSize);
+        measureChildren(widthMeasureSpec, heightMeasureSpec);
+        widthSize = resolveSizeAndState(measuredWidth, widthMeasureSpec, 0);
+        heightSize =  resolveSizeAndState(measuredHeight, heightMeasureSpec, 0);
         int largestSize = getLargestPageSize();
 
-        measuredHeight = rowCount * rowHeight;//(largestSize+columnCount-1)/columnCount * rowHeight;
-        setMeasuredDimension(widthSize * adapter.pageCount(), measuredHeight);
-    }
-
-    private int remeasure(int widthMode, int widthSize) {
-        widthSize = acknowledgeWidthSize(widthMode, widthSize, displayWidth);
-        measureChildren(MeasureSpec.EXACTLY, MeasureSpec.UNSPECIFIED);
-        columnCount = adapter.columnCount();
-        rowCount = adapter.rowCount();
-        columnWidth = widthSize / adapter.columnCount();
-        rowHeight = ROW_HEIGHT;
-        return widthSize;
+        measuredWidth = widthSize;
+        measuredHeight = heightSize;
+        setMeasuredDimension(measuredWidth , measuredHeight);
     }
 
     private int getLargestPageSize() {
@@ -1040,32 +1096,18 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         return size;
     }
 
-    private int acknowledgeWidthSize(int widthMode, int widthSize, int displayWidth) {
-        if (widthMode == MeasureSpec.UNSPECIFIED) {
-            widthSize = displayWidth;
-        }
-
-        if (adapter.getPageWidth(currentPage()) != 0) {
-            widthSize = adapter.getPageWidth(currentPage());
-        }
-
-        gridPageWidth = widthSize;
-        return widthSize;
-    }
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         //If we don't have pages don't do layout
         if (adapter.pageCount() == 0)
             return;
-        int pageWidth = (r-l) / adapter.pageCount();
-
         /*for (int page = 0; page < adapter.pageCount(); page++) {
             layoutPage(pageWidth, page);
         }*/
         int pageShowMin = 0 > currentPage() - OFFSCREEN_PAGE_LIMIT ? 0 : currentPage() - OFFSCREEN_PAGE_LIMIT;
         int pageShowMax = adapter.pageCount() - 1 < currentPage() + OFFSCREEN_PAGE_LIMIT ? adapter.pageCount() - 1 : currentPage() + OFFSCREEN_PAGE_LIMIT;
         for (int page = pageShowMin; page <= pageShowMax; page++) {
-            layoutPage(pageWidth, page);
+            layoutPage(page);
         }
         if (weWereMovingDragged()) {
             bringDraggedToFront();
@@ -1079,11 +1121,11 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         return dragged != -1;
     }
 
-    private void layoutPage(int pageWidth, int page) {
+    private void layoutPage(int page) {
         int col = 0;
         int row = 0;
         for (int childIndex = 0; childIndex < adapter.itemCountInPage(page); childIndex++) {
-            layoutAChild(pageWidth, page, col, row, childIndex);
+            layoutAChild(page, col, row, childIndex);
             col++;
             if (col == columnCount) {
                 col = 0;
@@ -1092,14 +1134,16 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         }
     }
 
-    private void layoutAChild(int pageWidth, int page, int col, int row, int childIndex) {
+    private void layoutAChild(int page, int col, int row, int childIndex) {
         int position = positionOfItem(page, childIndex);
 
         View child = getChildView(position);
 
-        if (child == null || child.getVisibility()==View.GONE)return;
+        if (child == null || child.getVisibility()==View.GONE) {
+            return;
+        }
 
-        int left = 0;
+        int left = halfPageSpacing;
         int top = 0;
         if (position == dragged) {
             left = lastTouchX - child.getMeasuredWidth() / 2;
@@ -1107,31 +1151,31 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         } else if (position == fullScreenItem){
             switch(getItemPositionOf(fullScreenItem).itemIndex){
                 case 0:
-                    left=page*pageWidth;
-                    top=0;
+                    left = (page * displayWidth) + halfPageSpacing;
+                    top = 0;
                     break;
                 case 1:
-                    left=(page+1)*pageWidth - child.getMeasuredWidth();
-                    top=0;
+                    left =(page + 1) * displayWidth - halfPageSpacing - child.getMeasuredWidth();
+                    top = 0;
                     break;
                 case 2:
-                    left=page*pageWidth;
-                    top=displayHeight-child.getMeasuredHeight();
+                    left = page * displayWidth + halfPageSpacing;
+                    top = displayHeight - child.getMeasuredHeight();
                     break;
                 case 3:
-                    left=(page+1)*pageWidth - child.getMeasuredWidth();
-                    top=displayHeight-child.getMeasuredHeight();
+                    left = (page + 1) * displayWidth - halfPageSpacing - child.getMeasuredWidth();
+                    top = displayHeight - child.getMeasuredHeight();
                     break;
                 default:
                     break;
             }
         } else {
-            left = (page * pageWidth) + (col * columnWidth) + ((columnWidth - child.getMeasuredWidth()) / 2);
-            top = (row * rowHeight) + ((rowHeight - child.getMeasuredHeight()) / 2);
+            left = (page * displayWidth) + halfPageSpacing + (col * (columnWidth + columnSpacing)) + ((columnWidth - child.getMeasuredWidth()) / 2);
+            top = (row * (rowHeight + rowSpacing)) + ((rowHeight - child.getMeasuredHeight()) / 2);
         }
         child.layout(left, top, left + child.getMeasuredWidth(),top + child.getMeasuredHeight());
-        Log.d(TAG, String.format("Layout child(%d, %d), left:%d, top:%d, w:%d, h:%d",
-                page, childIndex, left, top, child.getMeasuredWidth(), child.getMeasuredHeight()));
+        /*Log.d(TAG, String.format("Layout child(%d, %d), left:%d, top:%d, w:%d, h:%d",
+                page, childIndex, left, top, child.getMeasuredWidth(), child.getMeasuredHeight()));*/
     }
 
     private boolean lastTouchOnEdge() {
@@ -1186,7 +1230,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             mItemAnimationListener.onDraggedViewAnimationStart(getChildView(dragged),itemPos.pageIndex,itemPos.itemIndex);
         }
         if (!enableDragAnim)return;
-        ScaleAnimation scale = new ScaleAnimation(1f, 1.1f, 1f, 1.1f, displayWidth / 2, ROW_HEIGHT / 2);
+        ScaleAnimation scale = new ScaleAnimation(1f, 1.1f, 1f, 1.1f, displayWidth / 2, rowHeight / 2);
         scale.setDuration(DRAGGED_ZOOM_IN_ANIMATION_DURATION);
         scale.setFillAfter(true);
         scale.setFillEnabled(true);
@@ -1428,7 +1472,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             for (int i = firstIndex, item = 0; i < firstIndex + adapter.itemCountInPage(page); i++, item++) {
                 View v = adapter.view(page, item);
                 v.setTag(adapter.getItemAt(page, item));
-                LayoutParams layoutParams = new LayoutParams((displayWidth - getPaddingLeft() - getPaddingRight())/adapter.columnCount(),ROW_HEIGHT);
+                LayoutParams layoutParams = new LayoutParams(columnWidth, rowHeight);
                 addToViews(i,v);
                 addView(v, 0, layoutParams); // to keep the existed items on the top of viewGroup
             }
@@ -1438,7 +1482,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             for (int i = lastIndex, item = adapter.itemCountInPage(page) -1; i >= firstIndex; i--, item--) {
                 View v = adapter.view(page, item);
                 v.setTag(adapter.getItemAt(page, item));
-                LayoutParams layoutParams = new LayoutParams((displayWidth - getPaddingLeft() - getPaddingRight())/adapter.columnCount(),ROW_HEIGHT);
+                LayoutParams layoutParams = new LayoutParams(columnWidth, rowHeight);
                 addToViews(i,v);
                 addView(v, 0, layoutParams); // to keep the existed items on the top of viewGroup
             }

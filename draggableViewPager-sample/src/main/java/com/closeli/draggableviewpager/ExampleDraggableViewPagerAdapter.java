@@ -2,9 +2,7 @@ package com.closeli.draggableviewpager;
 
 import android.content.Context;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.TextView;
 
 import com.closeli.widget.draggableviewpager.DraggableViewPager;
 import com.closeli.widget.draggableviewpager.DraggableViewPagerAdapter;
@@ -13,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-        public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapter {
+public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapter {
 
     /**
      * 每行item个数
@@ -23,7 +21,7 @@ import java.util.List;
      * 每列item个数
      */
     private static final int COLUMN_SIZE = 2;
-    private static final int PAGE_SIZE = 4;
+    private static final int PAGE_ITEM_SIZE = 4;
 
     List<Page> pages = new ArrayList<Page>();
     private Context context;
@@ -38,7 +36,7 @@ import java.util.List;
         for (int i = 0; i < 4; i++) {
             Page page = new Page();
             List<Item> items = new ArrayList<Item>();
-            for (int j = 0; j < PAGE_SIZE; j++){
+            for (int j = 0; j < PAGE_ITEM_SIZE; j++){
                 totalCount +=1;
                 items.add(new Item(totalCount, "Item"+totalCount, R.drawable.ic_launcher));
             }
@@ -47,7 +45,7 @@ import java.util.List;
         }
         /*Page page = new Page();
         List<Item> items = new ArrayList<Item>();
-        for (int j = 0; j < PAGE_SIZE - 1; j++){
+        for (int j = 0; j < PAGE_ITEM_SIZE - 1; j++){
             totalCount +=1;
             items.add(new Item(totalCount, "Item"+totalCount, R.drawable.ic_launcher));
         }
@@ -105,9 +103,11 @@ import java.util.List;
         for (Page page : pages) {
             Log.d("Page", Integer.toString(i++));
 
+            String msg = "";
             for (Item item : page.getItems()) {
-                Log.d("Item", Long.toString(item.getId()));
+                msg += Long.toString(item.getId()) + ",";
             }
+            Log.d("Item", msg);
         }
     }
 
@@ -158,7 +158,7 @@ import java.util.List;
 
 
     @Override
-    public int getPageWidth(int page) {
+    public int getPageWidth() {
         return 0;
     }
 
@@ -175,5 +175,20 @@ import java.util.List;
     @Override
     public void destroyPage(int page) {
         //android.util.Log.d("XXXX","destroy page: "+page);
+        }
+
+    @Override
+    public int getColumnSpacing() {
+        return 0;
+    }
+
+    @Override
+    public int getRowSpacing() {
+        return 0;
+    }
+
+    @Override
+    public int getPageSpacing() {
+        return 0;
     }
 }

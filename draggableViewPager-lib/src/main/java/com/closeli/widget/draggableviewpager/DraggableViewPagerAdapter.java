@@ -88,7 +88,7 @@ public interface DraggableViewPagerAdapter {
      *
      * @return the page width
      */
-    public int getPageWidth(int page);
+    public int getPageWidth();
 
     /**
      * Gets the item displayed by the datasource
@@ -109,4 +109,22 @@ public interface DraggableViewPagerAdapter {
      * @param page
      */
     public void destroyPage(int page);
+
+    /**
+     * The spacing between columns in pixels
+     * @return column spacing,default is 0
+     */
+    public int getColumnSpacing();
+
+    /**
+     * The spacing between rows in pixels
+     * @return row spacing,default is 0
+     */
+    public int getRowSpacing();
+
+    /**
+     * The spacing between pages in pixels
+     * @return page spacing,default is 0
+     */
+    public int getPageSpacing();
 }
