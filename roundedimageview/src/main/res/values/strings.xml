@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">RoundedImageView</string>
+    <string name="str_btn_move">Move Image</string>
 </resources>

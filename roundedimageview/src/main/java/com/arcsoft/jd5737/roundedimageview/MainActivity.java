@@ -6,13 +6,19 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Shader;
+import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity {
+    private int location = 0;
+    private TextView mTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +26,34 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ImageView imageView = (ImageView)findViewById(R.id.camera_model_iv_image);
         Picasso.with(this).load(R.drawable.onepiece_1).resize(64, 96).transform(new RoundedTransformation(0, 0)).into(imageView);
+        final Drawable icon = getResources().getDrawable(R.drawable.camera_type_hemu_c11);
+        mTextView = ((TextView)findViewById(R.id.tv_img));
+        mTextView.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null);
+        findViewById(R.id.btn_img).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                location ++;
+                if (location == 4) {
+                    location = 0;
+                }
+                switch (location) {
+                    case 0:
+                        mTextView.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null);
+                        break;
+                    case 1:
+                        mTextView.setCompoundDrawablesWithIntrinsicBounds(null, icon, null, null);
+                        break;
+                    case 2:
+                        mTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, icon, null);
+                        break;
+                    case 3:
+                        mTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, icon);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
     }
 }
 class RoundedTransformation implements com.squareup.picasso.Transformation {
