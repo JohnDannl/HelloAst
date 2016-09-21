@@ -10,7 +10,9 @@ import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -54,6 +56,11 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        Animation animation = AnimationUtils.loadAnimation(this, R.anim.anim_rotate);
+        //animation.setInterpolator(new LinearInterpolator());
+        View iv = findViewById(R.id.img_rotate);
+        iv.clearAnimation();
+        iv.startAnimation(animation);
     }
 }
 class RoundedTransformation implements com.squareup.picasso.Transformation {
