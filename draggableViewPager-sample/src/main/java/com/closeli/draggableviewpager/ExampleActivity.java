@@ -99,7 +99,13 @@ public class ExampleActivity extends Activity  {
             @Override
             public void onFullScreenChange(View view, int page, int item, boolean isFullScreen) {
                 //Toast.makeText(ExampleActivity.this, String.format("View(%1$s,%2$s) FullScreen:%3$s",page+1,item+1,isFullScreen), Toast.LENGTH_SHORT).show();
-                if(isFullScreen)hideNavBar();
+                if(isFullScreen){
+                    hideNavBar();
+                    view.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
+                } else {
+                    view.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
+                }
+
             }
         });
         mDrgVpg.setOnItemAnimationListener(new DragDropGrid.OnDragDropGridItemAnimationListener() {
