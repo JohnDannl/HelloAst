@@ -264,6 +264,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         if (adapter.getPageSpacing() > 0) {
             pageSpacing = adapter.getPageSpacing();
             halfPageSpacing = pageSpacing / 2;
+            pageSpacing = halfPageSpacing * 2;      // updates the pageSpacing in case of roundoff deviation
         }
         if (adapter.rowCount() > 0) {
             rowCount = adapter.rowCount();
@@ -1519,7 +1520,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         if (position == 0) {        // remove the beginning item ,update the offset
             views.remove(0);
             offsetPosition++;
-        } else if (position == views.size()-1) {
+        } else if (position == views.size() - 1) {
             views.remove(position);
         }
     }
@@ -1532,7 +1533,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     private void swapViewsItems(int index1, int index2){
         int position1 = index1 - offsetPosition;
         int position2 = index2 - offsetPosition;
-        if (position1 >=0 && position1 < views.size() && position2 >=0 && position2 < views.size()) {
+        if (position1 >= 0 && position1 < views.size() && position2 >= 0 && position2 < views.size()) {
             Collections.swap(views, position1, position2);
         }
     }

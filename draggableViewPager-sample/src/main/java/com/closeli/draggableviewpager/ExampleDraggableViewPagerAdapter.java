@@ -179,16 +179,16 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
 
     @Override
     public int getColumnSpacing() {
-        return 10;
+        return 7;
     }
 
     @Override
     public int getRowSpacing() {
-        return 10;
+        return 7;
     }
 
     @Override
     public int getPageSpacing() {
-        return 100;
+        return 7;
     }
 }
