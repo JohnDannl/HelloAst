@@ -182,6 +182,13 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        findViewById(R.id.ll_text_view_container).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, "Click me",Toast.LENGTH_SHORT).show();
+            }
+        });
     }
     private TranslateAnimation createTranslateAnimation(int oldX,int newX,int oldY,int newY) {
         TranslateAnimation translate = new TranslateAnimation(Animation.ABSOLUTE, oldX,

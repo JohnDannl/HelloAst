@@ -475,7 +475,6 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             }else{
                 onItemClickListener.onClick(null,-1,-1);
             }
-
         }
     }
 

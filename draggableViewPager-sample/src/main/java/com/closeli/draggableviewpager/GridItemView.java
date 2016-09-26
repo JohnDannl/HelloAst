@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -25,7 +26,7 @@ public class GridItemView {
         public void handleMessage(Message message) {
             switch (message.what) {
                 case UPDATE_TIME_LINE:
-                    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd HH:mm:ss", Locale.CHINA);
+                    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd HH:mm:ss", Locale.getDefault());
                     String msg = sdf.format(new Date());
                     textView.setText(mName + ":" + msg);
                     sendEmptyMessageDelayed(UPDATE_TIME_LINE, 1000);
