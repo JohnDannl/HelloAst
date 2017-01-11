@@ -31,4 +31,23 @@
         android:textOff=""
         android:textOn=""
         android:id="@+id/toggleButton" />
+
+    <Button
+        android:id="@+id/btn_anim"
+        android:padding="10dip"
+        android:text="Anim"
+        android:onClick="onClickBtnAnim"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center">
+        <ImageView
+            android:id="@+id/iv_anim"
+            android:src="@drawable/al_switch_on"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
 </LinearLayout>

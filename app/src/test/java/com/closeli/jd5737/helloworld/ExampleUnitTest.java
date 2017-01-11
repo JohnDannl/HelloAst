@@ -1,5 +1,7 @@
 package com.closeli.jd5737.helloworld;
 
+import android.graphics.drawable.Drawable;
+
 import com.google.gson.FieldNamingStrategy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -8,6 +10,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.annotations.SerializedName;
+import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 
@@ -181,5 +184,58 @@ public class ExampleUnitTest {
     @Test
     public void stringFormat() {
         System.out.println(String.format("%h",14));
+    }
+
+    @Test
+    public void gsonTest() {
+        String jsonStr = "[{\"strategyId\":\"1798679d4851431684e9257ac84f371d\",\"strategyName\":\"新增策略t2\",\"rules\":" +
+                "[{\"valid\":1,\"conditons\":[{\"cParamId\":\"350312dea19e11e68b820050569d3255\",\"cRangeMaxValue\":\"1\",\"cDevi" +
+                "ceId\":\"2547ce7567df40efb6bef08d2d1a5f94\",\"cRangeMinValue\":\"0\",\"cTrigValue\":\"1\"}],\"actions\":[{\"aPara" +
+                "mValue\":\"1\",\"aDeviceId\":\"2547ce7567df40efb6bef08d2d1a5f94\",\"num\":0,\"execTime\":1,\"aParamId\":\"350312" +
+                "dea19e11e68b820050569d3255\"}]}]},{\"strategyId\":\"49ea7e3f802c46268e577e68048732ed\",\"strategyName\":\"新增策" +
+                "略t2\",\"rules\":[{\"valid\":1,\"conditons\":[{\"cParamId\":\"350312dea19e11e68b820050569d3255\",\"cRangeMaxVal" +
+                "ue\":\"1\",\"cDeviceId\":\"2547ce7567df40efb6bef08d2d1a5f94\",\"cRangeMinValue\":\"0\",\"cTrigValue\":\"1\"}],\"ac" +
+                "tions\":[{\"aParamValue\":\"1\",\"aDeviceId\":\"2547ce7567df40efb6bef08d2d1a5f94\",\"num\":0,\"execTime\":1,\"aPa" +
+                "ramId\":\"350312dea19e11e68b820050569d3255\"}]}]},{\"strategyId\":\"682b79a19e6d4265a61c198b2c7db678\",\"strateg" +
+                "yName\":\"新增策略t2\",\"rules\":[{\"valid\":1,\"conditons\":[{\"cParamId\":\"350312dea19e11e68b820050569" +
+                "d3255\",\"cRangeMaxValue\":\"1\",\"cDeviceId\":\"2547ce7567df40efb6bef08d2d1a5f94\",\"cRangeMinValue\":\"0\",\"cTrig" +
+                "Value\":\"1\"}],\"actions\":[{\"aParamValue\":\"1\",\"aDeviceId\":\"2547ce7567df40efb6bef08d2d1a5f94\",\"num\":0,\"exe" +
+                "cTime\":1,\"aParamId\":\"350312dea19e11e68b820050569d3255\"}]}]},{\"strategyId\":\"edbae426e9fd4dff86b6182d2a" +
+                "52e100\",\"strategyName\":\"新增策略t2\",\"rules\":[{\"valid\":2,\"conditons\":[{\"cParamId\":\"350312dea1" +
+                "9e11e68b820050569d3255\",\"cRangeMaxValue\":\"\",\"cDeviceId\":\"2547ce7567df40efb6bef08d2d1a5f94\",\"cRan" +
+                "geMinValue\":\"\",\"cTrigValue\":\"1\"}],\"actions\":[{\"aParamValue\":\"1\",\"aDeviceId\":\"2547ce7567df4" +
+                "0efb6bef08d2d1a5f94\",\"num\":0,\"execTime\":1,\"aParamId\":\"350312dea19e11e68b820050569d3255\"}]}]}]";
+        Gson gson = new Gson();
+        List<StrategyInfo> infos = gson.fromJson(jsonStr, new TypeToken<List<StrategyInfo>>(){}.getType());
+        for (StrategyInfo info : infos) {
+            System.out.println(info.strategyName);
+        }
+    }
+    class StrategyInfo {
+        public static final int GROUP_TITLE = 1;
+        public static final int SIMPLE = 2;
+        public static final int DETAIL = 3;
+        public static final int THUMBNAIL = 4;
+        public static final int MIDDEL_CONTENT = 5;
+        public static final int SWITCH = 6;
+        public String strategyId;
+        public String strategyName;
+        public String strategyDescription;
+        public String thumbUrl;
+        public Drawable thumbnail;
+        public int itemType;
+        public StrategyInfo(Drawable thumb, int itemType) {
+            this.thumbnail = thumb;
+            this.itemType = itemType;
+        }
+        public StrategyInfo(String name, int itemType) {
+            this.strategyName = name;
+            this.itemType = itemType;
+        }
+        public StrategyInfo(String name, String desc, int itemType) {
+            this.strategyName = name;
+            this.strategyDescription = desc;
+            this.itemType = itemType;
+        }
     }
 }

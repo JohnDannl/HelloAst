@@ -1,0 +1,9 @@
+<resources>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="multislider_track_height_material">2dp</dimen>
+    <dimen name="multislider_range_height_material">2dp</dimen>
+
+    <dimen name="multislider_height_material">4dp</dimen>
+</resources>
