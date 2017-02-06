@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.closeli.jd5737.helloworld">
+    package="cnedu.ustcjd.helloworld">
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.closeli.jd5737.helloworld.MainActivity"
+            android:name="cnedu.ustcjd.helloworld.MainActivity"
             android:launchMode="singleInstance"
             android:configChanges="orientation|keyboardHidden">
             <intent-filter>
@@ -23,9 +23,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.closeli.jd5737.helloworld.ViewPagerActivity" />
+        <activity android:name="cnedu.ustcjd.helloworld.ViewPagerActivity" />
         <activity
-            android:name="com.closeli.jd5737.helloworld.ThirdActivity"
+            android:name="cnedu.ustcjd.helloworld.ThirdActivity"
             android:label="@string/title_activity_third"></activity>
     </application>
 

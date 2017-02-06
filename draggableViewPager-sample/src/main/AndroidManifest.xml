@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.closeli.draggableviewpager">
+    package="cnedu.ustcjd.draggableviewpager">
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name">
         <activity
-            android:name="com.closeli.draggableviewpager.ExampleActivity"
+            android:name="cnedu.ustcjd.draggableviewpager.ExampleActivity"
             android:label="@string/app_name"
             android:screenOrientation="landscape"
             android:configChanges="orientation|keyboardHidden">

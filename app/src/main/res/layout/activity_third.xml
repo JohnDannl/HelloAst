@@ -8,7 +8,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
-    tools:context="com.closeli.jd5737.helloworld.ThirdActivity">
+    tools:context="cnedu.ustcjd.helloworld.ThirdActivity">
     <TextView
         android:id="@+id/third_tv_msg"
         android:layout_width="match_parent"

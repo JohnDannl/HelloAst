@@ -5,7 +5,7 @@ android {
     buildToolsVersion "24.0.0"
 
     defaultConfig {
-        applicationId "com.closeli.jd5737.customview"
+        applicationId "cnedu.ustcjd.customview"
         minSdkVersion 14
         targetSdkVersion 24
         versionCode 1

@@ -5,7 +5,7 @@ android {
     buildToolsVersion "24.0.0"
 
     defaultConfig {
-        applicationId "com.arcsoft.jd5737.roundedimageview"
+        applicationId "cnedu.ustcjd.roundedimageview"
         minSdkVersion 14
         targetSdkVersion 23
         versionCode 1

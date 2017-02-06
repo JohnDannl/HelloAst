@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.closeli.closeli.draggableviewpager">
+    package="cnedu.ustcjd.lib.draggableviewpager">
 
     <application android:allowBackup="true">
 
