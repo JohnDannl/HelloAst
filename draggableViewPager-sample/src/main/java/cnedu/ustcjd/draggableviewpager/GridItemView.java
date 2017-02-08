@@ -7,8 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
-import com.ustc.draggableviewpager.R;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;

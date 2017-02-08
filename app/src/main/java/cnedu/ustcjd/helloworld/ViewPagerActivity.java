@@ -16,16 +16,16 @@ public class ViewPagerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(com.ustc.jd.helloworld.R.layout.activity_view_pager);
-        final ViewPager pager = (ViewPager) findViewById(com.ustc.jd.helloworld.R.id.view_pager);
+        setContentView(cnedu.ustcjd.helloworld.R.layout.activity_view_pager);
+        final ViewPager pager = (ViewPager) findViewById(cnedu.ustcjd.helloworld.R.id.view_pager);
         pager.setAdapter(new MyViewPagerAdapter(getSupportFragmentManager(),16));
         pager.setOffscreenPageLimit(1);
         pager.setCurrentItem(2);
 
-        TextView tv_msg = (TextView) findViewById(com.ustc.jd.helloworld.R.id.vpg_tv_msg);
+        TextView tv_msg = (TextView) findViewById(cnedu.ustcjd.helloworld.R.id.vpg_tv_msg);
         tv_msg.setText(this.toString()+"@"+this.getTaskId());
 
-        Button btn_go = (Button) findViewById(com.ustc.jd.helloworld.R.id.vpg_btn_go);
+        Button btn_go = (Button) findViewById(cnedu.ustcjd.helloworld.R.id.vpg_btn_go);
         btn_go.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

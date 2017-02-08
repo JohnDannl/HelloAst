@@ -35,9 +35,9 @@ public class MainActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        setContentView(com.ustc.jd.draggablerecyclerviewpager.R.layout.activity_main);
+        setContentView(cnedu.ustcjd.draggablerecyclerviewpager.R.layout.activity_main);
 
-        mRecyclerViewPager = (RecyclerViewPager) findViewById(com.ustc.jd.draggablerecyclerviewpager.R.id.recycler_view_pager);
+        mRecyclerViewPager = (RecyclerViewPager) findViewById(cnedu.ustcjd.draggablerecyclerviewpager.R.id.recycler_view_pager);
         mRecyclerViewPager.setHasFixedSize(true);
         mAdapter = new RecyclerViewPagerAdapter(this);
         mRecyclerViewPager.setAdapter(mAdapter);
@@ -72,14 +72,14 @@ public class MainActivity extends Activity {
         mItemTouchHelper = new ItemTouchHelper(itemTouchCallback);
         mItemTouchHelper.attachToRecyclerView(mRecyclerViewPager);
 
-        imgNavLeft=(ImageView)findViewById(com.ustc.jd.draggablerecyclerviewpager.R.id.navi_bar_left);
+        imgNavLeft=(ImageView)findViewById(cnedu.ustcjd.draggablerecyclerviewpager.R.id.navi_bar_left);
         imgNavLeft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mRecyclerViewPager.scrollLeft();
             }
         });
-        imgNavRight=(ImageView)findViewById(com.ustc.jd.draggablerecyclerviewpager.R.id.navi_bar_right);
+        imgNavRight=(ImageView)findViewById(cnedu.ustcjd.draggablerecyclerviewpager.R.id.navi_bar_right);
         imgNavRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

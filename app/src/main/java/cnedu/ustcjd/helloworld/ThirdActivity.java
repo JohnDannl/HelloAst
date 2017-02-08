@@ -22,11 +22,11 @@ public class ThirdActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(com.ustc.jd.helloworld.R.layout.activity_third);
-        TextView tv_msg = (TextView) findViewById(com.ustc.jd.helloworld.R.id.third_tv_msg);
+        setContentView(cnedu.ustcjd.helloworld.R.layout.activity_third);
+        TextView tv_msg = (TextView) findViewById(cnedu.ustcjd.helloworld.R.id.third_tv_msg);
         tv_msg.setText(this.toString()+"@"+this.getTaskId());
 
-        Button btnToMain = (Button) findViewById(com.ustc.jd.helloworld.R.id.third_btn_to_main);
+        Button btnToMain = (Button) findViewById(cnedu.ustcjd.helloworld.R.id.third_btn_to_main);
         btnToMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -35,7 +35,7 @@ public class ThirdActivity extends Activity {
             }
         });
 
-        Button btnToThird = (Button) findViewById(com.ustc.jd.helloworld.R.id.third_btn_to_third);
+        Button btnToThird = (Button) findViewById(cnedu.ustcjd.helloworld.R.id.third_btn_to_third);
         btnToThird.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,10 +57,10 @@ public class ThirdActivity extends Activity {
     }
 
     private void initAnimation() {
-        ivAnim = findViewById(com.ustc.jd.helloworld.R.id.iv_anim);
-        leftIn = AnimationUtils.loadAnimation(this, com.ustc.jd.helloworld.R.anim.slide_left_in);
+        ivAnim = findViewById(cnedu.ustcjd.helloworld.R.id.iv_anim);
+        leftIn = AnimationUtils.loadAnimation(this, cnedu.ustcjd.helloworld.R.anim.slide_left_in);
         leftIn.setFillAfter(true);
-        rightOut = AnimationUtils.loadAnimation(this, com.ustc.jd.helloworld.R.anim.slide_right_out);
+        rightOut = AnimationUtils.loadAnimation(this, cnedu.ustcjd.helloworld.R.anim.slide_right_out);
         rightOut.setFillAfter(true);
     }
 

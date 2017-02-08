@@ -41,26 +41,26 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(com.ustc.jd.helloworld.R.layout.activity_main);
+        setContentView(cnedu.ustcjd.helloworld.R.layout.activity_main);
         mContext=this;
-        viewContainer=(LinearLayout) findViewById(com.ustc.jd.helloworld.R.id.adaptive_view_container);
-        EditText searchView=(EditText) LayoutInflater.from(this).inflate(com.ustc.jd.helloworld.R.layout.et_add_sub_view,null);
+        viewContainer=(LinearLayout) findViewById(cnedu.ustcjd.helloworld.R.id.adaptive_view_container);
+        EditText searchView=(EditText) LayoutInflater.from(this).inflate(cnedu.ustcjd.helloworld.R.layout.et_add_sub_view,null);
         /*LinearLayout.LayoutParams llp=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT,1);
         viewContainer.addView(searchView,llp);*/
         viewContainer.addView(searchView);
         searchView.setText(this.toString()+"@"+this.getTaskId());
-        final Button btn_add=(Button)findViewById(com.ustc.jd.helloworld.R.id.btn_add_view);
+        final Button btn_add=(Button)findViewById(cnedu.ustcjd.helloworld.R.id.btn_add_view);
         btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TextView tv=(TextView)LayoutInflater.from(mContext).inflate(com.ustc.jd.helloworld.R.layout.tv_add_sub_view,null);
-                tv.setText(getString(com.ustc.jd.helloworld.R.string.btn_prefix,addedViews.size()+1));
+                TextView tv=(TextView)LayoutInflater.from(mContext).inflate(cnedu.ustcjd.helloworld.R.layout.tv_add_sub_view,null);
+                tv.setText(getString(cnedu.ustcjd.helloworld.R.string.btn_prefix,addedViews.size()+1));
                 viewContainer.addView(tv,addedViews.size());
                 addedViews.add(tv);
             }
         });
-        Button btn_rm=(Button)findViewById(com.ustc.jd.helloworld.R.id.btn_rm_view);
+        Button btn_rm=(Button)findViewById(cnedu.ustcjd.helloworld.R.id.btn_rm_view);
         btn_rm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         displayWidth=size.x;
         displayHeight=size.y;
 
-        final Button btn_rotate=(Button)findViewById(com.ustc.jd.helloworld.R.id.btn_rotate);
+        final Button btn_rotate=(Button)findViewById(cnedu.ustcjd.helloworld.R.id.btn_rotate);
         btn_rotate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        Button btn_toast=(Button)findViewById(com.ustc.jd.helloworld.R.id.btn_toast);
+        Button btn_toast=(Button)findViewById(cnedu.ustcjd.helloworld.R.id.btn_toast);
         btn_toast.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -101,10 +101,10 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this,"width:"+displayWidth+",height:"+displayHeight,Toast.LENGTH_SHORT).show();
             }
         });
-        final Button btn_anim1=(Button)findViewById(com.ustc.jd.helloworld.R.id.btn_anim_1);
-        final Button btn_anim2=(Button)findViewById(com.ustc.jd.helloworld.R.id.btn_anim_2);
-        final Button btn_anim3=(Button)findViewById(com.ustc.jd.helloworld.R.id.btn_anim_3);
-        final LinearLayout animContainer = (LinearLayout)findViewById(com.ustc.jd.helloworld.R.id.anim_container);
+        final Button btn_anim1=(Button)findViewById(cnedu.ustcjd.helloworld.R.id.btn_anim_1);
+        final Button btn_anim2=(Button)findViewById(cnedu.ustcjd.helloworld.R.id.btn_anim_2);
+        final Button btn_anim3=(Button)findViewById(cnedu.ustcjd.helloworld.R.id.btn_anim_3);
+        final LinearLayout animContainer = (LinearLayout)findViewById(cnedu.ustcjd.helloworld.R.id.anim_container);
         btn_anim1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
         };
         animContainer.getViewTreeObserver().addOnGlobalLayoutListener(callback);
 
-        Button btnToViewPager=(Button)findViewById(com.ustc.jd.helloworld.R.id.btn_to_view_pager);
+        Button btnToViewPager=(Button)findViewById(cnedu.ustcjd.helloworld.R.id.btn_to_view_pager);
         btnToViewPager.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(com.ustc.jd.helloworld.R.id.ll_text_view_container).setOnClickListener(new View.OnClickListener() {
+        findViewById(cnedu.ustcjd.helloworld.R.id.ll_text_view_container).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(MainActivity.this, "Click me",Toast.LENGTH_SHORT).show();

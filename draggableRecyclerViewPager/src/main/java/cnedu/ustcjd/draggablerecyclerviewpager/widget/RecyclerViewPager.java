@@ -19,7 +19,7 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 
-import com.ustc.jd.draggablerecyclerviewpager.BuildConfig;
+import cnedu.ustcjd.draggablerecyclerviewpager.BuildConfig;
 
 import java.util.ArrayList;
 import java.util.List;

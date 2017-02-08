@@ -44,8 +44,6 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import com.ustc.draggableviewpager.R;
-
 import cnedu.ustcjd.widget.draggableviewpager.DragDropGrid;
 import cnedu.ustcjd.widget.draggableviewpager.DraggableViewPager;
 import cnedu.ustcjd.widget.draggableviewpager.callbacks.OnPageChangedListener;

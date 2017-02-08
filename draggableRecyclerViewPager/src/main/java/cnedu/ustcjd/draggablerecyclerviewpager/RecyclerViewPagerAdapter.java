@@ -35,7 +35,7 @@ public class RecyclerViewPagerAdapter extends RecyclerView.Adapter<RecyclerViewP
         TextView textView;
         public ItemViewHolder(final View itemView, int viewType) {
             super(itemView);
-            textView = (TextView) itemView.findViewById(com.ustc.jd.draggablerecyclerviewpager.R.id.info_text);
+            textView = (TextView) itemView.findViewById(cnedu.ustcjd.draggablerecyclerviewpager.R.id.info_text);
             ViewGroup.LayoutParams lp = textView.getLayoutParams();
             lp.width = displayWidth / 2;
             lp.height = displayHeight / 2;
@@ -58,7 +58,7 @@ public class RecyclerViewPagerAdapter extends RecyclerView.Adapter<RecyclerViewP
         displayWidth = point.x;
         displayHeight = point.y;
         for (int i = 0; i < 13; i++) {
-            mItems.add(new Item(i + 1, "Item " + (i + 1), com.ustc.jd.draggablerecyclerviewpager.R.drawable.ic_launcher));
+            mItems.add(new Item(i + 1, "Item " + (i + 1), cnedu.ustcjd.draggablerecyclerviewpager.R.drawable.ic_launcher));
         }
     }
 
@@ -67,13 +67,13 @@ public class RecyclerViewPagerAdapter extends RecyclerView.Adapter<RecyclerViewP
         View itemView = null;
         ItemViewHolder itemViewHolder = null;
         if (viewType == TYPE_NORMAL) {
-            itemView = LayoutInflater.from(parent.getContext()).inflate(com.ustc.jd.draggablerecyclerviewpager.R.layout.recycler_view_item_normal, parent, false);
+            itemView = LayoutInflater.from(parent.getContext()).inflate(cnedu.ustcjd.draggablerecyclerviewpager.R.layout.recycler_view_item_normal, parent, false);
             itemViewHolder = new ItemViewHolder(itemView, viewType);
-            itemViewHolder.textView = (TextView) itemView.findViewById(com.ustc.jd.draggablerecyclerviewpager.R.id.info_text);
+            itemViewHolder.textView = (TextView) itemView.findViewById(cnedu.ustcjd.draggablerecyclerviewpager.R.id.info_text);
         } else if (viewType == TYPE_FOOTER){
-            itemView = LayoutInflater.from(parent.getContext()).inflate(com.ustc.jd.draggablerecyclerviewpager.R.layout.recycler_view_item_footer, parent, false);
+            itemView = LayoutInflater.from(parent.getContext()).inflate(cnedu.ustcjd.draggablerecyclerviewpager.R.layout.recycler_view_item_footer, parent, false);
             itemViewHolder = new ItemViewHolder(itemView, viewType);
-            itemViewHolder.textView = (TextView) itemView.findViewById(com.ustc.jd.draggablerecyclerviewpager.R.id.info_text);
+            itemViewHolder.textView = (TextView) itemView.findViewById(cnedu.ustcjd.draggablerecyclerviewpager.R.id.info_text);
         }
         return itemViewHolder;
     }

@@ -23,6 +23,7 @@ import android.content.res.TypedArray;
 import android.graphics.*;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.*;
 import android.widget.Scroller;
 
@@ -36,6 +37,7 @@ import java.util.List;
  * Custom view that shows a pie chart and, optionally, a label.
  */
 public class PieChart extends ViewGroup {
+    private static final String TAG = "PieChart";
     private List<Item> mData = new ArrayList<Item>();
 
     private float mTotal = 0.0f;
@@ -127,7 +129,7 @@ public class PieChart extends ViewGroup {
      *
      * @param context
      * @param attrs   An attribute set which can contain attributes from
-     *                {@link com.ustc.jd.customview.R.styleable.PieChart} as well as attributes inherited
+     *                {@link cnedu.ustcjd.customview.R.styleable.PieChart} as well as attributes inherited
      *                from {@link View}.
      */
     public PieChart(Context context, AttributeSet attrs) {
@@ -143,7 +145,7 @@ public class PieChart extends ViewGroup {
         // the custom attributes that were declared in attrs.xml.
         TypedArray a = context.getTheme().obtainStyledAttributes(
                 attrs,
-                com.ustc.jd.customview.R.styleable.PieChart,
+                cnedu.ustcjd.customview.R.styleable.PieChart,
                 0, 0
         );
 
@@ -153,16 +155,16 @@ public class PieChart extends ViewGroup {
             //
             // The R.styleable.PieChart_* constants represent the index for
             // each custom attribute in the R.styleable.PieChart array.
-            mShowText = a.getBoolean(com.ustc.jd.customview.R.styleable.PieChart_showText, false);
-            mTextY = a.getDimension(com.ustc.jd.customview.R.styleable.PieChart_labelY, 0.0f);
-            mTextWidth = a.getDimension(com.ustc.jd.customview.R.styleable.PieChart_labelWidth, 0.0f);
-            mTextHeight = a.getDimension(com.ustc.jd.customview.R.styleable.PieChart_labelHeight, 0.0f);
-            mTextPos = a.getInteger(com.ustc.jd.customview.R.styleable.PieChart_labelPosition, 0);
-            mTextColor = a.getColor(com.ustc.jd.customview.R.styleable.PieChart_labelColor, 0xff000000);
-            mHighlightStrength = a.getFloat(com.ustc.jd.customview.R.styleable.PieChart_highlightStrength, 1.0f);
-            mPieRotation = a.getInt(com.ustc.jd.customview.R.styleable.PieChart_pieRotation, 0);
-            mPointerRadius = a.getDimension(com.ustc.jd.customview.R.styleable.PieChart_pointerRadius, 2.0f);
-            mAutoCenterInSlice = a.getBoolean(com.ustc.jd.customview.R.styleable.PieChart_autoCenterPointerInSlice, false);
+            mShowText = a.getBoolean(cnedu.ustcjd.customview.R.styleable.PieChart_showText, false);
+            mTextY = a.getDimension(cnedu.ustcjd.customview.R.styleable.PieChart_labelY, 0.0f);
+            mTextWidth = a.getDimension(cnedu.ustcjd.customview.R.styleable.PieChart_labelWidth, 0.0f);
+            mTextHeight = a.getDimension(cnedu.ustcjd.customview.R.styleable.PieChart_labelHeight, 0.0f);
+            mTextPos = a.getInteger(cnedu.ustcjd.customview.R.styleable.PieChart_labelPosition, 0);
+            mTextColor = a.getColor(cnedu.ustcjd.customview.R.styleable.PieChart_labelColor, 0xff000000);
+            mHighlightStrength = a.getFloat(cnedu.ustcjd.customview.R.styleable.PieChart_highlightStrength, 1.0f);
+            mPieRotation = a.getInt(cnedu.ustcjd.customview.R.styleable.PieChart_pieRotation, 0);
+            mPointerRadius = a.getDimension(cnedu.ustcjd.customview.R.styleable.PieChart_pointerRadius, 2.0f);
+            mAutoCenterInSlice = a.getBoolean(cnedu.ustcjd.customview.R.styleable.PieChart_autoCenterPointerInSlice, false);
         } finally {
             // release the TypedArray so that it can be reused.
             a.recycle();
@@ -506,7 +508,7 @@ public class PieChart extends ViewGroup {
         // get as big as it can
         int minh = (w - (int) mTextWidth) + getPaddingBottom() + getPaddingTop();
         int h = Math.min(MeasureSpec.getSize(heightMeasureSpec), minh);
-
+        Log.d(TAG, String.format("setMeasure width: %s, height: %s", w, h));
         setMeasuredDimension(w, h);
     }
 
@@ -735,11 +737,11 @@ public class PieChart extends ViewGroup {
         // In edit mode it's nice to have some demo data, so add that here.
         if (this.isInEditMode()) {
             Resources res = getResources();
-            addItem("Annabelle", 3, res.getColor(com.ustc.jd.customview.R.color.bluegrass));
-            addItem("Brunhilde", 4, res.getColor(com.ustc.jd.customview.R.color.chartreuse));
-            addItem("Carolina", 2, res.getColor(com.ustc.jd.customview.R.color.emerald));
-            addItem("Dahlia", 3, res.getColor(com.ustc.jd.customview.R.color.seafoam));
-            addItem("Ekaterina", 1, res.getColor(com.ustc.jd.customview.R.color.slate));
+            addItem("Annabelle", 3, res.getColor(cnedu.ustcjd.customview.R.color.bluegrass));
+            addItem("Brunhilde", 4, res.getColor(cnedu.ustcjd.customview.R.color.chartreuse));
+            addItem("Carolina", 2, res.getColor(cnedu.ustcjd.customview.R.color.emerald));
+            addItem("Dahlia", 3, res.getColor(cnedu.ustcjd.customview.R.color.seafoam));
+            addItem("Ekaterina", 1, res.getColor(cnedu.ustcjd.customview.R.color.slate));
         }
 
     }

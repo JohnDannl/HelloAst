@@ -2,6 +2,7 @@ package cnedu.ustcjd.scrollingtest;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,14 +31,14 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter {
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-        SimpleVH sVH = (SimpleVH) holder;
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        final SimpleVH sVH = (SimpleVH) holder;
         sVH.tvName.setText(infoList.get(position));
         sVH.tvDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                infoList.remove(position);
-                notifyDataSetChanged();
+                infoList.remove(sVH.getAdapterPosition());
+                notifyItemRemoved(sVH.getAdapterPosition());
             }
         });
     }

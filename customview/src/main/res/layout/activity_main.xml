@@ -16,8 +16,25 @@
         android:layout_height="wrap_content"
         android:text="Hello World!" />
     <cnedu.ustcjd.customview.PieChart
+        android:id="@+id/Pie"
         custom:showText="true"
         custom:labelPosition="right"
+        custom:labelHeight="20dp"
+        custom:labelWidth="110dp"
+        custom:labelY="85dp"
+        custom:highlightStrength="1.12"
+        android:background="@android:color/white"
+        custom:pieRotation="0"
+        custom:labelColor="@android:color/black"
+        custom:autoCenterPointerInSlice="true"
+        custom:pointerRadius="4dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/Reset"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/reset_button"
+        />
 </LinearLayout>

@@ -4,8 +4,6 @@ import android.content.Context;
 import android.util.Log;
 import android.view.View;
 
-import com.ustc.draggableviewpager.R;
-
 import cnedu.ustcjd.widget.draggableviewpager.DraggableViewPager;
 import cnedu.ustcjd.widget.draggableviewpager.DraggableViewPagerAdapter;
 
