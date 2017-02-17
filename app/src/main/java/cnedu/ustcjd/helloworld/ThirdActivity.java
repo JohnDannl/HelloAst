@@ -4,17 +4,28 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.app.Activity;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+
+import cnedu.ustcjd.widget.GuideView;
+
 public class ThirdActivity extends Activity {
-    private static String TAG = "Animation";
+    private static String TAG = "ThirdActivity";
     private View ivAnim;
     private int count = 0;
     Animation leftIn, rightOut;
@@ -35,7 +46,7 @@ public class ThirdActivity extends Activity {
             }
         });
 
-        Button btnToThird = (Button) findViewById(cnedu.ustcjd.helloworld.R.id.third_btn_to_third);
+        final Button btnToThird = (Button) findViewById(cnedu.ustcjd.helloworld.R.id.third_btn_to_third);
         btnToThird.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -43,11 +54,35 @@ public class ThirdActivity extends Activity {
                 startActivity(intent);
             }
         });
+
         initAnimation();
         IntentFilter filter = new IntentFilter();
         filter.addAction(NetworkManager.Network_Connected_Changed);
         filter.addAction(NetworkManager.Network_State_Changed);
         registerReceiver(receiver, filter);
+
+        final ImageView ivPicasso = (ImageView) findViewById(R.id.iv_picasso);
+        //String picUrl = "https://hoa.and-home.cn:8043/upload/module/background_rest_on.png";
+        String picUrl = "https://hoa.and-home.cn:8043/upload/module/background_at_on.png";
+        Drawable defaultDrawable = getResources().getDrawable(R.drawable.al_switch_on);
+        Picasso.with(this).load(picUrl).error(defaultDrawable).placeholder(defaultDrawable).resize(500, 180).into(ivPicasso, new Callback() {
+            @Override
+            public void onSuccess() {
+                Bitmap bitMap = ((BitmapDrawable) ivPicasso.getDrawable()).getBitmap();
+                int pixel = bitMap.getPixel(5, 5);
+                Log.d(TAG, String.format("pixel success:%x", pixel));
+                btnToThird.setBackgroundColor(pixel);
+            }
+
+            @Override
+            public void onError() {
+                Bitmap bitMap = ((BitmapDrawable) ivPicasso.getDrawable()).getBitmap();
+                int pixel = bitMap.getPixel(0, 0);
+                Log.d(TAG, String.format("pixel error:%x", pixel));
+                btnToThird.setBackgroundColor(pixel);
+            }
+        });
+        showNewbieTips();
     }
 
     @Override
@@ -115,4 +150,37 @@ public class ThirdActivity extends Activity {
             }
         }
     };
+    private void showNewbieTips() {
+        ImageView tipViw = new ImageView(this);
+        tipViw.setImageResource(R.drawable.duplex_audio_talk_newbie_tips);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        tipViw.setLayoutParams(params);
+        View targetView = ivAnim;
+        final GuideView guideView = GuideView.Builder.newInstance(this)
+                .setTargetView(targetView)
+                .setCustomGuideView(tipViw)
+                .setDirection(GuideView.Direction.RIGHT_BOTTOM)
+                .setShape(GuideView.MyShape.CIRCULAR)
+                .setBgColor(getResources().getColor(R.color.clr_guide_view_shadow))
+                .build();
+        guideView.show();
+        /*mIntroduceDuplexAudioTalkDialog = new Dialog(this, R.style.FullscreenDialog);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.introduce_duplex_audiotalk_dialog, null);
+        mIntroduceDuplexAudioTalkDialog.setContentView(view);
+        mIntroduceDuplexAudioTalkDialog.show();
+
+        TextView btn_exit = (TextView) view.findViewById(R.id.hemu_dialog_introduce_duplex_audiotalk_tv_i_know);*/
+        tipViw.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //preference.putBoolean(Common.Show_DuplexAudioTalkIntroduce, false).commit();
+
+                /*mIntroduceDuplexAudioTalkDialog.dismiss();
+                mShowingIntroduceDuplexAudioTalk = false;*/
+                guideView.hide();
+            }
+        });
+    }
 }

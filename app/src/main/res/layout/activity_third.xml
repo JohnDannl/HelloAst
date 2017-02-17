@@ -13,24 +13,29 @@
         android:id="@+id/third_tv_msg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
-    <Button
-        android:id="@+id/third_btn_to_main"
-        android:text="@string/to_main"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <Button
-        android:id="@+id/third_btn_to_third"
-        android:text="@string/to_third"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <ToggleButton
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_toggle_btn"
-        android:textOff=""
-        android:textOn=""
-        android:id="@+id/toggleButton" />
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/third_btn_to_main"
+            android:text="@string/to_main"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/third_btn_to_third"
+            android:text="@string/to_third"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <ToggleButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_toggle_btn"
+            android:textOff=""
+            android:textOn=""
+            android:id="@+id/toggleButton" />
+    </LinearLayout>
+
 
     <Button
         android:id="@+id/btn_anim"
@@ -39,15 +44,14 @@
         android:onClick="onClickBtnAnim"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
-    <RelativeLayout
+    <ImageView
+        android:id="@+id/iv_anim"
+        android:src="@drawable/al_switch_on"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <ImageView
+        android:id="@+id/iv_picasso"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center">
-        <ImageView
-            android:id="@+id/iv_anim"
-            android:src="@drawable/al_switch_on"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </RelativeLayout>
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
