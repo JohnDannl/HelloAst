@@ -22,11 +22,13 @@ import android.widget.TextView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import cnedu.ustcjd.widget.AudioTalkBgView;
 import cnedu.ustcjd.widget.GuideView;
 
 public class ThirdActivity extends Activity {
     private static String TAG = "ThirdActivity";
     private View ivAnim;
+    private AudioTalkBgView atbv_audio_talk;
     private int count = 0;
     Animation leftIn, rightOut;
 
@@ -34,7 +36,7 @@ public class ThirdActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(cnedu.ustcjd.helloworld.R.layout.activity_third);
-        TextView tv_msg = (TextView) findViewById(cnedu.ustcjd.helloworld.R.id.third_tv_msg);
+        final TextView tv_msg = (TextView) findViewById(cnedu.ustcjd.helloworld.R.id.third_tv_msg);
         tv_msg.setText(this.toString()+"@"+this.getTaskId());
 
         Button btnToMain = (Button) findViewById(cnedu.ustcjd.helloworld.R.id.third_btn_to_main);
@@ -82,7 +84,27 @@ public class ThirdActivity extends Activity {
                 btnToThird.setBackgroundColor(pixel);
             }
         });
-        showNewbieTips();
+        //showNewbieTips();
+        atbv_audio_talk = (AudioTalkBgView) findViewById(R.id.atbv_audio_talk);
+        atbv_audio_talk.setBgColor(getResources().getColor(R.color.clr_white));
+        atbv_audio_talk.setStrokeColor(getResources().getColor(R.color.clr_stroke_grey));
+        atbv_audio_talk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (v.isSelected()) {
+                    v.setSelected(false);
+                } else {
+                    v.setSelected(true);
+                }
+                if (v.isSelected()) {
+                    atbv_audio_talk.setBgColor(getResources().getColor(R.color.clr_bg_red));
+                    atbv_audio_talk.setStrokeColor(getResources().getColor(R.color.clr_stroke_red));
+                } else {
+                    atbv_audio_talk.setBgColor(getResources().getColor(R.color.clr_white));
+                    atbv_audio_talk.setStrokeColor(getResources().getColor(R.color.clr_stroke_grey));
+                }
+            }
+        });
     }
 
     @Override
@@ -182,5 +204,8 @@ public class ThirdActivity extends Activity {
                 guideView.hide();
             }
         });
+    }
+    public void showTips(View v) {
+        showNewbieTips();
     }
 }

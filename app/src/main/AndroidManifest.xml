@@ -15,7 +15,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name="cnedu.ustcjd.helloworld.MainActivity"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:configChanges="orientation|keyboardHidden">
             <!--<intent-filter>
                 <action android:name="android.intent.action.MAIN" />

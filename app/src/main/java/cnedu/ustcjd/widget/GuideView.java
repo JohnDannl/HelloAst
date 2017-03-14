@@ -1,6 +1,5 @@
 package cnedu.ustcjd.widget;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -15,13 +14,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
+import cnedu.ustcjd.helloworld.R;
 
 import java.util.List;
-
-import cnedu.ustcjd.helloworld.R;
 
 /**
  * Created by zhouweixian on 2016/1/23.
@@ -32,6 +29,7 @@ public class GuideView extends RelativeLayout implements ViewTreeObserver.OnGlob
     private List<View> mViews;
     private boolean first = true;
     private WindowManager mWindowManager;
+    private boolean isShowing = false;
     /**
      * targetView前缀。SHOW_GUIDE_PREFIX + targetView.getId()作为保存在SP文件的key。
      */
@@ -217,6 +215,11 @@ public class GuideView extends RelativeLayout implements ViewTreeObserver.OnGlob
             }
             restoreState();
         }
+        isShowing = false;
+    }
+
+    public boolean isShowing() {
+        return isShowing;
     }
 
     public void show() {
@@ -234,6 +237,7 @@ public class GuideView extends RelativeLayout implements ViewTreeObserver.OnGlob
         mWindowManager.addView(this, lp);
 //        ((FrameLayout) ((Activity) mContext).getWindow().getDecorView()).addView(this);
         first = false;
+        isShowing = true;
     }
 
     /**

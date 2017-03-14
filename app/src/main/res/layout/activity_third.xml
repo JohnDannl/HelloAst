@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -52,6 +53,21 @@
     <ImageView
         android:id="@+id/iv_picasso"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="tip"
+        android:onClick="showTips"/>
+    <cnedu.ustcjd.widget.AudioTalkBgView
+        android:id="@+id/atbv_audio_talk"
+        android:src="@drawable/bg_audio_talk"
+        android:layout_gravity="center_horizontal"
+        custom:shadowColor="@color/clr_shadow_red"
+        custom:backgroundColor="@color/clr_white"
+        custom:shadowOffsetY="7dp"
+        android:padding="35dip"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
 </LinearLayout>
