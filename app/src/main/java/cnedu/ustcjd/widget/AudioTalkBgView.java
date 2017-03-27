@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.widget.ImageView;
 
 import cnedu.ustcjd.helloworld.R;
@@ -28,6 +29,9 @@ public class AudioTalkBgView extends ImageView {
     private int bgColor;
     private int shadowColor;
     private int strokeColor;
+
+    private boolean touched = false;
+    private IAudioTalkViewListener touchListener;
 
     public AudioTalkBgView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -88,5 +92,62 @@ public class AudioTalkBgView extends ImageView {
         this.strokeColor = strokeColor;
         strokePaint.setColor(strokeColor);
         invalidate();
+    }
+
+    public interface IAudioTalkViewListener {
+        void onTouch();
+        void onRelease();
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (touchCenterBitmap(event.getX(), event.getY())) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    if (!touched) {
+                        touched = true;
+                        notifyTouchChanged(touched);
+                    }
+                    super.onTouchEvent(event);
+                    return true;
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL:
+                    if (touched) {
+                        touched = false;
+                        notifyTouchChanged(touched);
+                    }
+                    break;
+            }
+        } else {
+            if (touched) {
+                touched = false;
+                notifyTouchChanged(touched);
+            }
+        }
+        return super.onTouchEvent(event);
+    }
+
+    public void setAudioTalkViewListener(final IAudioTalkViewListener l) {
+        touchListener = l;
+    }
+
+    private boolean touchCenterBitmap(final float x, final float y) {
+        if (Math.sqrt(Math.pow((x - getWidth() / 2), 2) + Math.pow((y - getHeight() / 2), 2)) <= getWidth() / 2) {
+            return true;
+        }
+        return false;
+    }
+
+    private void notifyTouchChanged(final boolean touched) {
+
+        if (touched) {
+            if (touchListener != null) {
+                touchListener.onTouch();
+            }
+        } else {
+            if (touchListener != null) {
+                touchListener.onRelease();
+            }
+        }
     }
 }

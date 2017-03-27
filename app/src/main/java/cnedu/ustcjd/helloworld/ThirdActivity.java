@@ -18,17 +18,20 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import cnedu.ustcjd.widget.AudioTalkBgView;
+import cnedu.ustcjd.widget.AudioTalkingView;
 import cnedu.ustcjd.widget.GuideView;
 
 public class ThirdActivity extends Activity {
     private static String TAG = "ThirdActivity";
     private View ivAnim;
-    private AudioTalkBgView atbv_audio_talk;
+    private AudioTalkBgView talkView;
+    private AudioTalkingView mAudioTalkingView;
     private int count = 0;
     Animation leftIn, rightOut;
 
@@ -85,26 +88,43 @@ public class ThirdActivity extends Activity {
             }
         });
         //showNewbieTips();
-        atbv_audio_talk = (AudioTalkBgView) findViewById(R.id.atbv_audio_talk);
-        atbv_audio_talk.setBgColor(getResources().getColor(R.color.clr_white));
-        atbv_audio_talk.setStrokeColor(getResources().getColor(R.color.clr_stroke_grey));
-        atbv_audio_talk.setOnClickListener(new View.OnClickListener() {
+        talkView = (AudioTalkBgView) findViewById(R.id.atbv_audio_talk);
+        talkView.setBgColor(getResources().getColor(R.color.clr_white));
+        talkView.setStrokeColor(getResources().getColor(R.color.clr_stroke_grey));
+        talkView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(TAG, "audio talk on click");
                 if (v.isSelected()) {
                     v.setSelected(false);
                 } else {
                     v.setSelected(true);
                 }
                 if (v.isSelected()) {
-                    atbv_audio_talk.setBgColor(getResources().getColor(R.color.clr_bg_red));
-                    atbv_audio_talk.setStrokeColor(getResources().getColor(R.color.clr_stroke_red));
+                    talkView.setBgColor(getResources().getColor(R.color.clr_bg_red));
+                    talkView.setStrokeColor(getResources().getColor(R.color.clr_stroke_red));
                 } else {
-                    atbv_audio_talk.setBgColor(getResources().getColor(R.color.clr_white));
-                    atbv_audio_talk.setStrokeColor(getResources().getColor(R.color.clr_stroke_grey));
+                    talkView.setBgColor(getResources().getColor(R.color.clr_white));
+                    talkView.setStrokeColor(getResources().getColor(R.color.clr_stroke_grey));
                 }
             }
         });
+        talkView.setAudioTalkViewListener(new AudioTalkBgView.IAudioTalkViewListener() {
+            @Override
+            public void onTouch() {
+                Toast.makeText(ThirdActivity.this, "on Touch", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "audio talk on touch");
+                animationShowAudioTalk();
+            }
+
+            @Override
+            public void onRelease() {
+                Toast.makeText(ThirdActivity.this, "on Release", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "audio talk on release");
+                animationHideAudioTalk();
+            }
+        });
+        mAudioTalkingView = (AudioTalkingView) findViewById(R.id.player1bar_bottom_atv_talking);
     }
 
     @Override
@@ -207,5 +227,65 @@ public class ThirdActivity extends Activity {
     }
     public void showTips(View v) {
         showNewbieTips();
+    }
+    private void animationShowAudioTalk() {
+        final View talkingView = findViewById(R.id.player1bar_bottom_rl_talking);
+        if (talkingView.getVisibility() == View.VISIBLE) {
+            return;
+        } else {
+            mAudioTalkingView.enableDecileAnimation(true);
+            talkingView.clearAnimation();
+            talkingView.setVisibility(View.VISIBLE);
+            talkingView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.zoom_out_to_normal));
+        }
+
+        final View talkView = findViewById(R.id.player1bar_bottom_rl_talk);
+        final Animation zoomSmallAnimation = AnimationUtils.loadAnimation(this, R.anim.zoom_out_to_small);
+        zoomSmallAnimation.setFillAfter(true);
+        zoomSmallAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                //				talkView.setVisibility(View.GONE);
+            }
+        });
+        talkView.startAnimation(zoomSmallAnimation);
+
+    }
+
+    private void animationHideAudioTalk() {
+        final View talkingView = findViewById(R.id.player1bar_bottom_rl_talking);
+        if (talkingView.getVisibility() == View.VISIBLE) {
+            mAudioTalkingView.enableDecileAnimation(false);
+            final Animation zoomLargeAnimation = AnimationUtils.loadAnimation(this, R.anim.zoom_in_to_large);
+            zoomLargeAnimation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    talkingView.setVisibility(View.GONE);
+                }
+            });
+            talkingView.clearAnimation();
+            talkingView.setVisibility(View.VISIBLE);
+            talkingView.startAnimation(zoomLargeAnimation);
+        } else {
+            return;
+        }
+        final View talkView = findViewById(R.id.player1bar_bottom_rl_talk);
+        talkView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.zoom_in_to_normal));
     }
 }
