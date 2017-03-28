@@ -9,6 +9,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.app.Activity;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -107,6 +108,7 @@ public class ThirdActivity extends Activity {
                     talkView.setBgColor(getResources().getColor(R.color.clr_white));
                     talkView.setStrokeColor(getResources().getColor(R.color.clr_stroke_grey));
                 }
+                getScreenSizeInDp(ThirdActivity.this);
             }
         });
         talkView.setAudioTalkViewListener(new AudioTalkBgView.IAudioTalkViewListener() {
@@ -124,6 +126,15 @@ public class ThirdActivity extends Activity {
                 animationHideAudioTalk();
             }
         });
+        float[] display = getScreenSizeInDp(this);
+        if (display[0] <= 600) { //大屏可以到640
+            int smallPadding = 28 * 3;
+            int bigMargin = 8 * 3;
+            talkView.setPadding(smallPadding, smallPadding, smallPadding, smallPadding);
+            ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) talkView.getLayoutParams();
+            mlp.setMargins(bigMargin, 0 ,bigMargin, 0);
+            talkView.setLayoutParams(mlp);
+        }
         mAudioTalkingView = (AudioTalkingView) findViewById(R.id.player1bar_bottom_atv_talking);
     }
 
@@ -288,4 +299,13 @@ public class ThirdActivity extends Activity {
         final View talkView = findViewById(R.id.player1bar_bottom_rl_talk);
         talkView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.zoom_in_to_normal));
     }
-}
+
+    private float[] getScreenSizeInDp(Context context) {
+        DisplayMetrics dspMtr = context.getResources().getDisplayMetrics();
+        float width = dspMtr.widthPixels / dspMtr.density;
+        float height = dspMtr.heightPixels / dspMtr.density;
+        Log.d(TAG, String.format("density:%s,pixel:(%s,%s),dp:(%s,%s)",
+                dspMtr.density, dspMtr.heightPixels, dspMtr.widthPixels, height, width));
+        return new float[] {height, width};
+    }
+ }

@@ -89,10 +89,24 @@
                         android:layout_height="wrap_content" />
                 </RelativeLayout>
             </RelativeLayout>
-            <TextView
+            <RelativeLayout
                 android:layout_width="0dip"
                 android:layout_weight="1"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content">
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <cnedu.ustcjd.widget.AudioTalkBgView
+                        android:src="@drawable/bg_audio_talk"
+                        android:layout_gravity="center_horizontal"
+                        custom:shadowColor="@color/clr_shadow_red"
+                        custom:backgroundColor="@color/clr_white"
+                        custom:shadowOffsetY="7dp"
+                        android:padding="35dip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </RelativeLayout>
+            </RelativeLayout>
         </LinearLayout>
         <RelativeLayout
             android:id="@+id/player1bar_bottom_rl_talking"
