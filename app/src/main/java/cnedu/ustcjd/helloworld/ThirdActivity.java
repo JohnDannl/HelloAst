@@ -9,8 +9,10 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.app.Activity;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -31,10 +33,12 @@ import cnedu.ustcjd.widget.GuideView;
 public class ThirdActivity extends Activity {
     private static String TAG = "ThirdActivity";
     private View ivAnim;
-    private AudioTalkBgView talkView;
+    private AudioTalkBgView talkView, talkBgView2;
     private AudioTalkingView mAudioTalkingView;
     private int count = 0;
     Animation leftIn, rightOut;
+    private GuideView guideView;
+    private Handler mHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +92,7 @@ public class ThirdActivity extends Activity {
                 btnToThird.setBackgroundColor(pixel);
             }
         });
-        //showNewbieTips();
+
         talkView = (AudioTalkBgView) findViewById(R.id.atbv_audio_talk);
         talkView.setBgColor(getResources().getColor(R.color.clr_white));
         talkView.setStrokeColor(getResources().getColor(R.color.clr_stroke_grey));
@@ -136,11 +140,18 @@ public class ThirdActivity extends Activity {
             talkView.setLayoutParams(mlp);
         }
         mAudioTalkingView = (AudioTalkingView) findViewById(R.id.player1bar_bottom_atv_talking);
+
+        talkBgView2 = (AudioTalkBgView) findViewById(R.id.atbv_audio_talk2);
+        //showNewbieTips();
+        showComplexNewbieTips();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (guideView != null && guideView.isShowing()) {
+            guideView.hide();
+        }
         unregisterReceiver(receiver);
     }
 
@@ -209,29 +220,40 @@ public class ThirdActivity extends Activity {
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         tipViw.setLayoutParams(params);
-        View targetView = ivAnim;
-        final GuideView guideView = GuideView.Builder.newInstance(this)
-                .setTargetView(targetView)
+        guideView = GuideView.Builder.newInstance(this)
+                .setTargetView(talkView)
                 .setCustomGuideView(tipViw)
-                .setDirection(GuideView.Direction.RIGHT_BOTTOM)
+                .setDirection(GuideView.Direction.TOP)
                 .setShape(GuideView.MyShape.CIRCULAR)
                 .setBgColor(getResources().getColor(R.color.clr_guide_view_shadow))
+                .setStripStatusBar(true)
                 .build();
         guideView.show();
-        /*mIntroduceDuplexAudioTalkDialog = new Dialog(this, R.style.FullscreenDialog);
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.introduce_duplex_audiotalk_dialog, null);
-        mIntroduceDuplexAudioTalkDialog.setContentView(view);
-        mIntroduceDuplexAudioTalkDialog.show();
 
-        TextView btn_exit = (TextView) view.findViewById(R.id.hemu_dialog_introduce_duplex_audiotalk_tv_i_know);*/
         tipViw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //preference.putBoolean(Common.Show_DuplexAudioTalkIntroduce, false).commit();
+                guideView.hide();
+            }
+        });
+    }
+    private void showComplexNewbieTips() {
+        View tipView = LayoutInflater.from(this).inflate(R.layout.dialog_tip_hot, null);
+        guideView = GuideView.Builder.newInstance(this)
+                .setTargetView(talkView)
+                .addAnotherTargetView(talkBgView2)
+                .setCustomGuideView(tipView)
+                .setDirection(GuideView.Direction.BOTTOM)
+                .setOffset(0, getResources().getDimensionPixelSize(R.dimen.al_tip_hot_activity_offSetY))
+                .setShape(GuideView.MyShape.CIRCULAR)
+                .setBgColor(getResources().getColor(R.color.clr_guide_view_shadow))
+                .setStripStatusBar(true)
+                .build();
+        guideView.show();
 
-                /*mIntroduceDuplexAudioTalkDialog.dismiss();
-                mShowingIntroduceDuplexAudioTalk = false;*/
+        tipView.findViewById(R.id.iv_i_know).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 guideView.hide();
             }
         });
@@ -308,4 +330,5 @@ public class ThirdActivity extends Activity {
                 dspMtr.density, dspMtr.heightPixels, dspMtr.widthPixels, height, width));
         return new float[] {height, width};
     }
+
  }

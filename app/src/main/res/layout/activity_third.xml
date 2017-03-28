@@ -97,6 +97,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <cnedu.ustcjd.widget.AudioTalkBgView
+                        android:id="@+id/atbv_audio_talk2"
                         android:src="@drawable/bg_audio_talk"
                         android:layout_gravity="center_horizontal"
                         custom:shadowColor="@color/clr_shadow_red"

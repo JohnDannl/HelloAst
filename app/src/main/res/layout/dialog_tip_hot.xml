@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <View
+        android:id="@+id/anchor_view"
+        android:layout_height="@dimen/al_tip_hot_activity_height"
+        android:layout_width="0dp"/>
+    <ImageView
+        android:layout_alignTop="@id/anchor_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/shade_hot_n"/>
+    <ImageView
+        android:id="@+id/iv_i_know"
+        android:layout_alignBottom="@id/anchor_view"
+        android:padding="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/shade_know_n"/>
+</RelativeLayout>

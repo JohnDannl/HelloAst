@@ -1,23 +1,28 @@
 package cnedu.ustcjd.widget;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
+import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
 import cnedu.ustcjd.helloworld.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,9 +31,11 @@ import java.util.List;
 public class GuideView extends RelativeLayout implements ViewTreeObserver.OnGlobalLayoutListener {
     private final String TAG = getClass().getSimpleName();
     private Context mContext;
-    private List<View> mViews;
+    private List<View> mTargetViews = new ArrayList<View>();
     private boolean first = true;
     private WindowManager mWindowManager;
+    private int statusBarHeight;
+    private boolean stripStatusBar = false;
     private boolean isShowing = false;
     /**
      * targetView前缀。SHOW_GUIDE_PREFIX + targetView.getId()作为保存在SP文件的key。
@@ -98,6 +105,8 @@ public class GuideView extends RelativeLayout implements ViewTreeObserver.OnGlob
     private boolean onClickExit;
     private OnClickCallback onclickListener;
     private RelativeLayout guideViewLayout;
+    private List<Point> targetCenters = new ArrayList<Point>();
+    private List<Integer> targetRadius = new ArrayList<Integer>();
 
     public void restoreState() {
         Log.v(TAG, "restoreState");
@@ -135,14 +144,17 @@ public class GuideView extends RelativeLayout implements ViewTreeObserver.OnGlob
     }
 
     public void setRadius(int radius) {
+        Log.d(TAG, "setRadius:" + radius);
         this.radius = radius;
     }
 
     public void setOffsetX(int offsetX) {
+        Log.d(TAG, "setOffsetX:" + offsetX);
         this.offsetX = offsetX;
     }
 
     public void setOffsetY(int offsetY) {
+        Log.d(TAG, "setOffsetY:" + offsetY);
         this.offsetY = offsetY;
     }
 
@@ -152,6 +164,10 @@ public class GuideView extends RelativeLayout implements ViewTreeObserver.OnGlob
 
     public void setShape(MyShape shape) {
         this.myShape = shape;
+    }
+
+    public void setStripStatusBar(boolean stripStatusBar) {
+        this.stripStatusBar = stripStatusBar;
     }
 
     public void setCustomGuideView(View customGuideView) {
@@ -177,7 +193,15 @@ public class GuideView extends RelativeLayout implements ViewTreeObserver.OnGlob
         }
     }
 
+    public void addAnotherTargetView(View targetView) {
+        if (!mTargetViews.contains(targetView)) {
+            mTargetViews.add(targetView);
+        }
+    }
     private void init() {
+        mTargetViews.clear();
+        targetCenters.clear();
+        targetRadius.clear();
     }
 
     public void showOnce() {
@@ -205,7 +229,7 @@ public class GuideView extends RelativeLayout implements ViewTreeObserver.OnGlob
     }
 
     public void hide() {
-        Log.v(TAG, "hide");
+        Log.v(TAG, "hide()");
         if (customGuideView != null) {
             targetView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
             this.removeAllViews();
@@ -223,7 +247,7 @@ public class GuideView extends RelativeLayout implements ViewTreeObserver.OnGlob
     }
 
     public void show() {
-        Log.v(TAG, "show");
+        Log.v(TAG, "show()");
         if (hasShown())
             return;
 
@@ -245,7 +269,7 @@ public class GuideView extends RelativeLayout implements ViewTreeObserver.OnGlob
      * 在屏幕窗口，添加蒙层，蒙层绘制总背景和透明圆形，圆形下边绘制说明文字
      */
     private void createGuideView() {
-        Log.v(TAG, "createGuideView");
+        Log.v(TAG, "createGuideView()");
 
         // 添加到蒙层
         //        if (guideViewLayout == null) {
@@ -309,6 +333,7 @@ public class GuideView extends RelativeLayout implements ViewTreeObserver.OnGlob
 
             this.addView(customGuideView, guideViewParams);
         }
+        Log.d(TAG, "createGuideView() end");
     }
 
     /**
@@ -346,7 +371,7 @@ public class GuideView extends RelativeLayout implements ViewTreeObserver.OnGlob
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        Log.v(TAG, "onDraw");
+        Log.v(TAG, "onDraw()");
 
         if (!isMeasured)
             return;
@@ -357,11 +382,11 @@ public class GuideView extends RelativeLayout implements ViewTreeObserver.OnGlob
         //        if (!needDraw) return;
 
         drawBackground(canvas);
-
+        Log.v(TAG, "onDraw() end");
     }
 
     private void drawBackground(Canvas canvas) {
-        Log.v(TAG, "drawBackground");
+        Log.v(TAG, "drawBackground()");
         needDraw = false;
         // 先绘制bitmap，再将bitmap绘制到屏幕
         bitmap = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_8888);
@@ -411,9 +436,50 @@ public class GuideView extends RelativeLayout implements ViewTreeObserver.OnGlob
             temp.drawCircle(center[0], center[1], radius, mCirclePaint);//绘制圆形
         }
 
+        // 绘制其它target的透明背景
+        if (mTargetViews.size() == targetCenters.size()) {
+            for (int index = 0; index < mTargetViews.size(); index++) {
+                Point tCenter = targetCenters.get(index);
+                int tRadius = targetRadius.get(index);
+                if (myShape != null) {
+                    RectF oval = new RectF();
+                    switch (myShape) {
+                        case CIRCULAR://圆形
+                            temp.drawCircle(tCenter.x, tCenter.y, tRadius, mCirclePaint);//绘制圆形
+                            break;
+                        case ELLIPSE://椭圆
+                            //RectF对象
+                            oval.left = tCenter.x - 150;                              //左边
+                            oval.top =  tCenter.y - 50;                                   //上边
+                            oval.right = tCenter.x + 150;                             //右边
+                            oval.bottom =  tCenter.y + 50;                                //下边
+                            temp.drawOval(oval, mCirclePaint);                   //绘制椭圆
+                            break;
+                        case RECTANGULAR://圆角矩形
+                            //RectF对象
+                            oval.left = tCenter.x - 150;                              //左边
+                            oval.top =  tCenter.y - 50;                                   //上边
+                            oval.right = tCenter.x + 150;                             //右边
+                            oval.bottom =  tCenter.y + 50;                                //下边
+                            temp.drawRoundRect(oval, tRadius, tRadius, mCirclePaint);                   //绘制圆角矩形
+                            break;
+                    }
+                } else {
+                    temp.drawCircle(tCenter.x,  tCenter.y, tRadius, mCirclePaint);//绘制圆形
+                }
+            }
+        }
+
         // 绘制到屏幕
         canvas.drawBitmap(bitmap, 0, 0, bgPaint);
         bitmap.recycle();
+    }
+    private int getStatusBarHeight() {
+        Rect rectangle = new Rect();
+        ((Activity) mContext).getWindow().getDecorView().getWindowVisibleDisplayFrame(rectangle);
+        int statusBarHeight = rectangle.top;
+        Log.d(TAG, "statusBarHeight:" + statusBarHeight);
+        return statusBarHeight;
     }
 
     public void setOnClickExit(boolean onClickExit) {
@@ -446,7 +512,13 @@ public class GuideView extends RelativeLayout implements ViewTreeObserver.OnGlob
         if (targetView.getHeight() > 0 && targetView.getWidth() > 0) {
             isMeasured = true;
         }
-
+        Log.d(TAG, "onGlobalLayout()");
+        if (stripStatusBar) {
+            statusBarHeight = getStatusBarHeight();
+        } else {
+            statusBarHeight = 0;
+        }
+        Log.d(TAG, "stripStatusBar:" + stripStatusBar);
         // 获取targetView的中心坐标
         if (center == null) {
             // 获取右上角坐标
@@ -455,17 +527,35 @@ public class GuideView extends RelativeLayout implements ViewTreeObserver.OnGlob
             center = new int[2];
             // 获取中心坐标
             center[0] = location[0] + targetView.getWidth() / 2;
-            center[1] = location[1] + targetView.getHeight() / 2;
-            Log.d(TAG, String.format("GuideView targetView x: %d ,y: %d", location[0], location[1]));
+            center[1] = location[1] + targetView.getHeight() / 2 - statusBarHeight;
+            Log.d(TAG, String.format("targetView location x: %d ,y: %d", location[0], location[1]));
         }
         // 获取targetView外切圆半径
         if (radius == 0) {
             radius = getTargetViewRadius();
         }
+        // 测量额外添加的TargetView;
+        MeasureOtherTargetView();
         // 添加GuideView
         createGuideView();
     }
 
+    private void MeasureOtherTargetView() {
+        if (!isMeasured) {
+            return;
+        }
+        targetCenters.clear();
+        targetRadius.clear();
+        int[] location = new int[2];
+        for (View target : mTargetViews) {
+            int width = target.getWidth();
+            int height = target.getHeight();
+            int radius = (int) Math.sqrt(width * width  + height * height) / 2;
+            target.getLocationInWindow(location);
+            targetCenters.add(new Point(location[0] + width / 2, location[1] + height / 2 - statusBarHeight));
+            targetRadius.add(radius);
+        }
+    }
     /**
      * 定义GuideView相对于targetView的方位，共八种。不设置则默认在targetView下方
      */
@@ -508,6 +598,21 @@ public class GuideView extends RelativeLayout implements ViewTreeObserver.OnGlob
 
         public Builder setTargetView(View target) {
             guiderView.setTargetView(target);
+            return instance;
+        }
+
+        public Builder addAnotherTargetView(View target) {
+            guiderView.addAnotherTargetView(target);
+            return instance;
+        }
+
+        /**
+         * 如果在Activity里面添加一般需要设置为true减掉systemBar的高度
+         * @param stripStatusBar
+         * @return
+         */
+        public Builder setStripStatusBar(boolean stripStatusBar) {
+            guiderView.setStripStatusBar(stripStatusBar);
             return instance;
         }
 

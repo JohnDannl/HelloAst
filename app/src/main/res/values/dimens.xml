@@ -4,4 +4,6 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <integer name="slide_in_animation_duration">300</integer>
     <integer name="hemu_animation_duration">300</integer>
+    <dimen name="al_tip_hot_activity_height">250dp</dimen>
+    <dimen name="al_tip_hot_activity_offSetY">-200dp</dimen>
 </resources>

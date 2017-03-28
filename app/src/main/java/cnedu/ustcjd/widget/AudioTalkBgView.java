@@ -23,6 +23,7 @@ public class AudioTalkBgView extends ImageView {
     private static final float defaultOffsetY = 21F;
     private static final float defaultShadowRadius = 15F;
     private static final float defaultStrokeWidth = 1F;
+    private int mRadius;
     private float shadowRadius;
     private float offsetY;
     private float strokeWidth;
@@ -71,14 +72,14 @@ public class AudioTalkBgView extends ImageView {
     protected void onDraw(Canvas canvas) {
         //绘制阴影，param1：模糊半径；param2：x轴偏移：param3：y轴偏移；param4：阴影颜色
         bgPaint.setShadowLayer(shadowRadius, 0F, offsetY, shadowColor);
-        int radius = (getWidth() > getHeight() ? getHeight() : getWidth()) / 2;
-        Log.d(TAG, "radius:" + radius + ", shadowRadius:" + shadowRadius);
-        if (radius > (shadowRadius + offsetY)) {
-            radius -= (int) (shadowRadius + offsetY);
+        mRadius = (getWidth() > getHeight() ? getHeight() : getWidth()) / 2;
+        Log.d(TAG, "radius:" + mRadius + ", shadowRadius:" + shadowRadius);
+        if (mRadius > (shadowRadius + offsetY)) {
+            mRadius -= (int) (shadowRadius + offsetY);
         }
-        Log.d(TAG, "radius:" + radius);
-        canvas.drawCircle(getWidth() / 2, getHeight() / 2, radius, bgPaint);
-        canvas.drawCircle(getWidth() / 2, getHeight() / 2, radius, strokePaint);
+        Log.d(TAG, "radius:" + mRadius);
+        canvas.drawCircle(getWidth() / 2, getHeight() / 2, mRadius, bgPaint);
+        canvas.drawCircle(getWidth() / 2, getHeight() / 2, mRadius, strokePaint);
         super.onDraw(canvas);
     }
 
@@ -92,6 +93,10 @@ public class AudioTalkBgView extends ImageView {
         this.strokeColor = strokeColor;
         strokePaint.setColor(strokeColor);
         invalidate();
+    }
+
+    public int getRadius() {
+        return mRadius;
     }
 
     public interface IAudioTalkViewListener {
