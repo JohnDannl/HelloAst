@@ -256,6 +256,7 @@ public class GuideView extends RelativeLayout implements ViewTreeObserver.OnGlob
         }
 
         this.setBackgroundResource(R.color.transparent);
+        // 该方法虽然可以让遮罩页处于所有activity最顶端，但同时也会导致onGlobalLayout不调用
         mWindowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
         final WindowManager.LayoutParams lp = new WindowManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.TYPE_APPLICATION, WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, PixelFormat.TRANSLUCENT);
         mWindowManager.addView(this, lp);
