@@ -22,7 +22,7 @@
             android:textSize="24sp"
             android:textStyle="bold"/>
 
-        <com.edmodo.cropper.CropImageView
+        <com.edmodo.cropwindow.CropImageView
             android:id="@+id/CropImageView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -11,12 +11,12 @@
  * governing permissions and limitations under the License. 
  */
 
-package com.edmodo.cropper.cropwindow.handle;
+package com.edmodo.cropwindow.handle;
 
 import android.graphics.RectF;
 import android.support.annotation.NonNull;
 
-import com.edmodo.cropper.cropwindow.edge.Edge;
+import com.edmodo.cropwindow.edge.Edge;
 
 /**
  * Enum representing a pressable, draggable Handle on the crop window.

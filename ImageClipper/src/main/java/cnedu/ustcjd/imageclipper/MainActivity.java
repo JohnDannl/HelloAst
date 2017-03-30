@@ -17,7 +17,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import com.edmodo.cropper.CropImageView;
+import com.edmodo.cropwindow.CropImageView;
 
 public class MainActivity extends Activity {
 

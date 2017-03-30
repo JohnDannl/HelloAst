@@ -11,12 +11,12 @@
  * governing permissions and limitations under the License. 
  */
 
-package com.edmodo.cropper.util;
+package com.edmodo.cropwindow.util;
 
 import android.graphics.PointF;
 import android.support.annotation.NonNull;
 
-import com.edmodo.cropper.cropwindow.handle.Handle;
+import com.edmodo.cropwindow.handle.Handle;
 
 /**
  * Utility class to perform basic operations with Handles.

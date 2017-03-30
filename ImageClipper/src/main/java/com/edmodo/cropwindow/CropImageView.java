@@ -11,7 +11,7 @@
  * governing permissions and limitations under the License. 
  */
 
-package com.edmodo.cropper;
+package com.edmodo.cropwindow;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -30,11 +30,11 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 
-import com.edmodo.cropper.cropwindow.edge.Edge;
-import com.edmodo.cropper.cropwindow.handle.Handle;
-import com.edmodo.cropper.util.AspectRatioUtil;
-import com.edmodo.cropper.util.HandleUtil;
-import com.edmodo.cropper.util.PaintUtil;
+import com.edmodo.cropwindow.edge.Edge;
+import com.edmodo.cropwindow.handle.Handle;
+import com.edmodo.cropwindow.util.AspectRatioUtil;
+import com.edmodo.cropwindow.util.HandleUtil;
+import com.edmodo.cropwindow.util.PaintUtil;
 
 import cnedu.ustcjd.imageclipper.R;
 
@@ -47,6 +47,7 @@ public class CropImageView extends ImageView {
 
     @SuppressWarnings("unused")
     private static final String TAG = CropImageView.class.getName();
+    private static final int DOUBLE_TAP_DURATION = 200;
 
     @SuppressWarnings("unused")
     public static final int GUIDELINES_OFF = 0;
@@ -100,6 +101,10 @@ public class CropImageView extends ImageView {
     // The Handle that is currently pressed; null if no Handle is pressed.
     private Handle mPressedHandle;
 
+    private Handle mPreviousHandle;
+
+    private boolean doubleTapEnable = false;
+
     // Flag indicating if the crop area should always be a certain aspect ratio (indicated by mTargetAspectRatio).
     private boolean mFixAspectRatio;
 
@@ -110,6 +115,7 @@ public class CropImageView extends ImageView {
     // Mode indicating how/whether to show the guidelines; must be one of GUIDELINES_OFF, GUIDELINES_ON_TOUCH, GUIDELINES_ON.
     private int mGuidelinesMode = 1;
 
+    private long lastTapTime = 0;
     // Constructors ////////////////////////////////////////////////////////////////////////////////
 
     public CropImageView(Context context) {
@@ -189,7 +195,7 @@ public class CropImageView extends ImageView {
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
                 getParent().requestDisallowInterceptTouchEvent(false);
-                onActionUp();
+                onActionUp(event);
                 return true;
 
             case MotionEvent.ACTION_MOVE:
@@ -203,6 +209,14 @@ public class CropImageView extends ImageView {
     }
 
     // Public Methods //////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Whether to enable double tap
+     * @param doubleTapEnable
+     */
+    public void setDoubleTapEnable(boolean doubleTapEnable) {
+        this.doubleTapEnable = doubleTapEnable;
+    }
 
     /**
      * Sets the guidelines for the CropOverlayView to be either on, off, or to show when resizing
@@ -524,8 +538,9 @@ public class CropImageView extends ImageView {
     /**
      * Handles a {@link MotionEvent#ACTION_UP} or {@link MotionEvent#ACTION_CANCEL} event.
      */
-    private void onActionUp() {
+    private void onActionUp(MotionEvent event) {
         if (mPressedHandle != null) {
+            onDoubleTap(event);
             mPressedHandle = null;
             invalidate();
         }
@@ -557,4 +572,16 @@ public class CropImageView extends ImageView {
         invalidate();
     }
 
+    private void onDoubleTap(MotionEvent event) {
+        if (mPressedHandle == Handle.CENTER) {
+            if (mPreviousHandle == Handle.CENTER && (event.getEventTime() - lastTapTime) < DOUBLE_TAP_DURATION) {
+                Edge.LEFT.setCoordinate(mBitmapRect.left);
+                Edge.TOP.setCoordinate(mBitmapRect.top);
+                Edge.RIGHT.setCoordinate(mBitmapRect.right);
+                Edge.BOTTOM.setCoordinate(mBitmapRect.bottom);
+            }
+            mPreviousHandle = mPressedHandle;
+            lastTapTime = event.getEventTime();
+        }
+    }
 }

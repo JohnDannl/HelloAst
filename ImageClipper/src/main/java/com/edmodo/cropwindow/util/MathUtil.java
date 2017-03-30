@@ -1,4 +1,4 @@
-package com.edmodo.cropper.util;
+package com.edmodo.cropwindow.util;
 
 public class MathUtil {
 

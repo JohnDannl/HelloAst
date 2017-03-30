@@ -11,7 +11,7 @@
  * governing permissions and limitations under the License. 
  */
 
-package com.edmodo.cropper.util;
+package com.edmodo.cropwindow.util;
 
 import android.graphics.RectF;
 import android.support.annotation.NonNull;

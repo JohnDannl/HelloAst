@@ -11,18 +11,18 @@
  * governing permissions and limitations under the License. 
  */
 
-package com.edmodo.cropper.cropwindow.handle;
+package com.edmodo.cropwindow.handle;
 
 import android.graphics.RectF;
 import android.support.annotation.NonNull;
 
-import com.edmodo.cropper.cropwindow.edge.Edge;
-import com.edmodo.cropper.util.AspectRatioUtil;
+import com.edmodo.cropwindow.edge.Edge;
+import com.edmodo.cropwindow.util.AspectRatioUtil;
 
 /**
- * Handle helper class to handle horizontal handles (i.e. top and bottom handles).
+ * HandleHelper class to handle vertical handles (i.e. left and right handles).
  */
-class HorizontalHandleHelper extends HandleHelper {
+class VerticalHandleHelper extends HandleHelper {
 
     // Member Variables ////////////////////////////////////////////////////////////////////////////
 
@@ -30,8 +30,8 @@ class HorizontalHandleHelper extends HandleHelper {
 
     // Constructor /////////////////////////////////////////////////////////////////////////////////
 
-    HorizontalHandleHelper(Edge edge) {
-        super(edge, null);
+    VerticalHandleHelper(Edge edge) {
+        super(null, edge);
         mEdge = edge;
     }
 
@@ -47,36 +47,36 @@ class HorizontalHandleHelper extends HandleHelper {
         // Adjust this Edge accordingly.
         mEdge.adjustCoordinate(x, y, imageRect, snapRadius, targetAspectRatio);
 
-        float left = Edge.LEFT.getCoordinate();
-        float right = Edge.RIGHT.getCoordinate();
+        float top = Edge.TOP.getCoordinate();
+        float bottom = Edge.BOTTOM.getCoordinate();
 
         // After this Edge is moved, our crop window is now out of proportion.
-        final float targetWidth = AspectRatioUtil.calculateWidth(Edge.getHeight(), targetAspectRatio);
+        final float targetHeight = AspectRatioUtil.calculateHeight(Edge.getWidth(), targetAspectRatio);
 
         // Adjust the crop window so that it maintains the given aspect ratio by
         // moving the adjacent edges symmetrically in or out.
-        final float difference = targetWidth - Edge.getWidth();
+        final float difference = targetHeight - Edge.getHeight();
         final float halfDifference = difference / 2;
-        left -= halfDifference;
-        right += halfDifference;
+        top -= halfDifference;
+        bottom += halfDifference;
 
-        Edge.LEFT.setCoordinate(left);
-        Edge.RIGHT.setCoordinate(right);
+        Edge.TOP.setCoordinate(top);
+        Edge.BOTTOM.setCoordinate(bottom);
 
-        // Check if we have gone out of bounds on the sides, and fix.
-        if (Edge.LEFT.isOutsideMargin(imageRect, snapRadius)
-                && !mEdge.isNewRectangleOutOfBounds(Edge.LEFT, imageRect, targetAspectRatio)) {
+        // Check if we have gone out of bounds on the top or bottom, and fix.
+        if (Edge.TOP.isOutsideMargin(imageRect, snapRadius)
+                && !mEdge.isNewRectangleOutOfBounds(Edge.TOP, imageRect, targetAspectRatio)) {
 
-            final float offset = Edge.LEFT.snapToRect(imageRect);
-            Edge.RIGHT.offset(-offset);
+            final float offset = Edge.TOP.snapToRect(imageRect);
+            Edge.BOTTOM.offset(-offset);
             mEdge.adjustCoordinate(targetAspectRatio);
         }
 
-        if (Edge.RIGHT.isOutsideMargin(imageRect, snapRadius)
-                && !mEdge.isNewRectangleOutOfBounds(Edge.RIGHT, imageRect, targetAspectRatio)) {
+        if (Edge.BOTTOM.isOutsideMargin(imageRect, snapRadius)
+                && !mEdge.isNewRectangleOutOfBounds(Edge.BOTTOM, imageRect, targetAspectRatio)) {
 
-            final float offset = Edge.RIGHT.snapToRect(imageRect);
-            Edge.LEFT.offset(-offset);
+            final float offset = Edge.BOTTOM.snapToRect(imageRect);
+            Edge.TOP.offset(-offset);
             mEdge.adjustCoordinate(targetAspectRatio);
         }
     }

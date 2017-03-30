@@ -11,7 +11,7 @@
  * governing permissions and limitations under the License. 
  */
 
-package com.edmodo.cropper.cropwindow.edge;
+package com.edmodo.cropwindow.edge;
 
 /**
  * Simple class to hold a pair of Edges.
