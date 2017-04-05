@@ -27,16 +27,16 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 
+import cnedu.ustcjd.imageclipper.R;
 import com.edmodo.cropwindow.edge.Edge;
 import com.edmodo.cropwindow.handle.Handle;
 import com.edmodo.cropwindow.util.AspectRatioUtil;
 import com.edmodo.cropwindow.util.HandleUtil;
 import com.edmodo.cropwindow.util.PaintUtil;
-
-import cnedu.ustcjd.imageclipper.R;
 
 /**
  * Custom view that provides cropping capabilities to an image.
@@ -90,6 +90,8 @@ public class CropImageView extends ImageView {
     @NonNull
     private RectF mBitmapRect = new RectF();
 
+    private RectF mCropRect = null;
+
     // Holds the x and y offset between the exact touch location and the exact
     // handle location that is activated. There may be an offset because we
     // allow for some leeway (specified by 'mHandleRadius') in activating a
@@ -104,6 +106,7 @@ public class CropImageView extends ImageView {
     private Handle mPreviousHandle;
 
     private boolean doubleTapEnable = false;
+    private boolean alwaysFullScreen = false;
 
     // Flag indicating if the crop area should always be a certain aspect ratio (indicated by mTargetAspectRatio).
     private boolean mFixAspectRatio;
@@ -140,6 +143,7 @@ public class CropImageView extends ImageView {
         mFixAspectRatio = typedArray.getBoolean(R.styleable.CropImageView_fixAspectRatio, false);
         mAspectRatioX = typedArray.getInteger(R.styleable.CropImageView_aspectRatioX, 1);
         mAspectRatioY = typedArray.getInteger(R.styleable.CropImageView_aspectRatioY, 1);
+        alwaysFullScreen = typedArray.getBoolean(R.styleable.CropImageView_alwaysFullScreen, false);
         typedArray.recycle();
 
         final Resources resources = context.getResources();
@@ -171,7 +175,6 @@ public class CropImageView extends ImageView {
     protected void onDraw(Canvas canvas) {
 
         super.onDraw(canvas);
-
         drawDarkenedSurroundingArea(canvas);
         drawGuidelines(canvas);
         drawBorder(canvas);
@@ -210,6 +213,26 @@ public class CropImageView extends ImageView {
 
     // Public Methods //////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * Note: this method should be called after onLayout()
+     * @return
+     */
+    public RectF getCropBgRect() {
+        return mBitmapRect;
+    }
+
+    /**
+     * Note: this method should be called after onLayout()
+     * @param cropRect
+     */
+    public void setCropRect(RectF cropRect) {
+        mCropRect = cropRect;
+        Edge.LEFT.setCoordinate(cropRect.left);
+        Edge.TOP.setCoordinate(cropRect.top);
+        Edge.RIGHT.setCoordinate(cropRect.right);
+        Edge.BOTTOM.setCoordinate(cropRect.bottom);
+        invalidate();
+    }
     /**
      * Whether to enable double tap
      * @param doubleTapEnable
@@ -321,8 +344,9 @@ public class CropImageView extends ImageView {
     private RectF getBitmapRect() {
 
         final Drawable drawable = getDrawable();
-        if (drawable == null) {
-            return new RectF();
+        if (drawable == null || alwaysFullScreen) {
+            return new RectF(getLeft(), getTop(), getRight(), getBottom()); // use the outline of the imageView
+            //return new RectF();
         }
 
         // Get image matrix values and place them in an array.
@@ -349,6 +373,9 @@ public class CropImageView extends ImageView {
         final float right = Math.min(left + drawableDisplayWidth, getWidth());
         final float bottom = Math.min(top + drawableDisplayHeight, getHeight());
 
+        if (left < 0 || top < 0 || right < 0 || bottom < 0) {
+            return new RectF(getLeft(), getTop(), getRight(), getBottom()); // use the outline of the imageView
+        }
         return new RectF(left, top, right, bottom);
     }
 
@@ -360,13 +387,12 @@ public class CropImageView extends ImageView {
      * conform to the aspect ratio with at least one dimension maximized.
      */
     private void initCropWindow(@NonNull RectF bitmapRect) {
-
         if (mFixAspectRatio) {
 
             // Initialize the crop window with the proper aspect ratio.
             initCropWindowWithFixedAspectRatio(bitmapRect);
 
-        } else {
+        } else if (mCropRect == null) {
 
             // Initialize crop window to have 10% padding w/ respect to Drawable's bounds.
             final float horizontalPadding = 0.1f * bitmapRect.width();

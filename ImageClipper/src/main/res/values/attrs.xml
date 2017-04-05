@@ -11,6 +11,7 @@
         <attr name="fixAspectRatio" format="boolean"/>
         <attr name="aspectRatioX" format="integer"/>
         <attr name="aspectRatioY" format="integer"/>
+        <attr name="alwaysFullScreen" format="boolean"/>
 
     </declare-styleable>
 

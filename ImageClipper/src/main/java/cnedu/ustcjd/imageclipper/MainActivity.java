@@ -3,8 +3,11 @@ package cnedu.ustcjd.imageclipper;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.RectF;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -22,7 +25,7 @@ import com.edmodo.cropwindow.CropImageView;
 public class MainActivity extends Activity {
 
     // Private Constants ///////////////////////////////////////////////////////////////////////////
-
+    private static final String TAG = "ImageClipper";
     private static final int GUIDELINES_ON_TOUCH = 1;
 
     // Activity Methods ////////////////////////////////////////////////////////////////////////////
@@ -44,6 +47,16 @@ public class MainActivity extends Activity {
         final CropImageView cropImageView = (CropImageView) findViewById(R.id.CropImageView);
         final ImageView croppedImageView = (ImageView) findViewById(R.id.croppedImageView);
         final Button cropButton = (Button) findViewById(R.id.Button_crop);
+
+        cropImageView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                RectF border = cropImageView.getCropBgRect();
+                Log.d(TAG, String.format("crop border: %s,%s,%s,%s", border.left, border.top, border.right, border.bottom));
+                cropImageView.setCropRect(new RectF(border.left, border.top, border.right, border.bottom / 2));
+                cropImageView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+            }
+        });
 
         // Initializes fixedAspectRatio toggle button.
         fixedAspectRatioToggleButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
