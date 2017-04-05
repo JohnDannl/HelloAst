@@ -34,6 +34,9 @@ public enum Edge {
     // This is an arbitrary value that simply prevents the crop window from becoming too small.
     public static final int MIN_CROP_LENGTH_PX = 40;
 
+    // Minimum area in ratio
+    private static final float MIN_AREA_RATIO = 1f / 25f;
+
     // Member Variables ////////////////////////////////////////////////////////////////////////////
 
     // The coordinate value of this edge.
@@ -382,6 +385,11 @@ public enum Edge {
                 resultXVert = Edge.RIGHT.getCoordinate() - (MIN_CROP_LENGTH_PX * aspectRatio);
             }
             resultX = Math.min(x, Math.min(resultXHoriz, resultXVert));
+            // Checks if the window's area is too small
+            float minWidth = imageRect.width() * imageRect.height() * MIN_AREA_RATIO / Edge.getHeight();
+            if (Edge.RIGHT.getCoordinate() - resultX < minWidth) {
+                return Edge.LEFT.getCoordinate();
+            }
         }
         return resultX;
     }
@@ -420,6 +428,11 @@ public enum Edge {
                 resultXVert = Edge.LEFT.getCoordinate() + (MIN_CROP_LENGTH_PX * aspectRatio);
             }
             resultX = Math.max(x, Math.max(resultXHoriz, resultXVert));
+            // Checks if the window's area is too small
+            float minWidth = imageRect.width() * imageRect.height() * MIN_AREA_RATIO / Edge.getHeight();
+            if (resultX - Edge.LEFT.getCoordinate() < minWidth) {
+                return Edge.RIGHT.getCoordinate();
+            }
         }
         return resultX;
     }
@@ -455,8 +468,12 @@ public enum Edge {
             // Checks if the window is too small horizontally
             if (((Edge.BOTTOM.getCoordinate() - y) * aspectRatio) <= MIN_CROP_LENGTH_PX)
                 resultYVert = Edge.BOTTOM.getCoordinate() - (MIN_CROP_LENGTH_PX / aspectRatio);
-
             resultY = Math.min(y, Math.min(resultYHoriz, resultYVert));
+            // Checks if the window's area is too small
+            float minHeight = imageRect.width() * imageRect.height() * MIN_AREA_RATIO / Edge.getWidth();
+            if (Edge.BOTTOM.getCoordinate() - resultY < minHeight) {
+                return Edge.TOP.getCoordinate();
+            }
         }
         return resultY;
     }
@@ -494,6 +511,11 @@ public enum Edge {
                 resultYHoriz = Edge.TOP.getCoordinate() + (MIN_CROP_LENGTH_PX / aspectRatio);
             }
             resultY = Math.max(y, Math.max(resultYHoriz, resultYVert));
+            // Checks if the window's area is too small
+            float minHeight = imageRect.width() * imageRect.height() * MIN_AREA_RATIO / Edge.getWidth();
+            if (resultY - Edge.TOP.getCoordinate() < minHeight) {
+                return Edge.BOTTOM.getCoordinate();
+            }
         }
         return resultY;
     }

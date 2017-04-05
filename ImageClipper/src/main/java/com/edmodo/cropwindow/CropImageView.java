@@ -227,10 +227,6 @@ public class CropImageView extends ImageView {
      */
     public void setCropRect(RectF cropRect) {
         mCropRect = cropRect;
-        Edge.LEFT.setCoordinate(cropRect.left);
-        Edge.TOP.setCoordinate(cropRect.top);
-        Edge.RIGHT.setCoordinate(cropRect.right);
-        Edge.BOTTOM.setCoordinate(cropRect.bottom);
         invalidate();
     }
     /**
@@ -392,7 +388,12 @@ public class CropImageView extends ImageView {
             // Initialize the crop window with the proper aspect ratio.
             initCropWindowWithFixedAspectRatio(bitmapRect);
 
-        } else if (mCropRect == null) {
+        } else if (mCropRect != null) {
+            Edge.LEFT.setCoordinate(mCropRect.left);
+            Edge.TOP.setCoordinate(mCropRect.top);
+            Edge.RIGHT.setCoordinate(mCropRect.right);
+            Edge.BOTTOM.setCoordinate(mCropRect.bottom);
+        } else {
 
             // Initialize crop window to have 10% padding w/ respect to Drawable's bounds.
             final float horizontalPadding = 0.1f * bitmapRect.width();
