@@ -26,9 +26,12 @@ import android.widget.Toast;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import cnedu.ustcjd.util.DeviceInfo;
 import cnedu.ustcjd.widget.AudioTalkBgView;
 import cnedu.ustcjd.widget.AudioTalkingView;
 import cnedu.ustcjd.widget.GuideView;
+
+import static android.util.Log.d;
 
 public class ThirdActivity extends Activity {
     private static String TAG = "ThirdActivity";
@@ -80,7 +83,7 @@ public class ThirdActivity extends Activity {
             public void onSuccess() {
                 Bitmap bitMap = ((BitmapDrawable) ivPicasso.getDrawable()).getBitmap();
                 int pixel = bitMap.getPixel(5, 5);
-                Log.d(TAG, String.format("pixel success:%x", pixel));
+                d(TAG, String.format("pixel success:%x", pixel));
                 btnToThird.setBackgroundColor(pixel);
             }
 
@@ -88,7 +91,7 @@ public class ThirdActivity extends Activity {
             public void onError() {
                 Bitmap bitMap = ((BitmapDrawable) ivPicasso.getDrawable()).getBitmap();
                 int pixel = bitMap.getPixel(0, 0);
-                Log.d(TAG, String.format("pixel error:%x", pixel));
+                d(TAG, String.format("pixel error:%x", pixel));
                 btnToThird.setBackgroundColor(pixel);
             }
         });
@@ -99,7 +102,7 @@ public class ThirdActivity extends Activity {
         talkView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "audio talk on click");
+                d(TAG, "audio talk on click");
                 if (v.isSelected()) {
                     v.setSelected(false);
                 } else {
@@ -119,14 +122,14 @@ public class ThirdActivity extends Activity {
             @Override
             public void onTouch() {
                 Toast.makeText(ThirdActivity.this, "on Touch", Toast.LENGTH_SHORT).show();
-                Log.d(TAG, "audio talk on touch");
+                d(TAG, "audio talk on touch");
                 animationShowAudioTalk();
             }
 
             @Override
             public void onRelease() {
                 Toast.makeText(ThirdActivity.this, "on Release", Toast.LENGTH_SHORT).show();
-                Log.d(TAG, "audio talk on release");
+                d(TAG, "audio talk on release");
                 animationHideAudioTalk();
             }
         });
@@ -144,6 +147,7 @@ public class ThirdActivity extends Activity {
         talkBgView2 = (AudioTalkBgView) findViewById(R.id.atbv_audio_talk2);
         //showNewbieTips();
         showComplexNewbieTips();
+        Log.d(TAG, "device Info:" + DeviceInfo.getDeviceInfo(this));
     }
 
     @Override
@@ -185,7 +189,7 @@ public class ThirdActivity extends Activity {
         public void run() {
             while(true) {
                 if (ivAnim != null && !paused) {
-                    Log.d(TAG, String.format("x:%d,y:%d", (int)ivAnim.getX(), (int)ivAnim.getY()));
+                    d(TAG, String.format("x:%d,y:%d", (int)ivAnim.getX(), (int)ivAnim.getY()));
                 }
                 try {
                     Thread.sleep(200);
@@ -207,10 +211,10 @@ public class ThirdActivity extends Activity {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action != null && action.equals(NetworkManager.Network_Connected_Changed)) {
-                Log.d(TAG, "network connected change");
+                d(TAG, "network connected change");
             } else if (action != null && action.equals(NetworkManager.Network_State_Changed)) {
                 boolean isConnected = intent.getBooleanExtra(NetworkManager.Netwodk_Current_State, false);
-                Log.d(TAG, "network current state:" + isConnected);
+                d(TAG, "network current state:" + isConnected);
             }
         }
     };
@@ -326,7 +330,7 @@ public class ThirdActivity extends Activity {
         DisplayMetrics dspMtr = context.getResources().getDisplayMetrics();
         float width = dspMtr.widthPixels / dspMtr.density;
         float height = dspMtr.heightPixels / dspMtr.density;
-        Log.d(TAG, String.format("density:%s,pixel:(%s,%s),dp:(%s,%s)",
+        d(TAG, String.format("density:%s,pixel:(%s,%s),dp:(%s,%s)",
                 dspMtr.density, dspMtr.heightPixels, dspMtr.widthPixels, height, width));
         return new float[] {height, width};
     }
