@@ -17,4 +17,6 @@
     <string name="to_main">Go to Main</string>
     <string name="to_third">Go to Third</string>
     <string name="str_change_color">Change Color</string>
+    <string name="btn_ok">确定</string>
+    <string name="btn_cancel">取消</string>
 </resources>

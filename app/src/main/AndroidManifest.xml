@@ -28,6 +28,14 @@
         <activity
             android:name="cnedu.ustcjd.helloworld.ThirdActivity"
             android:label="@string/title_activity_third">
+            <!--<intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>-->
+        </activity>
+
+        <activity android:name=".NumberPickerActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
