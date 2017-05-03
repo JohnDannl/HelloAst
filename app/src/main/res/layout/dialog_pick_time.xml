@@ -2,15 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="match_parent">
-    <TextView
-        android:id="@+id/tv_title"
-        android:textSize="17sp"
-        android:padding="20dp"
-        android:text="@string/app_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
     <NumberPicker
-        android:layout_below="@id/tv_title"
         android:id="@+id/np_time"
         android:layout_centerHorizontal="true"
         android:descendantFocusability="blocksDescendants"
@@ -23,14 +15,14 @@
         style="?android:attr/buttonBarStyle"
         android:orientation="horizontal">
         <Button
-            android:id="@+id/btn_positive"
+            android:id="@+id/btn_negative"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:text="@string/btn_cancel"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_height="wrap_content"/>
         <Button
-            android:id="@+id/btn_negative"
+            android:id="@+id/btn_positive"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:text="@string/btn_ok"

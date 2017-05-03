@@ -19,6 +19,7 @@ import java.lang.reflect.Field;
 public class NumberPickerActivity extends Activity {
     private static final String TAG = "NumberPicker";
     private TextView tvTime;
+    private int value = 10;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,14 +33,13 @@ public class NumberPickerActivity extends Activity {
         });
     }
     private void showTimePicker() {
-        final Dialog dialog = new Dialog(this);
+        final Dialog dialog = new Dialog(this, android.R.style.Theme_Holo_Light_Dialog);
         dialog.setContentView(R.layout.dialog_pick_time);
-        TextView tvTitle = (TextView) dialog.findViewById(R.id.tv_title);
-        tvTitle.setText(R.string.btn_ok);
+        dialog.setTitle(R.string.btn_ok);
         NumberPicker numberPicker = (NumberPicker) dialog.findViewById(R.id.np_time);
-        numberPicker.setMinValue(0);
+        numberPicker.setMinValue(5);
         numberPicker.setMaxValue(23);
-        numberPicker.setValue(10);
+        numberPicker.setValue(value);
         numberPicker.setFormatter(new NumberPicker.Formatter() {
             @Override
             public String format(int value) {
@@ -50,6 +50,7 @@ public class NumberPickerActivity extends Activity {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
                 Log.d(TAG, "new value:" + newVal);
+                value = newVal;
             }
         });
         try {   // fix Android's bug ,the setValue not shown
@@ -66,6 +67,7 @@ public class NumberPickerActivity extends Activity {
         dialog.findViewById(R.id.btn_positive).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                tvTime.setText(String.valueOf(value));
                 dialog.dismiss();
             }
         });
