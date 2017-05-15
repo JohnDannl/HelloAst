@@ -256,13 +256,13 @@ public class GuideView extends RelativeLayout implements ViewTreeObserver.OnGlob
         }
 
         this.setBackgroundResource(R.color.transparent);
-        // 该方法虽然可以让遮罩页处于所有activity最顶端，但同时也会导致onGlobalLayout不调用
         mWindowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
         final WindowManager.LayoutParams lp = new WindowManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.TYPE_APPLICATION, WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, PixelFormat.TRANSLUCENT);
         mWindowManager.addView(this, lp);
 //        ((FrameLayout) ((Activity) mContext).getWindow().getDecorView()).addView(this);
         first = false;
         isShowing = true;
+        targetView.requestLayout(); // Make sure the onGlobalLayoutListener is called
     }
 
     /**
@@ -426,10 +426,19 @@ public class GuideView extends RelativeLayout implements ViewTreeObserver.OnGlob
                     break;
                 case RECTANGULAR://圆角矩形
                     //RectF对象
-                    oval.left = center[0] - 150;                              //左边
-                    oval.top = center[1] - 50;                                   //上边
-                    oval.right = center[0] + 150;                             //右边
-                    oval.bottom = center[1] + 50;                                //下边
+                    int margin = 5;
+                    int width = targetView.getWidth() / 2;
+                    int height = targetView.getHeight() / 2;
+                    if (width > 10) {
+                        width -= margin;
+                    }
+                    if (height > 10) {
+                        height -= margin;
+                    }
+                    oval.left = center[0] - width;                              //左边
+                    oval.top = center[1] - height;                                   //上边
+                    oval.right = center[0] + width;                             //右边
+                    oval.bottom = center[1] + height;                                //下边
                     temp.drawRoundRect(oval, radius, radius, mCirclePaint);                   //绘制圆角矩形
                     break;
             }
