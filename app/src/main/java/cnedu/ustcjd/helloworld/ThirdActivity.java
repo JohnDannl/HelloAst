@@ -9,6 +9,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.app.Activity;
+import android.os.Environment;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -25,6 +26,9 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+
+import java.io.File;
+import java.io.IOException;
 
 import cnedu.ustcjd.util.DeviceInfo;
 import cnedu.ustcjd.widget.AudioTalkBgView;
@@ -146,8 +150,42 @@ public class ThirdActivity extends Activity {
 
         talkBgView2 = (AudioTalkBgView) findViewById(R.id.atbv_audio_talk2);
         //showNewbieTips();
-        showComplexNewbieTips();
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                showComplexNewbieTips();
+            }
+        }, 500);
         Log.d(TAG, "device Info:" + DeviceInfo.getDeviceInfo(this));
+        fileTest();
+    }
+
+    private void fileTest() {
+        String fileDir = getApplicationContext().getFilesDir().getAbsolutePath();
+        Log.d(TAG + "X", "getApplicationContext().getFilesDir().getAbsolutePath():" + fileDir);
+        String extDir = getApplicationContext().getExternalFilesDir("").getAbsolutePath();
+        Log.d(TAG + "X", "getApplicationContext().getExternalFilesDir(\"\").getAbsolutePath():" + extDir);
+        String sdDir = Environment.getExternalStorageDirectory().getAbsolutePath();
+        Log.d(TAG + "X", "Environment.getExternalStorageDirectory().getAbsolutePath():" + sdDir);
+        final File recDir = new File(Environment.getExternalStorageDirectory(),  "CloseliTestbed/Video/");
+        Log.d(TAG + "X", "new File(Environment.getExternalStorageDirectory(),  \"CloseliTestbed/Video/\"):" + recDir.exists());
+        final File tmpDir = new File(Environment.getExternalStorageDirectory(),  "CloseliTestbed/Tmp/");
+        Log.d(TAG + "X", "tmpDir exist:" + tmpDir.exists());
+        boolean suc = tmpDir.mkdir();
+        Log.d(TAG + "X", "tmpDir mkdir:" + suc);
+        final File testFile = new File(Environment.getExternalStorageDirectory(),  "CloseliTestbed/Tmp/test.txt");
+        Log.d(TAG + "X", "test File exist:" + testFile.exists());
+        Log.d(TAG + "X", "test File Parent exists:" + new File(testFile.getParent()).exists());
+        if (!new File(testFile.getParent()).exists()) {
+            Log.d(TAG + "X", "test create Parent:" + new File(testFile.getParent()).mkdir());
+        }
+        try {
+            Log.d(TAG + "X", "test create File:" + testFile.createNewFile());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Log.d(TAG + "X", "test File exist:" + testFile.exists());
+        Log.d(TAG + "X", "test del File:" + testFile.delete());
     }
 
     @Override
@@ -263,7 +301,8 @@ public class ThirdActivity extends Activity {
         });
     }
     public void showTips(View v) {
-        showNewbieTips();
+        //showNewbieTips();
+        showComplexNewbieTips();
     }
     private void animationShowAudioTalk() {
         final View talkingView = findViewById(R.id.player1bar_bottom_rl_talking);

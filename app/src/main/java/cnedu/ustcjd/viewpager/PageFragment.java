@@ -2,17 +2,20 @@ package cnedu.ustcjd.viewpager;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import cnedu.ustcjd.helloworld.CallbackManager;
 import cnedu.ustcjd.helloworld.R;
 
 /**
  * Created by jd5737 on 2016/7/27.
  */
 public class PageFragment extends Fragment {
+    private static String TAG = "Callback";
 
     private static final String PAGE_FRAGMENT_INDEX = "cnedu.ustcjd.page_fragment_index";
     private int index;
@@ -45,24 +48,36 @@ public class PageFragment extends Fragment {
     @Override
     public void onStart(){
         super.onStart();
-        //Log.d("XXXX","onStart() : " + index);
+        Log.d(TAG,"onStart() : " + index);
+        CallbackManager.getInstance().addCallback(mCallback);
+
     }
 
     @Override
     public void onResume(){
         super.onResume();
-        //Log.d("XXXX","onResume() : " + index);
+        Log.d(TAG,"onResume() : " + index);
     }
 
     @Override
     public void onStop(){
         super.onStop();
-        //Log.d("XXXX","onStop() : " + index);
+        Log.d(TAG,"onStop() : " + index);
     }
 
     @Override
     public void onDestroy(){
         super.onDestroy();
-        //Log.d("XXXX","onDestroy() : " + index);
+        Log.d(TAG,"onDestroy() : " + index);
+        CallbackManager.getInstance().removeCallback(mCallback);
+        Log.d(TAG, "=================callback size:" + CallbackManager.getInstance().getCallbackSize());
+        CallbackManager.getInstance().call();
     }
+
+    private CallbackManager.Callback mCallback = new CallbackManager.Callback() {
+        @Override
+        public void onCallback(int i) {
+            Log.d(TAG, "fragment :" + index);
+        }
+    };
 }

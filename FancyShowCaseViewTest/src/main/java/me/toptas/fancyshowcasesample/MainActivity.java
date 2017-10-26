@@ -1,15 +1,26 @@
 package me.toptas.fancyshowcasesample;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -27,6 +38,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        addViewToWindow();
         final View view = findViewById(R.id.btn_focus);
         mHandler.postDelayed(new Runnable() {
             @Override
@@ -41,6 +53,22 @@ public class MainActivity extends BaseActivity {
 
     }
 
+    private void addViewToWindow() {
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        View view = new View(this);
+        view.setBackgroundColor(0x33ff0000);
+        view.setLayoutParams(new ViewGroup.LayoutParams(dm.widthPixels, dm.heightPixels));
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, "click", Toast.LENGTH_SHORT).show();
+            }
+        });
+        WindowManager mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        final WindowManager.LayoutParams lp = new WindowManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.TYPE_APPLICATION, WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, PixelFormat.RGBA_8888);
+        mWindowManager.addView(view, lp);
+    }
 
     /**
      * Shows a simple FancyShowCaseView

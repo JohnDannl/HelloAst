@@ -8,7 +8,7 @@
     <color name="clr_ptz_btn_press_text_rev">#FFC9FFEB</color>
     <color name="clr_transparent_white">#00000000</color>
     <color name="top_btn_clr">#FF32CCFF</color>
-    <color name="clr_guide_view_shadow">#AA000000</color>
+    <color name="clr_guide_view_shadow">#cc000000</color>
     <color name="transparent">#00000000</color>
     <color name="clr_bg_red">#FFE40077</color>
     <color name="clr_shadow_red">#FFdcb1c4</color>
