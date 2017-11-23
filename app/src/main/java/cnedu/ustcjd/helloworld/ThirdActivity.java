@@ -157,9 +157,18 @@ public class ThirdActivity extends Activity {
             }
         }, 500);
         Log.d(TAG, "device Info:" + DeviceInfo.getDeviceInfo(this));
-        fileTest();
+        //fileTest();
+        deviceInfoTest();
     }
 
+    private void deviceInfoTest() {
+        Log.d(TAG + "Y", DeviceInfoUtils.getIPAddress(true));
+        Log.d(TAG + "Y", DeviceInfoUtils.getIPAddress(false));
+        Log.d(TAG + "Y", "eth0:" + DeviceInfoUtils.getMACAddress("eth0"));
+        Log.d(TAG + "Y", "wlan0:" + DeviceInfoUtils.getMACAddress("wlan0"));
+        Log.d(TAG + "Y", "pid:" + DeviceInfoUtils.getMyProcessPid());
+        Log.d(TAG + "Y", "hex ip:" + DeviceInfoUtils.getHexIPAddress(DeviceInfoUtils.getIPAddress(true)));
+    }
     private void fileTest() {
         String fileDir = getApplicationContext().getFilesDir().getAbsolutePath();
         Log.d(TAG + "X", "getApplicationContext().getFilesDir().getAbsolutePath():" + fileDir);
