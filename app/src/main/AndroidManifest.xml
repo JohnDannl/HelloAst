@@ -19,11 +19,11 @@
             android:name="cnedu.ustcjd.helloworld.MainActivity"
             android:launchMode="singleTask"
             android:configChanges="orientation|keyboardHidden">
-            <!--<intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
+            </intent-filter>
         </activity>
         <activity android:name="cnedu.ustcjd.helloworld.ViewPagerActivity">
             <!--<intent-filter>
@@ -35,11 +35,11 @@
         <activity
             android:name="cnedu.ustcjd.helloworld.ThirdActivity"
             android:label="@string/title_activity_third">
-            <intent-filter>
+           <!-- <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter>-->
         </activity>
 
         <activity android:name=".NumberPickerActivity">

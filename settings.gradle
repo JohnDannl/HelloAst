@@ -1,4 +1,4 @@
 include ':app'//, ':dynamicGrid', ':dynamicGrid-example', ':itemTouchHelper-demo', ':draggableViewPager-lib', ':draggableViewPager-sample', ':draggableRecyclerViewPager', ':recyclerViewPlayGround', ':roundedImageview', ':RangeSeekbar', ':customView', ':ScrollingTest', ':SwipeMenuLib', ':SplashVerify', ':ImageClipper', ':FancyShowCaseViewTest'
-include ':myLauncher'
-include ':dragDrop'
-include ':FancyShowCaseView'
+//include ':myLauncher'
+//include ':dragDrop'
+//include ':FancyShowCaseView'

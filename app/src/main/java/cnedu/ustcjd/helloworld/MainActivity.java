@@ -5,9 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Point;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -21,10 +25,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
-
+    private static final String TAG = "HelloWorld";
     private Context mContext;
     private LinearLayout viewContainer;
     private ArrayList<TextView> addedViews=new ArrayList<TextView>();
@@ -37,13 +43,32 @@ public class MainActivity extends AppCompatActivity {
     private boolean anim2 =false;
     private boolean anim3 =false;
     private ObjectAnimator objAnim;
+    private static TextView tvTime;
+    private static long time;
+    private static final int MSG_UPDATE_TIME = 1;
+
+    static class MyHandler extends Handler{
+        public void handleMessage(Message message) {
+            switch (message.what) {
+                case MSG_UPDATE_TIME:
+                    time ++;
+                    tvTime.setText(String.format("%1$02d:%2$02d", time / 60, time % 60));
+                    sendEmptyMessageDelayed(MSG_UPDATE_TIME, 1000);
+                    break;
+            }
+        }
+    }
+    private Handler mHandler = new MyHandler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(cnedu.ustcjd.helloworld.R.layout.activity_main);
+        Log.d(TAG, "onCreate()");
         mContext=this;
         viewContainer=(LinearLayout) findViewById(cnedu.ustcjd.helloworld.R.id.adaptive_view_container);
+        tvTime = (TextView) findViewById(R.id.tvTimer);
+        mHandler.sendEmptyMessage(MSG_UPDATE_TIME);
         EditText searchView=(EditText) LayoutInflater.from(this).inflate(cnedu.ustcjd.helloworld.R.layout.et_add_sub_view,null);
         /*LinearLayout.LayoutParams llp=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT,1);
@@ -200,5 +225,33 @@ public class MainActivity extends AppCompatActivity {
         translate.setFillAfter(true);
         translate.setInterpolator(new AccelerateDecelerateInterpolator());
         return translate;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume()");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause()");
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.d(TAG, "onBackPressed()");
+    }
+
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            moveTaskToBack(false);
+            boolean ret = true;//super.onKeyDown(keyCode, event);
+            Log.d(TAG, "onKeyDown back ret:" + ret);
+            return ret;
+        }
+
+        return super.onKeyDown(keyCode, event);
     }
 }
