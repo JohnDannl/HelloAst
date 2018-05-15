@@ -5,10 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Point;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
@@ -25,9 +25,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Locale;
+
+import cnedu.ustcjd.util.IntentWrapper;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "HelloWorld";
@@ -214,7 +214,9 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Click me",Toast.LENGTH_SHORT).show();
             }
         });
+        IntentWrapper.showBatteryOptimizationSettingDialog(this);
     }
+
     private TranslateAnimation createTranslateAnimation(int oldX,int newX,int oldY,int newY) {
         TranslateAnimation translate = new TranslateAnimation(Animation.ABSOLUTE, oldX,
                 Animation.ABSOLUTE, newX,
