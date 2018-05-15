@@ -20,11 +20,11 @@
             android:name="cnedu.ustcjd.helloworld.MainActivity"
             android:launchMode="singleTask"
             android:configChanges="orientation|keyboardHidden">
-            <intent-filter>
+            <!--<intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter>-->
         </activity>
         <activity android:name="cnedu.ustcjd.helloworld.ViewPagerActivity">
             <!--<intent-filter>
@@ -49,6 +49,14 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>-->
+        </activity>
+
+        <activity android:name=".BatteryOptimizationActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
         </activity>
     </application>
 

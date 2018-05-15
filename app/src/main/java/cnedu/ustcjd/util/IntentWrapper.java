@@ -1,5 +1,6 @@
 package cnedu.ustcjd.util;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -14,6 +15,7 @@ import android.os.PowerManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +23,8 @@ import java.util.List;
 import static android.content.Context.POWER_SERVICE;
 
 public class IntentWrapper {
-    //Android 7.0+ Doze 模式
+    private static final String TAG = "IntentWrapper";
+    //Android 6.0+ Doze 模式
     protected static final int DOZE = 98;
     //华为 自启管理
     protected static final int HUAWEI = 99;
@@ -64,15 +67,13 @@ public class IntentWrapper {
     //锤子手机 自启动权限管理
     protected static final int SMART = 118;
 
-    protected static List<IntentWrapper> sIntentWrapperList;
-
     public static List<IntentWrapper> getIntentWrapperList(Context context) {
-        if (sIntentWrapperList == null) {
-            sIntentWrapperList = new ArrayList<>();
+        List<IntentWrapper> sIntentWrapperList = new ArrayList<>();
+        if (context != null) {
             String packageName = context.getApplicationContext().getPackageName();
 
-            //Android 7.0+ Doze 模式
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            //Android 6.0+ Doze 模式
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 PowerManager powerManager = (PowerManager) context.getSystemService(POWER_SERVICE);
                 boolean ignoringBatteryOptimizations = powerManager.isIgnoringBatteryOptimizations(packageName);
                 if (!ignoringBatteryOptimizations) {
@@ -216,6 +217,9 @@ public class IntentWrapper {
         this.type = type;
     }
 
+    public int getType() {
+        return type;
+    }
     /**
      * 判断本机上是否有能处理当前Intent的Activity
      */
@@ -259,7 +263,7 @@ public class IntentWrapper {
             if (!iw.doesActivityExists(context)) continue;
             switch (iw.type) {
                 case DOZE:
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
                         if (pm.isIgnoringBatteryOptimizations(context.getPackageName())) break;
                         new AlertDialog.Builder(context)
@@ -489,20 +493,36 @@ public class IntentWrapper {
         for (final IntentWrapper iw : intentWrapperList) {
             //如果本机上没有能处理这个Intent的Activity，说明不是对应的机型，直接忽略进入下一次循环。
             if (!iw.doesActivityExists(context)) continue;
+            showed.add(iw);
+        }
+        int count = 0;
+        for (final IntentWrapper iw : showed) {
             new AlertDialog.Builder(context)
                     .setCancelable(false)
-                    .setTitle("重要")
+                    .setTitle(showed.size() > 1 ? String.format("重要（%s）", showed.size() - count) : "重要")
                     .setMessage("为保证应用核心服务的持续运行，以便及时收到设备的消息推送。需要忽略 " + getApplicationName(context) + " 的电池优化并允许应用在后台长期运行。\n\n" +
-                            "请点击『确定』，在弹出的『设置』对话框中，进行相应设置。")
+                            "请点击『确定』，在弹出的相应页面进行设置。")
                     .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface d, int w) {
+                            d.dismiss();
                             iw.startActivity(context);
                         }
                     })
                     .show();
-            showed.add(iw);
-            break;
+            count ++;
         }
+        Log.d(TAG, "intent wrapper size:" + showed.size());
         return showed;
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    public static boolean checkIfMyselfInPowerWhiteList(Context context) {
+        boolean ret = true;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+            ret = pm.isIgnoringBatteryOptimizations(context.getPackageName());
+        }
+        Log.d(TAG, String.format("SDK_Ver:%s, in power white list myself:%s", Build.VERSION.SDK_INT, ret));
+        return ret;
     }
 }
