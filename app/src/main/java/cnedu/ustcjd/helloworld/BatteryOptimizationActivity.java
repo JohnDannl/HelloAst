@@ -8,7 +8,7 @@ import android.widget.Toast;
 
 import java.util.List;
 
-import cnedu.ustcjd.util.IntentWrapper;
+import cnedu.ustcjd.util.BatteryOptimizationManager;
 
 public class BatteryOptimizationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,12 +17,12 @@ public class BatteryOptimizationActivity extends AppCompatActivity {
     }
 
     public void onClickCheck(View view) {
-        boolean ret = IntentWrapper.checkIfMyselfInPowerWhiteList(this);
+        boolean ret = BatteryOptimizationManager.checkIfMyselfInPowerWhiteList(this);
         Toast.makeText(this, String.format("SDK_Ver:%s, in white list:%s", Build.VERSION.SDK_INT, ret), Toast.LENGTH_SHORT).show();
     }
 
     public void onClickRequest(View view) {
-        List<IntentWrapper> ret = IntentWrapper.showBatteryOptimizationSettingDialog(this);
+        List<BatteryOptimizationManager.IntentWrapper> ret = BatteryOptimizationManager.showBatteryOptimizationSettingDialog(this);
         Toast.makeText(this, String.format("intent list:%s, type:%s", ret.size(), ret.size() > 0 ? ret.get(0).getType() : -1), Toast.LENGTH_SHORT).show();
     }
 }

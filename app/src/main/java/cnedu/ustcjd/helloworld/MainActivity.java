@@ -26,9 +26,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import cnedu.ustcjd.util.IntentWrapper;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "HelloWorld";

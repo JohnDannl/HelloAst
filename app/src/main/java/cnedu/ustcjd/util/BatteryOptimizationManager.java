@@ -22,8 +22,8 @@ import java.util.List;
 
 import static android.content.Context.POWER_SERVICE;
 
-public class IntentWrapper {
-    private static final String TAG = "IntentWrapper";
+public class BatteryOptimizationManager {
+    private static final String TAG = "BatteryOptimization";
     //Android 6.0+ Doze 模式
     protected static final int DOZE = 98;
     //华为 自启管理
@@ -66,6 +66,23 @@ public class IntentWrapper {
     protected static final int ZTE_GOD = 117;
     //锤子手机 自启动权限管理
     protected static final int SMART = 118;
+    protected static String sApplicationName;
+
+    public static String getApplicationName(Context context) {
+        if (sApplicationName == null) {
+            PackageManager pm;
+            ApplicationInfo ai;
+            try {
+                pm = context.getApplicationContext().getPackageManager();
+                ai = pm.getApplicationInfo(context.getPackageName(), 0);
+                sApplicationName = pm.getApplicationLabel(ai).toString();
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+                sApplicationName = context.getPackageName();
+            }
+        }
+        return sApplicationName;
+    }
 
     public static List<IntentWrapper> getIntentWrapperList(Context context) {
         List<IntentWrapper> sIntentWrapperList = new ArrayList<>();
@@ -189,64 +206,6 @@ public class IntentWrapper {
             sIntentWrapperList.add(new IntentWrapper(zteGodIntent, SMART));
         }
         return sIntentWrapperList;
-    }
-
-    protected static String sApplicationName;
-
-    public static String getApplicationName(Context context) {
-        if (sApplicationName == null) {
-            PackageManager pm;
-            ApplicationInfo ai;
-            try {
-                pm = context.getApplicationContext().getPackageManager();
-                ai = pm.getApplicationInfo(context.getPackageName(), 0);
-                sApplicationName = pm.getApplicationLabel(ai).toString();
-            } catch (PackageManager.NameNotFoundException e) {
-                e.printStackTrace();
-                sApplicationName = context.getPackageName();
-            }
-        }
-        return sApplicationName;
-    }
-
-    protected Intent intent;
-    protected int type;
-
-    protected IntentWrapper(Intent intent, int type) {
-        this.intent = intent;
-        this.type = type;
-    }
-
-    public int getType() {
-        return type;
-    }
-    /**
-     * 判断本机上是否有能处理当前Intent的Activity
-     */
-    protected boolean doesActivityExists(Context context) {
-        List<ResolveInfo> list = context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-        return list != null && list.size() > 0;
-    }
-
-    /**
-     * 安全地启动一个Activity
-     */
-    protected void startActivity(Activity a) {
-        try {
-            a.startActivity(intent);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static IntentWrapper getBatteryOptimizationIntent(Context context) {
-        IntentWrapper myIntent = null;
-        for (IntentWrapper iw : getIntentWrapperList(context)) {
-            if (!iw.doesActivityExists(context)) continue;
-            myIntent = iw;
-            break;
-        }
-        return myIntent;
     }
     /**
      * 处理白名单.
@@ -524,5 +483,37 @@ public class IntentWrapper {
         }
         Log.d(TAG, String.format("SDK_Ver:%s, in power white list myself:%s", Build.VERSION.SDK_INT, ret));
         return ret;
+    }
+
+    public static class IntentWrapper {
+        protected Intent intent;
+        protected int type;
+
+        protected IntentWrapper(Intent intent, int type) {
+            this.intent = intent;
+            this.type = type;
+        }
+
+        public int getType() {
+            return type;
+        }
+        /**
+         * 判断本机上是否有能处理当前Intent的Activity
+         */
+        protected boolean doesActivityExists(Context context) {
+            List<ResolveInfo> list = context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+            return list != null && list.size() > 0;
+        }
+
+        /**
+         * 安全地启动一个Activity
+         */
+        protected void startActivity(Activity a) {
+            try {
+                a.startActivity(intent);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
