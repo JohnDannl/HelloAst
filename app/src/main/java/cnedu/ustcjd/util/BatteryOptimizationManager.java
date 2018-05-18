@@ -97,6 +97,11 @@ public class BatteryOptimizationManager {
                     Intent dozeIntent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
                     dozeIntent.setData(Uri.parse("package:" + packageName));
                     sIntentWrapperList.add(new IntentWrapper(dozeIntent, DOZE));
+
+                    if (dozeIntent.resolveActivity(context.getPackageManager()) == null) {
+                        Intent dozeIntent2 = new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+                        sIntentWrapperList.add(new IntentWrapper(dozeIntent2, DOZE));
+                    }
                 }
             }
 
