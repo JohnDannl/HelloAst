@@ -1,11 +1,13 @@
 package cnedu.ustcjd.helloworld;
 
 import android.Manifest;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.tbruyelle.rxpermissions2.Permission;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import io.reactivex.functions.Action;
@@ -20,19 +22,28 @@ public class PermissionActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate");
         final RxPermissions rxPermissions = new RxPermissions(this);
         rxPermissions
-                .request(Manifest.permission.CAMERA)
+                .request(new String[] {Manifest.permission.WRITE_SETTINGS, Manifest.permission.CAMERA})
                 .subscribe(new Consumer<Boolean>() {
                                @Override
                                public void accept(Boolean aBoolean) throws Exception {
-                                   Toast.makeText(PermissionActivity.this, "permit", Toast.LENGTH_SHORT).show();
-                                   Log.d(TAG, "permit");
+                                   Toast.makeText(PermissionActivity.this, "permit:" + aBoolean, Toast.LENGTH_SHORT).show();
+                                   Log.d(TAG, "permit:" + aBoolean);
+                                   if (aBoolean) {
+                                       try {
+                                           int mAcceleramater = Settings.System.getInt(getContentResolver(), Settings.System.ACCELEROMETER_ROTATION);
+                                           Settings.System.putInt(getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0);
+                                           Log.i(TAG, "mAcceleramater = " + mAcceleramater);
+                                       } catch (Settings.SettingNotFoundException e) {
+                                           e.printStackTrace();
+                                       }
+                                   }
                                }
                            },
                         new Consumer<Throwable>() {
                             @Override
                             public void accept(Throwable throwable) throws Exception {
                                 Toast.makeText(PermissionActivity.this, "denied", Toast.LENGTH_SHORT).show();
-                                Log.d(TAG, "denied");
+                                Log.d(TAG, "denied:" + throwable.getMessage());
                             }
                         },
                         new Action() {
@@ -42,6 +53,23 @@ public class PermissionActivity extends AppCompatActivity {
                                 Log.d(TAG, "complete");
                             }
                         });
+
+        rxPermissions.requestEach(new String[] {Manifest.permission.WRITE_SETTINGS, Manifest.permission.CAMERA}).subscribe(new Consumer<Permission>() {
+            @Override
+            public void accept(Permission permission) throws Exception {
+                Log.d(TAG, String.format("prmission:%s, %s, %s", permission.name, permission.granted, permission.shouldShowRequestPermissionRationale));
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable throwable) throws Exception {
+
+            }
+        }, new Action() {
+            @Override
+            public void run() throws Exception {
+
+            }
+        });
     }
 
     public void onStart() {
