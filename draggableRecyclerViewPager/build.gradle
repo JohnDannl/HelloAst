@@ -7,7 +7,7 @@ android {
     defaultConfig {
         applicationId "cnedu.ustcjd.draggablerecyclerviewpager"
         minSdkVersion 14
-        targetSdkVersion 23
+        targetSdkVersion project.targetSdkVersion
         versionCode 1
         versionName "1.0"
     }
@@ -20,8 +20,8 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.0.1'
-    compile 'com.android.support:recyclerview-v7:23.0.1'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation 'junit:junit:4.12'
+    implementation 'com.android.support:appcompat-v7:23.0.1'
+    implementation 'com.android.support:recyclerview-v7:23.0.1'
 }

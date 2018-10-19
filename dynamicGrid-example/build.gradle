@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 dependencies {
-    compile project(':dynamicGrid')
-    compile 'com.android.support:support-v4:19.+'
+    implementation project(':dynamicGrid')
+    implementation 'com.android.support:support-v4:19.+'
 }
 
 android {

@@ -7,14 +7,14 @@ android {
     defaultConfig {
         applicationId "co.paulburke.android.itemtouchhelperdemo"
         minSdkVersion 16
-        targetSdkVersion 23
+        targetSdkVersion project.targetSdkVersion
         versionCode 3
         versionName "1.1"
     }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:design:23.0.1'
-    compile 'com.android.support:recyclerview-v7:23.0.1'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:design:23.0.1'
+    implementation 'com.android.support:recyclerview-v7:23.0.1'
 }

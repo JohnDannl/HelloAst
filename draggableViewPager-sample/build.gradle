@@ -7,14 +7,14 @@ android {
     defaultConfig {
         applicationId "cnedu.ustcjd.draggableviewpager.sample"
         minSdkVersion 14
-        targetSdkVersion 23
+        targetSdkVersion project.targetSdkVersion
         versionCode 1
         versionName "1.0"
     }
 }
 
 dependencies {
-    compile project(':draggableViewPager-lib')
-    //compile 'com.android.support:appcompat-v7:23.0.1'
-    //compile 'com.android.support:recyclerview-v7:23.0.1'
+    implementation project(':draggableViewPager-lib')
+    //implementation 'com.android.support:appcompat-v7:23.0.1'
+    //implementation 'com.android.support:recyclerview-v7:23.0.1'
 }
