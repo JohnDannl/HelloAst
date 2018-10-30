@@ -37,7 +37,7 @@ import cnedu.ustcjd.widget.GuideView;
 
 import static android.util.Log.d;
 
-public class ThirdActivity extends Activity {
+public class GuideViewActivity extends Activity {
     private static String TAG = "ThirdActivity";
     private View ivAnim;
     private AudioTalkBgView talkView, talkBgView2;
@@ -58,7 +58,7 @@ public class ThirdActivity extends Activity {
         btnToMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ThirdActivity.this, MainActivity.class);
+                Intent intent = new Intent(GuideViewActivity.this, MainActivity.class);
                 startActivity(intent);
             }
         });
@@ -67,7 +67,7 @@ public class ThirdActivity extends Activity {
         btnToThird.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ThirdActivity.this, ThirdActivity.class);
+                Intent intent = new Intent(GuideViewActivity.this, GuideViewActivity.class);
                 startActivity(intent);
             }
         });
@@ -119,20 +119,20 @@ public class ThirdActivity extends Activity {
                     talkView.setBgColor(getResources().getColor(R.color.clr_white));
                     talkView.setStrokeColor(getResources().getColor(R.color.clr_stroke_grey));
                 }
-                getScreenSizeInDp(ThirdActivity.this);
+                getScreenSizeInDp(GuideViewActivity.this);
             }
         });
         talkView.setAudioTalkViewListener(new AudioTalkBgView.IAudioTalkViewListener() {
             @Override
             public void onTouch() {
-                Toast.makeText(ThirdActivity.this, "on Touch", Toast.LENGTH_SHORT).show();
+                Toast.makeText(GuideViewActivity.this, "on Touch", Toast.LENGTH_SHORT).show();
                 d(TAG, "audio talk on touch");
                 animationShowAudioTalk();
             }
 
             @Override
             public void onRelease() {
-                Toast.makeText(ThirdActivity.this, "on Release", Toast.LENGTH_SHORT).show();
+                Toast.makeText(GuideViewActivity.this, "on Release", Toast.LENGTH_SHORT).show();
                 d(TAG, "audio talk on release");
                 animationHideAudioTalk();
             }

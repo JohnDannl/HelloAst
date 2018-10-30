@@ -13,7 +13,7 @@
     <string name="str_rotate">旋转</string>
     <string name="str_toast">Toast</string>
     <string name="str_to_view_pager">toViewPager</string>
-    <string name="title_activity_third">ThirdActivity</string>
+    <string name="title_activity_guideview">GuideViewActivity</string>
     <string name="to_main">Go to Main</string>
     <string name="to_third">Go to Third</string>
     <string name="str_change_color">Change Color</string>

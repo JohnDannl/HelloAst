@@ -8,4 +8,8 @@
         <attr name="strokeWidth" format="dimension"/>
         <attr name="strokeColor" format="color"/>
     </declare-styleable>
+    <declare-styleable name="LiveActivity">
+        <attr name="styleTextColor" format="color"/>
+        <attr name="styleImageSrc" format="reference"/>
+    </declare-styleable>
 </resources>

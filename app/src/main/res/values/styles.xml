@@ -8,4 +8,14 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="ATheme" parent="AppTheme">
+        <item name="styleTextColor">@android:color/black</item>
+        <item name="styleImageSrc">@drawable/ic_launcher</item>
+    </style>
+
+    <style name="BTheme" parent="AppTheme">
+        <item name="styleTextColor">@android:color/holo_red_light</item>
+        <item name="styleImageSrc">@drawable/bg_audio_talk_start</item>
+    </style>
+
 </resources>

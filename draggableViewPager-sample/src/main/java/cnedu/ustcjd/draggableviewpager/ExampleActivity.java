@@ -83,7 +83,7 @@ public class ExampleActivity extends Activity  {
 
         mDrgVpg = (DraggableViewPager) findViewById(R.id.gridview);
 
-        ExampleDraggableViewPagerAdapter adapter = new ExampleDraggableViewPagerAdapter(this, mDrgVpg);
+        final ExampleDraggableViewPagerAdapter adapter = new ExampleDraggableViewPagerAdapter(this, mDrgVpg);
 
         mDrgVpg.setAdapter(adapter);
         mDrgVpg.setClickListener(new DragDropGrid.OnDragDropGridItemClickListener() {
@@ -161,6 +161,13 @@ public class ExampleActivity extends Activity  {
 
         // simulate a loop layout request
         mHandler.sendEmptyMessageDelayed(REQUEST_LAYOUT, INTERVAL_REQUEST_LAYOUT);
+        mDrgVpg.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                mDrgVpg.scrollToPage(2);
+                mDrgVpg.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+            }
+        });
     }
     Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {

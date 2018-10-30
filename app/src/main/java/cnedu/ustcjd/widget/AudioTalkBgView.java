@@ -5,18 +5,17 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Build;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.widget.ImageView;
-
 import cnedu.ustcjd.helloworld.R;
 
 /**
  * Created by jd5737 on 2017/3/10.
  */
 
-public class AudioTalkBgView extends ImageView {
+public class AudioTalkBgView extends AppCompatImageView {
     private static final String TAG = "AudioTalkBgView";
     private Paint bgPaint;
     private Paint strokePaint;
