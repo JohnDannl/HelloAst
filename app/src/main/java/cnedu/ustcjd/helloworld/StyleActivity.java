@@ -23,4 +23,8 @@ public class StyleActivity extends AppCompatActivity {
         bSwithA = !bSwithA;
         recreate();
     }
+
+    public void onStyleTvClick(View view) {
+        view.setSelected(!view.isSelected());
+    }
 }

@@ -23,6 +23,8 @@
         app:layout_constraintTop_toBottomOf="@id/iv_style"
         android:textColor="?attr/styleTextColor"
         android:text="This is the text for style test."
+        android:drawableTop="@drawable/bg_audio_talk"
+        android:onClick="onStyleTvClick"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 </android.support.constraint.ConstraintLayout>
