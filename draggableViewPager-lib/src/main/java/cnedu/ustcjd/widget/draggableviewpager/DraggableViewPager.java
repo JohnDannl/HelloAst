@@ -2,15 +2,21 @@ package cnedu.ustcjd.widget.draggableviewpager;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.graphics.Point;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.Display;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.HorizontalScrollView;
 
 import cnedu.ustcjd.widget.draggableviewpager.callbacks.OnPageChangedListener;
+import cnedu.ustcjd.widget.draggableviewpager.utils.SystemUtils;
+
 
 public class DraggableViewPager extends HorizontalScrollView implements ViewPagerContainer, OnGestureListener {
 
@@ -27,10 +33,11 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
 
     private OnPageChangedListener pageChangedListener;
     private int bgXmlRes;
+    private Context mContext;
 
     public DraggableViewPager(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-
+        mContext = context;
         setBackground(attrs);
 
         initPagedScroll();
@@ -112,17 +119,17 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
         setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(!isScrollEnalbed)return true;
+                if (!isScrollEnalbed) return true;
                 boolean specialEventUsed = gestureScanner.onTouchEvent(event);
                 if (!specialEventUsed && (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL)) {
                     int scrollX = getScrollX();
                     int onePageWidth = v.getMeasuredWidth();
                     //int page = ((scrollX + (onePageWidth *1/2)) / onePageWidth);
                     int hoverPageWidth = onePageWidth * 1 / 3;
-                    int page=currentPage();
-                    if (scrollX-onePageWidth*page >= hoverPageWidth) {
+                    int page = currentPage();
+                    if (scrollX - onePageWidth * page >= hoverPageWidth) {
                         page = (scrollX + onePageWidth - hoverPageWidth) / onePageWidth;
-                    } else if (scrollX - onePageWidth*page <= - hoverPageWidth) {
+                    } else if (scrollX - onePageWidth * page <= -hoverPageWidth) {
                         page = scrollX / onePageWidth;
                     }
                     scrollToPage(page);
@@ -136,7 +143,7 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
                     int roundPage = scrollX / onePageWidth;
                     if (scrollX - onePageWidth * roundPage >= hoverPageWidth) {
                         page = (scrollX + onePageWidth - hoverPageWidth) / onePageWidth;
-                    } else if (scrollX - onePageWidth * roundPage <= onePageWidth - hoverPageWidth){
+                    } else if (scrollX - onePageWidth * roundPage <= onePageWidth - hoverPageWidth) {
                         page = scrollX / onePageWidth;
                     }
 
@@ -178,43 +185,50 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
         grid.setOnItemClickListener(l);
     }
 
+    public void setSwapListener(DragDropGrid.OnSwapItemListener l) {
+        grid.setOnSwapItemListener(l);
+    }
+
     /**
      * enable and disable draggable function,default:enabled
+     *
      * @param enabled
      */
-    public void setDragEnabled(boolean enabled){
+    public void setDragEnabled(boolean enabled) {
         grid.setDragEnabled(enabled);
     }
-    public void setDragZoomInAnimEnabled(boolean enabled){
+
+    public void setDragZoomInAnimEnabled(boolean enabled) {
         grid.setDragZoomInAnimEnabled(enabled);
     }
-    public void setPageScrollAnimationEnabled(boolean enabled){
-        this.isPageScrollAnimationEnabled=enabled;
+
+    public void setPageScrollAnimationEnabled(boolean enabled) {
+        this.isPageScrollAnimationEnabled = enabled;
     }
-    public void setItemDoubleClickFullScreenEnabled(boolean enabled){
+
+    public void setItemDoubleClickFullScreenEnabled(boolean enabled) {
         grid.setItemDoubleClickFullScreenEnabled(enabled);
     }
-    public void setOnItemAnimationListener(DragDropGrid.OnDragDropGridItemAnimationListener listener){
+
+    public void setOnItemAnimationListener(DragDropGrid.OnDragDropGridItemAnimationListener listener) {
         grid.setOnItemAnimationListener(listener);
     }
+
     /**
      * set page scroll time in millisecond if scroll animation is enabled,default:500ms
+     *
      * @param milliSeconds
      */
-    public void setPageScrollSpeed(int milliSeconds){
-        this.PAGE_SCROLL_SPEED=milliSeconds;
+    public void setPageScrollSpeed(int milliSeconds) {
+        this.PAGE_SCROLL_SPEED = milliSeconds;
     }
 
     public boolean onLongClick(View v) {
         return grid.onLongClick(v);
     }
 
-    public void removeItem(int page, int index) {
-        grid.removeItem(page, index);
-    }
-
     public void notifyDataSetChanged() {
-        grid.reloadViews();
+        grid.notifyDataChanged();
     }
 
     @Override
@@ -222,10 +236,22 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
         grid.updateCachedPages(page, page < activePage, page > activePage);
         int oldActivePage = activePage;
         activePage = page;
-        int onePageWidth = getMeasuredWidth();
+
+        boolean hasNav = SystemUtils.checkDeviceHasNavigationBar(getContext());
+        Log.d("navigation_bar_height", "hasNav is " + hasNav);
+
+        final WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        int hasNavOther = SystemUtils.hasSoftKeys(wm);
+        Log.d("navigation_bar_height", "hasNavOther is " + hasNavOther);
+
+        final Display display = wm.getDefaultDisplay();
+        final Point point = new Point();
+        display.getSize(point);
+        int onePageWidth = point.x + (hasNavOther > 0 && hasNav? hasNavOther : 0);
+
         int scrollTo = page * onePageWidth;
         if (isPageScrollAnimationEnabled) {
-            ObjectAnimator animator= ObjectAnimator.ofInt(this, "scrollX",scrollTo);
+            ObjectAnimator animator = ObjectAnimator.ofInt(this, "scrollX", scrollTo);
             animator.setDuration(PAGE_SCROLL_SPEED);
             animator.start();
         } else {
@@ -241,7 +267,7 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
         int newPage = activePage - 1;
         if (canScrollToPreviousPage()) {
             scrollToPage(newPage);
-        }else{
+        } else {
             scrollToPage(activePage);
         }
     }
@@ -251,7 +277,7 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
         int newPage = activePage + 1;
         if (canScrollToNextPage()) {
             scrollToPage(newPage);
-        }else{
+        } else {
             scrollToPage(activePage);
         }
     }
@@ -264,13 +290,13 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
     @Override
     public void enableScroll() {
         requestDisallowInterceptTouchEvent(false);
-        isScrollEnalbed=true;
+        isScrollEnalbed = true;
     }
 
     @Override
     public void disableScroll() {
         requestDisallowInterceptTouchEvent(true);
-        isScrollEnalbed=false;
+        isScrollEnalbed = false;
     }
 
     @Override
@@ -337,5 +363,9 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
     @Override
     public boolean onSingleTapUp(MotionEvent arg0) {
         return false;
+    }
+
+    public DraggableViewPagerAdapter getAdapter() {
+        return adapter;
     }
 }

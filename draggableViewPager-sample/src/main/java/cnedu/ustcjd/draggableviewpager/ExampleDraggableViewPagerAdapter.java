@@ -4,12 +4,11 @@ import android.content.Context;
 import android.util.Log;
 import android.view.View;
 
-import cnedu.ustcjd.widget.draggableviewpager.DraggableViewPager;
-import cnedu.ustcjd.widget.draggableviewpager.DraggableViewPagerAdapter;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import cnedu.ustcjd.widget.draggableviewpager.DraggableViewPagerAdapter;
 
 public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapter {
 
@@ -23,59 +22,49 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
     private static final int COLUMN_SIZE = 2;
     private static final int PAGE_ITEM_SIZE = 4;
 
-    List<Page> pages = new ArrayList<Page>();
+    private List<Item> items = new ArrayList<>();
     private Context context;
-    private DraggableViewPager gridview;
+    private ItemViewCallback mItemCallback;
 
-    public ExampleDraggableViewPagerAdapter(Context context, DraggableViewPager gridview) {
+    public ExampleDraggableViewPagerAdapter(Context context, ItemViewCallback itemViewCallback) {
         super();
         this.context = context;
-        this.gridview = gridview;
+        this.mItemCallback = itemViewCallback;
 
         int totalCount = 0;
         for (int i = 0; i < 4; i++) {
-            Page page = new Page();
-            List<Item> items = new ArrayList<Item>();
             for (int j = 0; j < PAGE_ITEM_SIZE; j++){
                 totalCount +=1;
                 items.add(new Item(totalCount, "Item"+totalCount, R.drawable.ic_launcher));
             }
-            page.setItems(items);
-            pages.add(page);
         }
-        /*Page page = new Page();
-        List<Item> items = new ArrayList<Item>();
-        for (int j = 0; j < PAGE_ITEM_SIZE - 1; j++){
-            totalCount +=1;
-            items.add(new Item(totalCount, "Item"+totalCount, R.drawable.ic_launcher));
-        }
-        page.setItems(items);
-        pages.add(page);*/
     }
 
     @Override
     public int pageCount() {
-        return pages.size();
+        return (items.size() + PAGE_ITEM_SIZE - 1) / PAGE_ITEM_SIZE;
     }
 
     private List<Item> itemsInPage(int page) {
-        if (pages.size() > page) {
-            return pages.get(page).getItems();
+        if (pageCount() > page) {
+            int max = (page + 1) * PAGE_ITEM_SIZE;
+            if ((page + 1) * PAGE_ITEM_SIZE > items.size()) max = items.size();
+            return items.subList(page * PAGE_ITEM_SIZE, max);
         }
         return Collections.emptyList();
     }
 
     @Override
-    public View view(int page, int index) {
-        /*final LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View view = layoutInflater.inflate(R.layout.my_text_view, null);
-        final TextView textView = (TextView) view.findViewById(R.id.info_text);
-        Item item = getItem(page, index);
-        textView.setText(item.getName());
-        //textView.setBackgroundDrawable(context.getResources().getDrawable(item.getDrawable()));*/
-        Item item = getItem(page, index);
-        final View view = new GridItemView(context, item.getName()).getView();
-        return view;
+    public View view(final int page, final int index) {
+        final Item item = getItem(page, index);
+        GridItemView gridItem = new GridItemView(context, item.getName());
+        gridItem.setItemDeleteCallback(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mItemCallback != null) mItemCallback.onItemViewDeleteClick(item);
+            }
+        });
+        return gridItem.getView();
     }
 
     private Item getItem(int page, int index) {
@@ -100,60 +89,52 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
 
     public void printLayout() {
         int i = 0;
-        for (Page page : pages) {
-            Log.d("Page", Integer.toString(i++));
+        for (int page = 0; page < pageCount(); page++) {
+            Log.d("Page", Integer.toString(page));
 
             String msg = "";
-            for (Item item : page.getItems()) {
+            for (Item item : itemsInPage(page)) {
                 msg += Long.toString(item.getId()) + ",";
             }
             Log.d("Item", msg);
         }
     }
 
-    private Page getPage(int pageIndex) {
-        return pages.get(pageIndex);
+    private List<Item> getPage(int pageIndex) {
+        return itemsInPage(pageIndex);
     }
 
     @Override
     public void swapItems(int pageIndex, int itemIndexA, int itemIndexB) {
-        getPage(pageIndex).swapItems(itemIndexA, itemIndexB);
+        int srcIndex = pageIndex * PAGE_ITEM_SIZE + itemIndexA;
+        int desIndex = pageIndex * PAGE_ITEM_SIZE + itemIndexB;
+        Collections.swap(items, srcIndex, desIndex);
         printLayout();
     }
 
     @Override
     public void moveItemToPreviousPage(int pageIndex, int itemIndex) {
-        int leftPageIndex = pageIndex - 1;
-        if (leftPageIndex >= 0) {
-            Page startpage = getPage(pageIndex);
-            Page landingPage = getPage(leftPageIndex);
-
-            Item landingPageLastItem=landingPage.removeItem(landingPage.size()-1);
-            Item item = startpage.removeItem(itemIndex);
-            landingPage.addItem(item);
-            startpage.addItem(itemIndex,landingPageLastItem);
+        if (pageIndex > 0) {
+            int startIndex = pageIndex * PAGE_ITEM_SIZE + itemIndex;
+            int destIndex = pageIndex * PAGE_ITEM_SIZE - 1;
+            Collections.swap(items, startIndex, destIndex);
         }
         printLayout();
     }
 
     @Override
     public void moveItemToNextPage(int pageIndex, int itemIndex) {
-        int rightPageIndex = pageIndex + 1;
-        if (rightPageIndex < pageCount()) {
-            Page startpage = getPage(pageIndex);
-            Page landingPage = getPage(rightPageIndex);
-
-            Item landingPageFirstItem=landingPage.removeItem(0);
-            Item item = startpage.removeItem(itemIndex);
-            landingPage.addItem(0,item);
-            startpage.addItem(itemIndex,landingPageFirstItem);
+        if (pageIndex + 1 < pageCount()) {
+            int srcIndex = pageIndex * PAGE_ITEM_SIZE + itemIndex;
+            int desIndex = (pageIndex + 1) * PAGE_ITEM_SIZE;
+            Collections.swap(items, srcIndex, desIndex);
         }
         printLayout();
     }
 
     @Override
-    public void deleteItem(int pageIndex, int itemIndex) {
-        getPage(pageIndex).deleteItem(itemIndex);
+    public void deleteItem(Object item) {
+        if (items.contains(item)) items.remove(item);
     }
 
 
@@ -164,7 +145,7 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
 
     @Override
     public Object getItemAt(int page, int index) {
-        return getPage(page).getItems().get(index);
+        return getPage(page).get(index);
     }
 
     @Override
@@ -178,17 +159,11 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
         }
 
     @Override
-    public int getColumnSpacing() {
-        return 7;
+    public boolean containsObject(Object obj) {
+        return items.contains(obj);
     }
 
-    @Override
-    public int getRowSpacing() {
-        return 7;
-    }
-
-    @Override
-    public int getPageSpacing() {
-        return 7;
+    public interface ItemViewCallback {
+        void onItemViewDeleteClick(Object obj);
     }
 }

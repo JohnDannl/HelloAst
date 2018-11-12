@@ -83,7 +83,7 @@ public class ExampleActivity extends Activity  {
 
         mDrgVpg = (DraggableViewPager) findViewById(R.id.gridview);
 
-        final ExampleDraggableViewPagerAdapter adapter = new ExampleDraggableViewPagerAdapter(this, mDrgVpg);
+        final ExampleDraggableViewPagerAdapter adapter = new ExampleDraggableViewPagerAdapter(this, mItemViewCallback);
 
         mDrgVpg.setAdapter(adapter);
         mDrgVpg.setClickListener(new DragDropGrid.OnDragDropGridItemClickListener() {
@@ -237,4 +237,11 @@ public class ExampleActivity extends Activity  {
         }
         isNavBarShow=true;
     }
+    ExampleDraggableViewPagerAdapter.ItemViewCallback mItemViewCallback = new ExampleDraggableViewPagerAdapter.ItemViewCallback() {
+        @Override
+        public void onItemViewDeleteClick(Object obj) {
+            mDrgVpg.getAdapter().deleteItem(obj);
+            mDrgVpg.notifyDataSetChanged();
+        }
+    };
 }

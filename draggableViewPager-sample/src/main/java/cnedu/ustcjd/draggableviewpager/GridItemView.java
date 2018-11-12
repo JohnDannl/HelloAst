@@ -39,6 +39,9 @@ public class GridItemView {
     public GridItemView(Context context, String itemName) {
         mContext = context;
         mName = itemName;
+        if (rootView == null) {
+            initViews();
+        }
     }
 
     private void initViews() {
@@ -47,10 +50,11 @@ public class GridItemView {
         mHandler.sendEmptyMessageDelayed(UPDATE_TIME_LINE, 1000);
     }
 
+    public void setItemDeleteCallback(View.OnClickListener listener) {
+        rootView.findViewById(R.id.btn_delete).setOnClickListener(listener);
+    }
+
     public View getView() {
-        if (rootView == null) {
-            initViews();
-        }
         return rootView;
     }
 }

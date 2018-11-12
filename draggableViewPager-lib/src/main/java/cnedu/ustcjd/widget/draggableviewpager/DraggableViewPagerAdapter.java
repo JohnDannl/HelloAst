@@ -42,8 +42,7 @@ public interface DraggableViewPagerAdapter {
     public int columnCount();
 
     /**
-     * Prints the layout in Log.d();
-     * TODO Remove this.
+     * Prints the layout in CLLoger.d();
      */
     public void printLayout();
 
@@ -76,10 +75,9 @@ public interface DraggableViewPagerAdapter {
     /**
      * deletes the item in page and at position
      *
-     * @param pageIndex
-     * @param itemIndex
+     * @param obj
      */
-    public void deleteItem(int pageIndex, int itemIndex);
+    public void deleteItem(Object obj);
 
 
     /**
@@ -110,21 +108,5 @@ public interface DraggableViewPagerAdapter {
      */
     public void destroyPage(int page);
 
-    /**
-     * The spacing between columns in pixels
-     * @return column spacing,default is 0
-     */
-    public int getColumnSpacing();
-
-    /**
-     * The spacing between rows in pixels
-     * @return row spacing,default is 0
-     */
-    public int getRowSpacing();
-
-    /**
-     * The spacing between pages in pixels
-     * @return page spacing,default is 0
-     */
-    public int getPageSpacing();
+    boolean containsObject(Object obj);
 }
