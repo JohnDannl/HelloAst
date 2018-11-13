@@ -64,6 +64,12 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
                 if(mItemCallback != null) mItemCallback.onItemViewDeleteClick(item);
             }
         });
+        gridItem.setItemAddCallback(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mItemCallback != null) mItemCallback.onItemViewAddClick(item);
+            }
+        });
         return gridItem.getView();
     }
 
@@ -137,6 +143,16 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
         if (items.contains(item)) items.remove(item);
     }
 
+    /**
+     * add the item to adapter end
+     *
+     * @param obj
+     */
+    @Override
+    public void addItem(Object obj) {
+        items.add((Item) obj);
+    }
+
 
     @Override
     public int getPageWidth() {
@@ -163,7 +179,13 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
         return items.contains(obj);
     }
 
+    @Override
+    public int size() {
+        return items.size();
+    }
+
     public interface ItemViewCallback {
         void onItemViewDeleteClick(Object obj);
+        void onItemViewAddClick(Object obj);
     }
 }

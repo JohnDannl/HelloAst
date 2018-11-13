@@ -54,6 +54,10 @@ public class GridItemView {
         rootView.findViewById(R.id.btn_delete).setOnClickListener(listener);
     }
 
+    public void setItemAddCallback(View.OnClickListener listener) {
+        rootView.findViewById(R.id.btn_add).setOnClickListener(listener);
+    }
+
     public View getView() {
         return rootView;
     }

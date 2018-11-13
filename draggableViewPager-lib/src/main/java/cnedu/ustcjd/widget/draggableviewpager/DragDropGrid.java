@@ -40,7 +40,6 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     private static int FULLSCREEN_ANIMATION_DURATION = 10;
     private static int OFFSCREEN_PAGE_LIMIT = 1;
     private static int EGDE_DETECTION_MARGIN = 35;
-    private List<Integer> loadedPages = new ArrayList<Integer>();
     private boolean hasDoubleClick = false;
     private long lastClickTime = 0L;
     private int lastClickItem = -1;
@@ -221,6 +220,16 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
 
             }
 
+            /**
+             * add the item to adapter end
+             *
+             * @param obj
+             */
+            @Override
+            public void addItem(Object obj) {
+
+            }
+
             @Override
             public int itemCountInPage(int page) {
                 return 0;
@@ -254,6 +263,11 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             @Override
             public boolean containsObject(Object obj) {
                 return false;
+            }
+
+            @Override
+            public int size() {
+                return 0;
             }
         };
     }
@@ -290,7 +304,6 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
     private void addChildViews() {
         removeAllViews();
         views.clear();
-        loadedPages.clear();
         offsetPosition = 0;
         for (int page = 0; page <= OFFSCREEN_PAGE_LIMIT; page++) {
             for (int item = 0; item < adapter.itemCountInPage(page); item++) {
@@ -300,54 +313,25 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
                 addView(v, layoutParams);
                 views.add(v);
             }
-            loadedPages.add(page);
         }
     }
 
     public void notifyDataChanged() {
         int currentPage = container.currentPage();
-        boolean goToPrevious = adapter.itemCountInPage(currentPage) == 0;
-        if (goToPrevious) scrollToPreviousPage();
-        reloadViews();
-    }
-
-    public void reloadViews() {
-        // delete obsolete view
-        Iterator<View> iter = views.listIterator();
-        while(iter.hasNext()) {
-            View view = iter.next();
-            Object tag = view.getTag();
-            if (!adapter.containsObject(tag)) {
-                iter.remove();
-                removeView(view);
-            }
-        }
-        // add new view
-        int currentPage = currentPage();
-        for (int page = currentPage; page <= currentPage + OFFSCREEN_PAGE_LIMIT && page < adapter.pageCount(); page++) {
-            for (int item = 0; item < adapter.itemCountInPage(page); item++) {
-                if (indexOfItem(page, item) == -1) {
-                    View v = adapter.view(page, item);
-                    v.setTag(adapter.getItemAt(page, item));
-                    addView(v);
-                    views.add(v);
-                }
-            }
-        }
-        for (int page = 0; page < adapter.pageCount(); page++) {
-            for (int item = 0; item < adapter.itemCountInPage(page); item++) {
-                if (indexOfItem(page, item) == -1) {
-                    View v = adapter.view(page, item);
-                    v.setTag(adapter.getItemAt(page, item));
-                    addView(v);
-                }
-            }
+        boolean goToPrevious = adapter.itemCountInPage(currentPage) == 0 && currentPage > 0;
+        if (goToPrevious) {
+            container.scrollLeft();
+        } else {
+            updateCachedPages(currentPage);
         }
     }
 
     public int indexOfItem(int page, int index) {
         Object item = adapter.getItemAt(page, index);
+        return indexOfItem(item);
+    }
 
+    private int indexOfItem(Object item) {
         for (int i = 0; i < this.getChildCount(); i++) {
             View v = this.getChildAt(i);
             if (item.equals(v.getTag()))
@@ -1387,12 +1371,10 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
      * Updates the cached pages according to the showing <code>newPage</code> and OFFSCREEN_PAGE_LIMIT because of the scrolling action
      *
      * @param newPage the new page is to scroll to
-     * @param toLeft  whether is to scroll to left
-     * @param toRight whether is to scroll to right
      */
-    public void updateCachedPages(int newPage, boolean toLeft, boolean toRight) {
-        if (!toLeft && !toRight) return;
-        Log.i(TAG, String.format("ToLeft:%s, ToRight:%s, UpdateCachedPage:%d", toLeft, toRight, newPage));
+    public void updateCachedPages(int newPage) {
+        Log.i(TAG, String.format("UpdateCachedPage:%d", newPage));
+        // get the pages to be cached
         List<Integer> newPages = new ArrayList<Integer>();
         for (int i = newPage; i <= newPage + OFFSCREEN_PAGE_LIMIT; i++) {
             if (i < adapter.pageCount()) {
@@ -1408,152 +1390,54 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
                 break;
             }
         }
-        if (newPages.isEmpty()) return;
-        if (toLeft) {
-            int oldSize = loadedPages.size();
-            int oldPageMin = loadedPages.get(0);
-            int newPageMax = newPages.get(newPages.size() - 1);
-            // removes obsolete pages which not included in newPages
-            for (int i = oldSize - 1; i >= 0; i--) {
-                if (!newPages.contains(loadedPages.get(i))) { // remove from right to left
-                    removeChildViewsOfPage(loadedPages.get(i));
+        //if (newPages.isEmpty()) return;
+        List<Object> items = new ArrayList<>();
+        for (int page : newPages) {
+            for (int item = 0; item < adapter.itemCountInPage(page); item++) {
+                items.add(adapter.getItemAt(page, item));
+            }
+        }
+        // delete obsolete items
+        Iterator<View> iter = views.listIterator();
+        while(iter.hasNext()) {
+            View view = iter.next();
+            Object tag = view.getTag();
+            if (!items.contains(tag)) {
+                iter.remove();
+                removeView(view);
+            }
+        }
+        // add new items
+        List<View> newViews = new ArrayList<>();
+        for (int page : newPages) {
+            for (int item = 0; item < adapter.itemCountInPage(page); item++) {
+                View v = null;
+                Object obj = adapter.getItemAt(page, item);
+                if (indexOfItem(obj) == -1) {
+                    v = adapter.view(page, item);
+                    v.setTag(adapter.getItemAt(page, item));
+                    LayoutParams layoutParams = new LayoutParams((displayWidth - getPaddingLeft() - getPaddingRight()) / adapter.columnCount(), ROW_HEIGHT);
+                    addView(v, 0, layoutParams); // to keep the existed items on the top of viewGroup
                 } else {
-                    break;
+                    for (View oldV : views) {
+                        if (oldV.getTag().equals(obj)) {
+                            v = oldV;
+                            break;
+                        }
+                    }
                 }
-            }
-            // adjusts the offsetPosition for example, 4,5,6 <= 8,9,10
-            if (oldPageMin - 1 > newPageMax) {
-                for (int page = oldPageMin - 1; page > newPageMax; page--) {
-                    offsetPosition -= adapter.itemCountInPage(page);
-                }
-            }
-            // adds new pages which not included in loadedPages
-            for (int i = newPages.size() - 1; i >= 0; i--) {
-                if (!loadedPages.contains(newPages.get(i))) {
-                    addChildViewsOfPage(newPages.get(i));
-                }
-            }
-        } else if (toRight) {
-            int oldSize = loadedPages.size();
-            int oldPageMax = loadedPages.get(oldSize - 1);
-            int newPageMin = newPages.get(0);
-            // removes obsolete pages which not included in newPages
-            for (int i = 0; i < oldSize; i++) {
-                if (!newPages.contains(loadedPages.get(0))) {
-                    removeChildViewsOfPage(loadedPages.get(0));
-                } else {
-                    break;
-                }
-            }
-            // adjusts the offsetPosition for example, 4,5,6 => 8,9,10
-            if (oldPageMax + 1 < newPageMin) {
-                for (int page = oldPageMax + 1; page < newPageMin; page++) {
-                    offsetPosition += adapter.itemCountInPage(page);
-                }
-            }
-            // adds new pages which not included in loadedPages
-            for (int i = 0; i < newPages.size(); i++) {
-                if (!loadedPages.contains(newPages.get(i))) {
-                    addChildViewsOfPage(newPages.get(i));
-                }
+                newViews.add(v);
             }
         }
-    }
+        // 保持缓存的views和adapter内数据顺序一致
+        views.clear();
+        views.addAll(newViews);
 
-    /**
-     * Removes items of certain page in a certain order from the {@link DragDropGrid}
-     *
-     * @param page
-     */
-    private void removeChildViewsOfPage(int page) {
-        if (!loadedPages.contains(page)) return;
-        int firstIndex = positionOfItem(page, 0);
-        if (firstIndex - offsetPosition == 0) {     // remove from the left to right
-            for (int i = firstIndex; i < firstIndex + adapter.itemCountInPage(page); i++) {
-                removeView(getChildView(i));
-                removeFromViews(i);
-            }
-            loadedPages.remove(0);
-        } else {        // remove from the right to left
-            int lastIndex = firstIndex + adapter.itemCountInPage(page) - 1;
-            for (int i = lastIndex; i >= firstIndex; i--) {
-                removeView(getChildView(i));
-                removeFromViews(i);
-            }
-            loadedPages.remove(loadedPages.size() - 1);
+        int newOffset = 0;
+        for (int i = 0; newPages.size() > 0 && i < newPages.get(0); i++) {
+            newOffset += adapter.itemCountInPage(i);
         }
-        tellAdapterPageIsDestroyed(page);
-        String leftPages = "";
-        for (int i : loadedPages) {
-            leftPages += i + ",";
-        }
-        Log.i(TAG, String.format("Removes page:%d,Retained pages:%s", page, leftPages));
-    }
-
-    /**
-     * Add items of certain page in a certain order to the {@link DragDropGrid}
-     *
-     * @param page
-     */
-    private void addChildViewsOfPage(int page) {
-        if (loadedPages.contains(page)) return;
-        int firstIndex = positionOfItem(page, 0);
-        if (firstIndex - offsetPosition == views.size()) {    // add items at the end of views
-            for (int i = firstIndex, item = 0; i < firstIndex + adapter.itemCountInPage(page); i++, item++) {
-                View v = adapter.view(page, item);
-                v.setTag(adapter.getItemAt(page, item));
-                LayoutParams layoutParams = new LayoutParams((displayWidth - getPaddingLeft() - getPaddingRight()) / adapter.columnCount(), ROW_HEIGHT);
-                addToViews(i, v);
-                addView(v, 0, layoutParams); // to keep the existed items on the top of viewGroup
-            }
-            loadedPages.add(page);
-        } else {    // add items at the beginning of views
-            int lastIndex = firstIndex + adapter.itemCountInPage(page) - 1;
-            for (int i = lastIndex, item = adapter.itemCountInPage(page) - 1; i >= firstIndex; i--, item--) {
-                View v = adapter.view(page, item);
-                v.setTag(adapter.getItemAt(page, item));
-                LayoutParams layoutParams = new LayoutParams((displayWidth - getPaddingLeft() - getPaddingRight()) / adapter.columnCount(), ROW_HEIGHT);
-                addToViews(i, v);
-                addView(v, 0, layoutParams); // to keep the existed items on the top of viewGroup
-            }
-            loadedPages.add(0, page);
-        }
-        String leftPages = "";
-        for (int i : loadedPages) {
-            leftPages += i + ",";
-        }
-        Log.i(TAG, String.format("Adds page:%d,Retained pages:%s", page, leftPages));
-    }
-
-    /**
-     * Calculates the real position of item in <code>views</code> and inserts into <code>views</code>
-     *
-     * @param index
-     * @param v
-     */
-    private void addToViews(int index, View v) {
-        int position = index - offsetPosition;
-        if (position == -1) {     // add at the beginning, update the offset
-            views.add(0, v);
-            offsetPosition--;
-        } else if (position == views.size()) {      // add at the end
-            views.add(v);
-        }
-    }
-
-    /**
-     * Calculates the real position of item in <code>views</code> and removes from <code>views</code>
-     *
-     * @param index
-     */
-    private void removeFromViews(int index) {
-        int position = index - offsetPosition;
-        if (position == 0) {        // remove the beginning item ,update the offset
-            views.remove(0);
-            offsetPosition++;
-        } else if (position == views.size() - 1) {
-            views.remove(position);
-        }
+        offsetPosition = newOffset;
     }
 
     /**

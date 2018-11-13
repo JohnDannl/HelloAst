@@ -148,7 +148,7 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
                     }
 
                     if (page != activePage) {
-                        grid.updateCachedPages(page, page < activePage, page > activePage);
+                        grid.updateCachedPages(page);
                         activePage = page;
                         if (pageChangedListener != null) {
                             pageChangedListener.onPageChanged(DraggableViewPager.this, page);
@@ -233,7 +233,7 @@ public class DraggableViewPager extends HorizontalScrollView implements ViewPage
 
     @Override
     public void scrollToPage(int page) {
-        grid.updateCachedPages(page, page < activePage, page > activePage);
+        grid.updateCachedPages(page);
         int oldActivePage = activePage;
         activePage = page;
 

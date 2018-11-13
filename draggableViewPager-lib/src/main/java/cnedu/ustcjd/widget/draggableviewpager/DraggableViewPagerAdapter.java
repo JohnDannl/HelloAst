@@ -73,12 +73,17 @@ public interface DraggableViewPagerAdapter {
 
 
     /**
-     * deletes the item in page and at position
+     * deletes the item in page
      *
      * @param obj
      */
     public void deleteItem(Object obj);
 
+    /**
+     * add the item to adapter end
+     * @param obj
+     */
+    public void addItem(Object obj);
 
     /**
      * Tells the grid, the page defined width
@@ -109,4 +114,6 @@ public interface DraggableViewPagerAdapter {
     public void destroyPage(int page);
 
     boolean containsObject(Object obj);
+
+    int size();
 }

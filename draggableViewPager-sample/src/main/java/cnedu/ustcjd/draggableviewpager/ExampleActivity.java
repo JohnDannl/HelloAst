@@ -47,6 +47,7 @@ import android.widget.RelativeLayout;
 import cnedu.ustcjd.widget.draggableviewpager.DragDropGrid;
 import cnedu.ustcjd.widget.draggableviewpager.DraggableViewPager;
 import cnedu.ustcjd.widget.draggableviewpager.callbacks.OnPageChangedListener;
+import cnedu.ustcjd.widget.draggableviewpager.utils.SystemUtils;
 
 public class ExampleActivity extends Activity  {
 
@@ -68,6 +69,7 @@ public class ExampleActivity extends Activity  {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_main);
+        SystemUtils.hideSystemNavBar(this);
         final RelativeLayout contentContainer=(RelativeLayout)findViewById(R.id.content_container);
         contentContainer.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -241,6 +243,13 @@ public class ExampleActivity extends Activity  {
         @Override
         public void onItemViewDeleteClick(Object obj) {
             mDrgVpg.getAdapter().deleteItem(obj);
+            mDrgVpg.notifyDataSetChanged();
+        }
+
+        @Override
+        public void onItemViewAddClick(Object obj) {
+            int totalCount = mDrgVpg.getAdapter().size();
+            mDrgVpg.getAdapter().addItem(new Item(totalCount, "New Item" + totalCount, R.drawable.ic_launcher));
             mDrgVpg.notifyDataSetChanged();
         }
     };
