@@ -1452,7 +1452,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
         if (position1 >= 0 && position1 < views.size() && position2 >= 0 && position2 < views.size()) {
             Collections.swap(views, position1, position2);
         }
-        onSwapItemListener.swapItem(index1, index2);
+        if (onSwapItemListener != null) onSwapItemListener.swapItem(index1, index2);
     }
 
     /**
