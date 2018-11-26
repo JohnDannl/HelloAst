@@ -175,6 +175,11 @@ public class ExampleDraggableViewPagerAdapter implements DraggableViewPagerAdapt
         }
 
     @Override
+    public void destroyItem(Object obj) {
+
+    }
+
+    @Override
     public boolean containsObject(Object obj) {
         return items.contains(obj);
     }

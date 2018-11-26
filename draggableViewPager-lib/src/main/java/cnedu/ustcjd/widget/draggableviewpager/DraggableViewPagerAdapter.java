@@ -113,6 +113,8 @@ public interface DraggableViewPagerAdapter {
      */
     public void destroyPage(int page);
 
+    public void destroyItem(Object obj);
+
     boolean containsObject(Object obj);
 
     int size();

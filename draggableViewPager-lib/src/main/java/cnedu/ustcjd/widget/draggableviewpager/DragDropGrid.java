@@ -261,6 +261,11 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             }
 
             @Override
+            public void destroyItem(Object obj) {
+
+            }
+
+            @Override
             public boolean containsObject(Object obj) {
                 return false;
             }
@@ -1405,6 +1410,7 @@ public class DragDropGrid extends ViewGroup implements OnTouchListener, OnLongCl
             if (!items.contains(tag)) {
                 iter.remove();
                 removeView(view);
+                adapter.destroyItem(tag);
             }
         }
         // add new items
